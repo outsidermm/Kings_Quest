@@ -2,6 +2,7 @@ from .base_state import State
 from state_manager import GameStateManager
 import pygame
 import pygame_gui
+import os
 
 
 class Menu(State):
@@ -16,29 +17,38 @@ class Menu(State):
         game_state_manager: GameStateManager,
     ) -> None:
         super().__init__(display, ui_manager, game_state_manager)
+        self.screen_width = self.get_display().get_rect().width
+        self.screen_height = self.get_display().get_rect().height
+
+        self.__game_title = pygame_gui.elements.UITextBox("King's Quest", pygame.Rect((0,-self.screen_height*0.3), (1000, 200)), self.get_ui_manager(), anchors=({"center":"center"}), object_id=pygame_gui.core.ObjectID(class_id="@title",object_id="#game_title"))
+
         self.__play_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect((350, 275), (100, 50)),
+            relative_rect=pygame.Rect((0, 0), (500, 70)),
             text="PLAY",
             manager=self.get_ui_manager(),
+            anchors=({"center":"center"})
         )
         self.__setting_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect((600, 275), (100, 50)),
+            relative_rect=pygame.Rect((0,self.screen_height*0.15), (500, 70)),
             text="SETTINGS",
             manager=self.get_ui_manager(),
+            anchors=({"center":"center"})
         )
 
         self.__quit_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect((800, 275), (100, 50)),
+            relative_rect=pygame.Rect((0,self.screen_height*0.3), (500, 70)),
             text="QUIT",
             manager=self.get_ui_manager(),
+            anchors=({"center":"center"})
         )
-
+        self.__GUIBackground = pygame.transform.scale(pygame.image.load(os.path.join("./assets/GUIBackground.png")).convert(), (self.screen_width, self.screen_height))
+        self.get_display().blit(self.__GUIBackground, (0, 0))
     def handle_events(self,event) -> None:
         if event.type == pygame_gui.UI_BUTTON_PRESSED:
             if event.ui_element == self.__play_button:
-                print("hello")
+                pass
             if event.ui_element == self.__setting_button:
-                print("hello")
+                pass
             if event.ui_element == self.__quit_button:
                 pygame.quit()
                 quit()

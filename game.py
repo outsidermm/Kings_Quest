@@ -28,6 +28,8 @@ class Game:
             (self.__SCREEN_WIDTH, self.__SCREEN_HEIGHT)
         ))
 
+        self.__ui_manager.get_theme().load_theme("./settings/menu_theme.json")
+
         self.set_clock(pygame.time.Clock())
 
         self.set_game_state_manager(GameStateManager("menu"))
