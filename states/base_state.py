@@ -5,22 +5,22 @@ import pygame_gui
 
 
 class State(abc.ABC):
-    __display = None
+    __screen = None
     __game_state_manager = None
     __ui_manager = None
 
     def __init__(
         self,
-        display: pygame.Surface,
+        screen: pygame.Surface,
         ui_manager: pygame_gui.UIManager,
         game_state_manager: GameStateManager,
     ) -> None:
-        self.set_display(display)
+        self.set_screen(screen)
         self.set_ui_manager(ui_manager)
         self.set_game_state_manager(game_state_manager)
 
     @abc.abstractmethod
-    def handle_events(self,event:list[pygame.Event]) -> None:
+    def handle_events(self, event: pygame.Event) -> None:
         pass
 
     @abc.abstractmethod
@@ -28,14 +28,18 @@ class State(abc.ABC):
         pass
 
     @abc.abstractmethod
+    def reset_event_polling(self) -> None:
+        pass
+
+    @abc.abstractmethod
     def render(self) -> None:
         pass
 
-    def get_display(self) -> pygame.Surface:
-        return self.__display
+    def get_screen(self) -> pygame.Surface:
+        return self.__screen
 
-    def set_display(self, display: pygame.Surface) -> None:
-        self.__display = display
+    def set_screen(self, screen: pygame.Surface) -> None:
+        self.__screen = screen
 
     def get_game_state_manager(self) -> GameStateManager:
         return self.__game_state_manager
