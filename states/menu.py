@@ -1,0 +1,168 @@
+from .base_state import State
+from state_manager import GameStateManager
+import pygame
+import pygame_gui
+import os
+
+
+class Menu(State):
+    __screen = None
+    __game_state_manager = None
+    __ui_manager = None
+    __play_button = None
+    __setting_button = None
+    __quit_button = None
+    __play_button_pressed = False
+    __setting_button_pressed = False
+    __quit_button_pressed = False
+    __game_title = None
+    __GUIBackground = None
+
+    def __init__(
+        self,
+        screen: pygame.Surface,
+        ui_manager: pygame_gui.UIManager,
+        game_state_manager: GameStateManager,
+    ) -> None:
+        super().__init__(screen, ui_manager, game_state_manager)
+        self.__screen_width = self.get_screen().get_rect().width
+        self.__screen_height = self.get_screen().get_rect().height
+
+        self.set_game_title(
+            pygame_gui.elements.UITextBox(
+                "King's Quest",
+                pygame.Rect((0, -self.__screen_height * 0.3), (1000, 200)),
+                self.get_ui_manager(),
+                anchors=({"center": "center"}),
+                object_id=pygame_gui.core.ObjectID(
+                    class_id="@title", object_id="#game_title"
+                ),
+            )
+        )
+
+        self.set_play_button(
+            pygame_gui.elements.UIButton(
+                relative_rect=pygame.Rect((0, 0), (500, 70)),
+                text="PLAY",
+                manager=self.get_ui_manager(),
+                anchors=({"center": "center"}),
+            )
+        )
+
+        self.set_setting_button(
+            pygame_gui.elements.UIButton(
+                relative_rect=pygame.Rect((0, self.__screen_height * 0.15), (500, 70)),
+                text="SETTINGS",
+                manager=self.get_ui_manager(),
+                anchors=({"center": "center"}),
+            )
+        )
+
+        self.set_quit_button(
+            pygame_gui.elements.UIButton(
+                relative_rect=pygame.Rect((0, self.__screen_height * 0.3), (500, 70)),
+                text="QUIT",
+                manager=self.get_ui_manager(),
+                anchors=({"center": "center"}),
+            )
+        )
+
+        self.set_GUIBackground(
+            pygame.transform.scale(
+                pygame.image.load(os.path.join("./assets/GUIBackground.png")).convert(),
+                (self.__screen_width, self.__screen_height),
+            )
+        )
+
+    def handle_events(self, event: pygame.Event) -> None:
+        if event.type == pygame_gui.UI_BUTTON_PRESSED:
+            if event.ui_element == self.get_play_button():
+                self.set_play_button_pressed(True)
+            if event.ui_element == self.get_setting_button():
+                self.set_setting_button_pressed(True)
+            if event.ui_element == self.get_quit_button():
+                self.set_quit_button_pressed(True)
+
+    def run(self) -> None:
+        if self.get_play_button_pressed():
+            pass
+        elif self.get_setting_button_pressed():
+            pass
+        elif self.get_quit_button_pressed():
+            pygame.quit()
+            quit()
+        self.reset_event_polling()
+
+    def reset_event_polling(self) -> None:
+        self.set_play_button_pressed(False)
+        self.set_setting_button_pressed(False)
+        self.set_quit_button_pressed(False)
+
+    def render(self) -> None:
+        self.get_screen().blit(self.__GUIBackground, (0, 0))
+
+    def get_screen(self) -> pygame.Surface:
+        return super().get_screen()
+
+    def set_screen(self, screen: pygame.Surface) -> None:
+        super().set_screen(screen)
+
+    def get_ui_manager(self) -> pygame_gui.UIManager:
+        return super().get_ui_manager()
+
+    def set_ui_manager(self, ui_manager: pygame_gui.UIManager) -> None:
+        super().set_ui_manager(ui_manager)
+
+    def get_game_state_manager(self) -> GameStateManager:
+        return super().get_game_state_manager()
+
+    def set_game_state_manager(self, game_state_manager: GameStateManager) -> None:
+        super().set_game_state_manager(game_state_manager)
+
+    def get_play_button_pressed(self) -> bool:
+        return self.__play_button_pressed
+
+    def get_setting_button_pressed(self) -> bool:
+        return self.__setting_button_pressed
+
+    def get_quit_button_pressed(self) -> bool:
+        return self.__quit_button_pressed
+
+    def set_play_button_pressed(self, play_button_pressed: bool) -> None:
+        self.__play_button_pressed = play_button_pressed
+
+    def set_setting_button_pressed(self, setting_button_pressed: bool) -> None:
+        self.__setting_button_pressed = setting_button_pressed
+
+    def set_quit_button_pressed(self, quit_button_pressed: bool) -> None:
+        self.__quit_button_pressed = quit_button_pressed
+
+    def get_play_button(self) -> pygame_gui.elements.UIButton:
+        return self.__play_button
+
+    def get_setting_button(self) -> pygame_gui.elements.UIButton:
+        return self.__setting_button
+
+    def get_quit_button(self) -> pygame_gui.elements.UIButton:
+        return self.__quit_button
+
+    def set_play_button(self, play_button: pygame_gui.elements.UIButton) -> None:
+        self.__play_button = play_button
+
+    def set_setting_button(self, setting_button: pygame_gui.elements.UIButton) -> None:
+        self.__setting_button = setting_button
+
+    def set_quit_button(self, quit_button: pygame_gui.elements.UIButton) -> None:
+        self.__quit_button = quit_button
+
+    def get_game_title(self) -> pygame_gui.elements.UITextBox:
+        return self.__game_title
+
+    def set_game_title(self, game_title: pygame_gui.elements.UITextBox) -> None:
+        self.__game_title = game_title
+
+    def get_GUIBackground(self) -> pygame.Surface:
+        return self.__GUIBackground
+
+    def set_GUIBackground(self, GUIBackground: pygame.Surface) -> None:
+        self.__GUIBackground = GUIBackground

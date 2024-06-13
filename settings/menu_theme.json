@@ -1,0 +1,49 @@
+{
+	"button": {
+		"colours": {
+			"normal_bg": "Black",
+			"hovered_bg": "Black",
+			"normal_text": "#46DFFD",
+			"hovered_text": "White",
+			"normal_boarder": "#46DFFD",
+			"hovered_boarder": "White"
+		},
+		"misc": {
+			"tool_tip_delay": "1.5",
+			"boarder_width": "5"
+		},
+		"font": {
+			"name": "futura",
+			"size": "25",
+			"bold": "0",
+			"italic": "0",
+			"regular_resource": {
+				"package": "assets.fonts",
+				"resource": "Regular.ttf"
+			}
+		}
+	},
+	"@title": {
+		"colours": {
+			"normal_text": "#46DFFD",
+			"normal_border": "Black",
+			"dark_bg": "Black"
+		},
+		"font": {
+			"name": "phosphate",
+			"size": "120",
+			"bold": "1",
+			"italic": "0",
+			"regular_resource": {
+				"package": "assets.fonts",
+				"resource": "Title.ttf"
+			}
+		},
+		"misc": {
+			"text_horiz_alignment": "center",
+			"padding": "0",
+			"border_width": "0",
+			"shadow_wdith": "0"
+		}
+	}
+}
