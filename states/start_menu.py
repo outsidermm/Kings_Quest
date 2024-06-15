@@ -1,14 +1,10 @@
-from .base_state import State
+from .base_state import BaseState
 from state_manager import GameStateManager
-import pygame
-import pygame_gui
+import pygame, pygame_gui
 import os
 
 
-class Menu(State):
-    __screen = None
-    __game_state_manager = None
-    __ui_manager = None
+class StartMenu(BaseState):
     __play_button = None
     __setting_button = None
     __quit_button = None
@@ -85,18 +81,25 @@ class Menu(State):
 
     def run(self) -> None:
         if self.get_play_button_pressed():
-            pass
+            self.remove_UI()
+            self.get_game_state_manager().set_state("character_selection_menu")
         elif self.get_setting_button_pressed():
-            pass
+            # self.get_game_state_manager().set_state("settings")
+            self.remove_UI()
         elif self.get_quit_button_pressed():
             pygame.quit()
             quit()
-        self.reset_event_polling()
 
     def reset_event_polling(self) -> None:
         self.set_play_button_pressed(False)
         self.set_setting_button_pressed(False)
         self.set_quit_button_pressed(False)
+
+    def remove_UI(self) -> None:
+        self.get_game_title().kill()
+        self.get_play_button().kill()
+        self.get_setting_button().kill()
+        self.get_quit_button().kill()
 
     def render(self) -> None:
         self.get_screen().blit(self.__GUIBackground, (0, 0))

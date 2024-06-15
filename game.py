@@ -1,7 +1,9 @@
 import pygame
 import pygame_gui
 from state_manager import GameStateManager
-from states.menu import Menu
+from states.start_menu import StartMenu
+from states.character_selection import CharacterSelectionMenu
+from character import Character
 
 
 class Game:
@@ -9,8 +11,11 @@ class Game:
     __ui_manager = None
     __game_state_manager = None
     __clock = None
-    __menu = None
     __states = None
+    __characters: list[Character] = []
+
+    __start_menu = None
+    __character_selection_menu = None
 
     def __init__(self) -> None:
         pygame.init()
@@ -33,15 +38,33 @@ class Game:
 
         self.set_clock(pygame.time.Clock())
 
-        self.set_game_state_manager(GameStateManager("menu"))
+        self.set_game_state_manager(GameStateManager("start_menu"))
 
-        self.set_menu(
-            Menu(
+        self.get_characters().append(
+            [Character("i", {}, {}), Character("j", {}, {}), Character("k", {}, {})]
+        )
+
+        self.set_start_menu(
+            StartMenu(
                 self.get_screen(), self.get_ui_manager(), self.get_game_state_manager()
             )
         )
 
-        self.set_states({"menu": self.__menu})
+        self.set_character_selection_menu(
+            CharacterSelectionMenu(
+                self.get_screen(),
+                self.get_ui_manager(),
+                self.get_game_state_manager(),
+                self.get_characters(),
+            )
+        )
+
+        self.set_states(
+            {
+                "start_menu": self.get_start_menu(),
+                "character_selection_menu": self.get_character_selection_menu(),
+            }
+        )
 
     def run(self) -> None:
         while True:
@@ -51,13 +74,16 @@ class Game:
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     quit()
+                self.get_ui_manager().process_events(event)
+
                 self.get_states()[
                     self.get_game_state_manager().get_state()
                 ].handle_events(event)
 
-                self.get_ui_manager().process_events(event)
-
             self.get_states()[self.get_game_state_manager().get_state()].run()
+            self.get_states()[
+                self.get_game_state_manager().get_state()
+            ].reset_event_polling()
 
             self.get_ui_manager().update(time_delta)
 
@@ -98,8 +124,22 @@ class Game:
     def get_states(self) -> dict:
         return self.__states
 
-    def get_menu(self) -> Menu:
-        return self.__menu
+    def get_start_menu(self) -> StartMenu:
+        return self.__start_menu
 
-    def set_menu(self, menu: Menu) -> None:
-        self.__menu = menu
+    def set_start_menu(self, start_menu: StartMenu) -> None:
+        self.__start_menu = start_menu
+
+    def get_characters(self) -> list[Character]:
+        return self.__characters
+
+    def set_characters(self, characters: list[Character]) -> None:
+        self.__characters = characters
+
+    def set_character_selection_menu(
+        self, character_selection_menu: CharacterSelectionMenu
+    ) -> None:
+        self.__character_selection_menu = character_selection_menu
+
+    def get_character_selection_menu(self) -> CharacterSelectionMenu:
+        return self.__character_selection_menu

@@ -4,7 +4,7 @@ import pygame
 import pygame_gui
 
 
-class State(abc.ABC):
+class BaseState(abc.ABC):
     __screen = None
     __game_state_manager = None
     __ui_manager = None
