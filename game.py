@@ -2,7 +2,7 @@ import pygame
 import pygame_gui
 from state_manager import GameStateManager
 from states.start_menu import StartMenu
-from states.character_selection import CharacterSelectionMenu
+from states.character_selection_menu import CharacterSelectionMenu
 from character import Character
 
 
