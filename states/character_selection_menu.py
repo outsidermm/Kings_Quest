@@ -7,6 +7,8 @@ from state_manager import GameStateManager
 class CharacterSelectionMenu(BaseState):
 
     __characters: list[Character] = None
+    __selected_character: Character = None
+    __selection_page = None
 
     def __init__(
         self,
@@ -18,6 +20,7 @@ class CharacterSelectionMenu(BaseState):
         super().__init__(screen, ui_manager, game_state_manager)
         self.__characters = characters
 
+    def start(self)->None:
         self.set_right_arrow_select(
             pygame_gui.elements.UIButton(
                 relative_rect=pygame.Rect(
@@ -39,7 +42,7 @@ class CharacterSelectionMenu(BaseState):
                 anchors=({"left": "left"}),
             )
         )
-
+        
     def handle_events(self, event: pygame.Event):
         pass
 

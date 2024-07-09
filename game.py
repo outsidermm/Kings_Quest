@@ -77,17 +77,20 @@ class Game:
                 self.get_ui_manager().process_events(event)
 
                 self.get_states()[
-                    self.get_game_state_manager().get_state()
+                    self.get_game_state_manager().get_state()[0]
                 ].handle_events(event)
 
-            self.get_states()[self.get_game_state_manager().get_state()].run()
+            self.get_states()[self.get_game_state_manager().get_state()[0]].run()
+            if self.get_game_state_manager().get_state()[1]:
+                self.get_ui_manager().clear_and_reset()
+                self.get_states()[self.get_game_state_manager().get_state()[0]].start()
             self.get_states()[
-                self.get_game_state_manager().get_state()
+                self.get_game_state_manager().get_state()[0]
             ].reset_event_polling()
 
             self.get_ui_manager().update(time_delta)
 
-            self.get_states()[self.get_game_state_manager().get_state()].render()
+            self.get_states()[self.get_game_state_manager().get_state()[0]].render()
             self.get_screen().blit(
                 pygame.Surface((self.__SCREEN_HEIGHT, self.__SCREEN_WIDTH)), (0, 0)
             )

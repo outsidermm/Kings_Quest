@@ -81,7 +81,8 @@ class StartMenu(BaseState):
 
     def run(self) -> None:
         if self.get_play_button_pressed():
-            self.remove_UI()
+            self.get_screen().fill((0, 0, 0))
+            # self.remove_UI()
             self.get_game_state_manager().set_state("character_selection_menu")
         elif self.get_setting_button_pressed():
             # self.get_game_state_manager().set_state("settings")
@@ -100,6 +101,7 @@ class StartMenu(BaseState):
         self.get_play_button().kill()
         self.get_setting_button().kill()
         self.get_quit_button().kill()
+        self.get_screen().fill((0, 0, 0))
 
     def render(self) -> None:
         self.get_screen().blit(self.__GUIBackground, (0, 0))
