@@ -8,7 +8,7 @@ class CharacterSelectionMenu(BaseState):
 
     __characters: list[Character] = None
     __selected_character: Character = None
-    __selection_page = None
+    __selection_page = 0
 
     def __init__(
         self,
@@ -19,19 +19,19 @@ class CharacterSelectionMenu(BaseState):
     ):
         super().__init__(screen, ui_manager, game_state_manager)
         self.__characters = characters
+        self.__characater_count = len(characters)
+        self.__characater_count = 4 # TODO Get actual character count from objects
+        self.__characater_name_list = ["Character 1", "Character 2", "Character 3", "Character 4"] # TODO Get actual character names from objects
 
     def start(self)->None:
-        self.set_right_arrow_select(
-            pygame_gui.elements.UIButton(
-                relative_rect=pygame.Rect(
-                    (-200, self.get_screen().height - 100), (150, 70)
-                ),
-                text="->",
-                manager=self.get_ui_manager(),
-                anchors=({"right": "right"}),
-            )
-        )
+        self.__character_picture_panel = pygame_gui.elements.UIPanel(relative_rect=pygame.Rect((0, 0), (self.get_screen().height, self.get_screen().width*0.6)), manager=self.get_ui_manager(),  anchors=({"left":"left"}))
+        
+        right_info = pygame.Rect((0, 0), (self.get_screen().width*0.4, self.get_screen().height))
+        right_info.right = -30
+        self.__character_info_panel = pygame_gui.elements.UIPanel(relative_rect=right_info, manager=self.get_ui_manager(),  anchors=({"right":"right"}))
 
+        self.__character_name = pygame_gui.elements.UITextBox("Character 1",relative_rect=pygame.Rect((self.get_screen().height*0.05, self.get_screen().width*0.05), (150, 150)), manager=self.get_ui_manager(),  anchors=({"left":"left"}), container=self.__character_info_panel)
+        
         self.set_left_arrow_select(
             pygame_gui.elements.UIButton(
                 relative_rect=pygame.Rect(
@@ -40,17 +40,41 @@ class CharacterSelectionMenu(BaseState):
                 text="<-",
                 manager=self.get_ui_manager(),
                 anchors=({"left": "left"}),
+                container=self.__character_picture_panel
             )
         )
-        
+
+        self.set_right_arrow_select(
+            pygame_gui.elements.UIButton(
+                relative_rect=pygame.Rect(
+                    (-200, self.get_screen().height - 100), (150, 70)
+                ),
+                text="->",
+                manager=self.get_ui_manager(),
+                anchors=({"right": "right"}),
+                container=self.__character_info_panel
+            )
+        )
+
+
     def handle_events(self, event: pygame.Event):
-        pass
+        if event.type == pygame_gui.UI_BUTTON_PRESSED:
+            if event.ui_element == self.get_left_arrow_select():
+                self.__left_switch_character = True
+            if event.ui_element == self.get_right_arrow_select():
+                self.__right_switch_character = True
 
     def run(self):
-        pass
+        if self.__left_switch_character:
+            self.__selection_page = (self.__selection_page - 1) % self.__characater_count
+            self.__character_name.set_text(self.__characater_name_list[self.__selection_page])
+        elif self.__right_switch_character:
+            self.__selection_page = (self.__selection_page + 1) % self.__characater_count
+            self.__character_name.set_text(self.__characater_name_list[self.__selection_page])
 
-    def reset_event_polling(self):
-        pass
+    def reset_event_polling(self) -> None:
+        self.__left_switch_character = False
+        self.__right_switch_character = False
 
     def render(self):
         pass
