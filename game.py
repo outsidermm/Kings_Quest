@@ -3,7 +3,11 @@ import pygame_gui
 from state_manager import GameStateManager
 from states.start_menu import StartMenu
 from states.character_selection_menu import CharacterSelectionMenu
-from character import Character
+from characters.mage import Mage
+from characters.ranger import Ranger
+from characters.warrior import Warrior
+from characters.berserker import Berserker
+from characters.base_character import BaseCharacter
 
 
 class Game:
@@ -12,7 +16,7 @@ class Game:
     __game_state_manager = None
     __clock = None
     __states = None
-    __characters: list[Character] = []
+    __characters: list[BaseCharacter] = None
 
     __start_menu = None
     __character_selection_menu = None
@@ -40,8 +44,13 @@ class Game:
 
         self.set_game_state_manager(GameStateManager("start_menu"))
 
-        self.get_characters().append(
-            [Character("i", {}, {}), Character("j", {}, {}), Character("k", {}, {})]
+        self.set_characters(
+            [
+                Warrior("Aric", "assets/characters/1.png"),
+                Mage("Lyra", "assets/characters/2.png"),
+                Berserker("Berserker", "assets/characters/3.png"),
+                Ranger("Ranger", "assets/characters/4.png"),
+            ]
         )
 
         self.set_start_menu(
@@ -133,10 +142,10 @@ class Game:
     def set_start_menu(self, start_menu: StartMenu) -> None:
         self.__start_menu = start_menu
 
-    def get_characters(self) -> list[Character]:
+    def get_characters(self) -> list[BaseCharacter]:
         return self.__characters
 
-    def set_characters(self, characters: list[Character]) -> None:
+    def set_characters(self, characters: list[BaseCharacter]) -> None:
         self.__characters = characters
 
     def set_character_selection_menu(
