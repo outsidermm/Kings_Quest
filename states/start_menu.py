@@ -103,7 +103,7 @@ class StartMenu(BaseState):
         self.get_quit_button().kill()
         self.get_screen().fill((0, 0, 0))
 
-    def render(self) -> None:
+    def render(self, time_delta) -> None:
         self.get_screen().blit(self.__GUIBackground, (0, 0))
 
     def get_screen(self) -> pygame.Surface:
