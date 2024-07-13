@@ -17,7 +17,7 @@ class Ranger(BaseCharacter):
     __unlocked_abilities: list = ["Arrow Barrage"]
 
     def __init__(self, name: str, sprite_location: str) -> None:
-        super().__init__(name, self.__statistics,sprite_location)
+        super().__init__(name, self.__statistics, sprite_location)
         self.__sprite_location = sprite_location
         self.__name = name
 
@@ -41,3 +41,6 @@ class Ranger(BaseCharacter):
 
     def get_name(self) -> str:
         return self.__name
+
+    def get_sprite_location(self) -> str:
+        return self.__sprite_location

@@ -41,3 +41,6 @@ class Berserker(BaseCharacter):
 
     def get_name(self) -> str:
         return self.__name
+
+    def get_sprite_location(self) -> str:
+        return self.__sprite_location

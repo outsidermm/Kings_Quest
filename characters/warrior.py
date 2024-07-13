@@ -21,7 +21,6 @@ class Warrior(BaseCharacter):
         self.__sprite_location = sprite_location
         self.__name = name
 
-
     def upgrade(self):
         if self.__character_level == 1:
             self.__character_level += 1
@@ -42,3 +41,6 @@ class Warrior(BaseCharacter):
 
     def get_name(self) -> str:
         return self.__name
+
+    def get_sprite_location(self) -> str:
+        return self.__sprite_location

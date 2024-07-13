@@ -1,5 +1,6 @@
 import abc
 
+
 class BaseCharacter(abc.ABC):
 
     __name: str = None
@@ -9,9 +10,7 @@ class BaseCharacter(abc.ABC):
     __character_level: int = 1
     __sprite_location: str = None
 
-    def __init__(
-        self, name: str, statistics: dict, sprite_location: str
-    ) -> None:
+    def __init__(self, name: str, statistics: dict, sprite_location: str) -> None:
         self.__name = name
         self.__statistics = statistics
         self.__sprite_location = sprite_location
@@ -30,3 +29,6 @@ class BaseCharacter(abc.ABC):
 
     def get_name(self) -> str:
         return self.__name
+
+    def get_sprite_location(self) -> str:
+        return self.__sprite_location
