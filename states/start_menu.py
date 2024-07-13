@@ -65,7 +65,7 @@ class StartMenu(BaseState):
 
         self.set_GUIBackground(
             pygame.transform.scale(
-                pygame.image.load(os.path.join("./assets/GUIBackground.png")).convert(),
+                pygame.image.load("assets/GUIBackground.png"),
                 (self.__screen_width, self.__screen_height),
             )
         )

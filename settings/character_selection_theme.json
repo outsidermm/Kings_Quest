@@ -92,5 +92,41 @@
             "size": "25",
             "name": "futura"
 		}
+    },
+    "@ability_menu": {
+        "colours": {
+            "normal_bg": "#444444",
+            "hovered_bg": "#444444",
+            "active_bg": "#444444",
+            "normal_text": "#46DFFD",
+            "hovered_text": "#46DFFD",
+            "active_text": "#46DFFD",
+            "normal_border": "#000000",
+            "hovered_border": "#000000"
+        },
+        "misc": {
+            "shape":"rounded_rectangle",
+            "shape_corner_radius":5
+        }
+    },
+    "#ability_header": {
+		"colours": {
+			"dark_bg": "#20272d"
+		}
+    },
+    "#ability_sub_title":{
+        "colours": {
+            "dark_bg": "#20272d"
+        },
+		"font": {
+			"name": "phosphate",
+			"size": "30",
+			"bold": "0"
+		}
+    },
+    "#ability_text":{
+        "colours": {
+            "dark_bg": "#20272d"
+        }
     }
 }

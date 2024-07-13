@@ -44,7 +44,10 @@ class Ability:
 
     def upgrade(self) -> None:
         for upgrade in self.__upgrades:
-            self.__ability_statistics[upgrade[0]] += upgrade[1]
+            if upgrade[0] in self.__ability_statistics.keys():
+                self.__ability_statistics[upgrade[0]] += upgrade[1]
+            else:
+                self.__ability_statistics[upgrade[0]] = upgrade[1]
 
     def get_name(self) -> str:
         return self.__name
@@ -95,138 +98,138 @@ class Ability:
         self.__active = active
 
 
-PLAYER_ABILITY_LIST: dict[Ability] = {
+PLAYER_ABILITY_LIST: dict[str | Ability] = {
     "Power Slash": Ability(
         "Power Slash",
-        "Slash the enemy with a powerful strike",
+        "Deals 45 damage to the enemy. Duration: 1 turn, Cooldown: 2 turns",
         {"damage": 45, "duration": 1, "cooldown": 2},
         [("MP", 20)],
-        "",
-        [("damage", 55)],
+        "assets/abilities/Power Slash.webp",
+        [("damage", 10)],
     ),
     "Shield War": Ability(
         "Shield War",
-        "Block incoming damage",
+        "Increases physical resistance by 200 for 3 turns. Cooldown: 3 turns",
         {"duration": 3, "cooldown": 3, "resistance": 200},
         [("MP", 25)],
-        "",
+        "assets/abilities/Shield War.webp",
     ),
     "War Cry": Ability(
         "War Cry",
-        "Increase attack damage",
+        "Increases attack damage by 30 for 2 turns and physical resistance by 100 for 2 turns. Cooldown: 4 turns",
         {"damage": 30, "duration": 2, "cooldown": 4, "resistance": 100},
         [("MP", 30)],
-        "",
+        "assets/abilities/War Cry.webp",
     ),
     "Fireball": Ability(
         "Fireball",
-        "Cast a fireball",
+        "Deals 120 damage to the enemy. Duration: 1 turn, Cooldown: 3 turns",
         {"damage": 120, "duration": 1, "cooldown": 3},
         [("MP", 20)],
-        "",
-        [("damage", 150)],
+        "assets/abilities/Fireball.webp",
+        [("damage", 30)],
     ),
     "Arcane Shield": Ability(
         "Arcane Shield",
-        "Block incoming magic damage",
+        "Blocks 100 incoming magic damage for 1 turn. Cooldown: 2 turns",
         {"duration": 1, "cooldown": 2, "absorption": 100},
         [("MP", 25)],
-        "",
+        "assets/abilities/Arcane Shield.webp",
     ),
     "Mana Surge": Ability(
         "Mana Surge",
-        "Increase mana",
+        "Increases mana by 50. Duration: 1 turn, Cooldown: 5 turns",
         {"mana": 50, "duration": 1, "cooldown": 5},
         [("MP", 15)],
-        "",
+        "assets/abilities/Mana Surge.webp",
     ),
     "Arrow Barrage": Ability(
         "Arrow Barrage",
-        "Shoot multiple arrows that bleeds 50 damage for 2 turns",
+        "Shoots multiple arrows that cause 50 bleed damage for 2 turns. Cooldown: 4 turns",
         {"bleed": 50, "duration": 2, "cooldown": 4},
         [("MP", 25)],
-        "",
-        [("damage", 60)],
+        "assets/abilities/Arrow Barrage.webp",
+        [("damage", 10)],
     ),
-    "Nature's Grace": Ability(
-        "Nature's Grace",
-        "Increase health regeneration",
+    "Natural Grace": Ability(
+        "Natural Grace",
+        "Increases health regeneration by 50 HP for 3 turns. Cooldown: 5 turns",
         {"HP": 50, "duration": 3, "cooldown": 5},
         [("MP", 20)],
-        "",
+        "assets/abilities/Natural Grace.webp",
     ),
-    "Fatal shadow": Ability(
-        "Fatal shadow",
-        "Increase critical hite rate by 20%",
+    "Fatal Shadow": Ability(
+        "Fatal Shadow",
+        "Increases critical hit rate by 20 percent for 1 turn. Cooldown: 3 turns",
         {"critical": 20, "duration": 1, "cooldown": 3},
         [("MP", 30)],
-        "",
+        "assets/abilities/Fatal Shadow.webp",
     ),
     "Berserk": Ability(
         "Berserk",
-        "Increases strength by 50%",
+        "Increases strength by 50% for 3 turns, but reduces resistance by 75. Cooldown: 3 turns",
         {"strength": 55, "duration": 3, "cooldown": 3},
         [("MP", 25), ("resistance", 75)],
-        "",
+        "assets/abilities/Berserk.webp",
     ),
     "Bloodlust": Ability(
         "Bloodlust",
-        "Heals for 25 HP for the next 2 turns",
+        "Heals for 25 HP for the next 2 turns. Cooldown: 4 turns",
         {"regeneration": 25, "duration": 2, "cooldown": 4},
         [("MP", 30)],
-        "",
+        "assets/abilities/Bloodlust.webp",
     ),
     "Reckless Charge": Ability(
         "Reckless Charge",
-        "Charge at the enemy",
+        "Charges at the enemy, dealing 20 damage and stunning them for 1 turn. Duration: 1 turn, Cooldown: 2 turns",
         {"stun": True, "damage": 20, "duration": 1, "cooldown": 2},
         [("MP", 20)],
-        "",
-        [("duration", 3)],
+        "assets/abilities/Reckless Charge.webp",
+        [("duration", 2)],
     ),
 }
 
-ENEMY_ABILITY_LIST: dict[Ability] = {
+ENEMY_ABILITY_LIST: dict[str | Ability] = {
     "Rending Claws": Ability(
         "Rending Claws",
-        "Deals 200 physical damage and causes bleeding (30 damage per turn for 3 turns)",
+        "Deals 200 physical damage and causes bleeding (30 damage per turn for 3 turns). Cooldown: 3 turns",
         {"damage": 10, "duration": 3, "cooldown": 3, "bleed": 30},
         [],
-        "",
+        "assets/abilities/Rending Claws.webp",
     ),
     "Savage Roar": Ability(
         "Savage Roar",
-        "Reduces the attack damage of all enemies by 20 percent for 2 turns",
+        "Reduces the attack damage of all enemies by 20 percent for 2 turns. Cooldown: 4 turns",
         {"duration": 2, "cooldown": 4, "attack_damage_reduction": 20},
         [],
-        "",
+        "assets/abilities/Savage Roar.webp",
     ),
     "Dark Bolt": Ability(
         "Dark Bolt",
-        "Deals 250 magic damage and reduces target's armor by 50 for 2 turns",
+        "Deals 250 magic damage and reduces target's armor by 50 for 2 turns. Cooldown: 3 turns",
         {"damage": 250, "duration": 2, "cooldown": 3, "armor_reduction": 50},
         [],
-        "",
+        "assets/abilities/Dark Bolt.webp",
     ),
     "Life Drain": Ability(
         "Life Drain",
-        "Deals 150 magic damage and heals Morgath for 100 HP",
+        "Deals 150 magic damage and heals caster for 100 HP. Duration: 1 turn, Cooldown: 3 turns",
         {"damage": 150, "duration": 1, "cooldown": 3, "regeneration": 100},
         [],
-        "",
+        "assets/abilities/Life Drain.webp",
     ),
     "Flame Breath": Ability(
         "Flame Breath",
-        "Deals 300 damage to all enemies",
+        "Deals 300 damage to all enemies. Duration: 1 turn, Cooldown: 4 turns",
         {"damage": 300, "duration": 1, "cooldown": 4},
         [],
-        "",
+        "assets/abilities/Flame Breath.webp",
     ),
     "Tail Swipe": Ability(
         "Tail Swipe",
-        "Deals 250 damage to a single target and stuns them for 1 turn",
+        "Deals 250 damage to a single target and stuns them for 1 turn. Duration: 1 turn, Cooldown: 3 turns",
         {"damage": 250, "duration": 1, "cooldown": 3, "stun": True},
         [],
-        "",
+        "assets/abilities/Tail Swipe.webp",
     ),
 }

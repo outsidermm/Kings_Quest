@@ -1,4 +1,5 @@
 from .base_character import BaseCharacter
+from ability import PLAYER_ABILITY_LIST, Ability
 
 
 class Mage(BaseCharacter):
@@ -14,7 +15,15 @@ class Mage(BaseCharacter):
         "magical_damage": 30,  # Magical Damage per attack
     }
     __name: str = None
-    __unlocked_abilities: list = ["Fireball"]
+    __unlocked_abilities: list[Ability] = [
+        PLAYER_ABILITY_LIST["Fireball"],
+        PLAYER_ABILITY_LIST["Mana Surge"],
+    ]
+    __ability_list: list[Ability] = [
+        PLAYER_ABILITY_LIST["Fireball"],
+        PLAYER_ABILITY_LIST["Arcane Shield"],
+        PLAYER_ABILITY_LIST["Mana Surge"],
+    ]
     __character_level: int = 2
 
     def __init__(self, name: str, sprite_location: str) -> None:
@@ -29,13 +38,13 @@ class Mage(BaseCharacter):
             self.__statistics["MP"] += 50
         elif self.__character_level == 2:
             self.__character_level += 1
-            pass  # Modify Fireball
+            self.__unlocked_abilities[0].upgrade()
         elif self.__character_level == 3:
             self.__character_level += 1
-            self.__unlocked_abilities.append("Arcane Shield")
+            self.__unlocked_abilities.append(PLAYER_ABILITY_LIST["Arcane Shield"])
 
     def unlock_ability(self) -> None:
-        self.__unlocked_abilities.append("Mana Surge")
+        self.__unlocked_abilities.append(PLAYER_ABILITY_LIST["Mana Surge"])
 
     def attack(self):
         pass
@@ -51,3 +60,9 @@ class Mage(BaseCharacter):
 
     def get_character_level(self) -> int:
         return self.__character_level
+
+    def get_ability_list(self) -> list[Ability]:
+        return self.__ability_list
+
+    def get_unlocked_abilities(self) -> list[Ability]:
+        return self.__unlocked_abilities

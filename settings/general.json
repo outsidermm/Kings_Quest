@@ -46,7 +46,7 @@
 	"@sub_title": {
 		"colours": {
 			"normal_text": "#46DFFD",
-			"dark_bg": "Black"
+			"dark_bg": "#1C1C1C"
 		},
 		"font": {
 			"name": "phosphate",

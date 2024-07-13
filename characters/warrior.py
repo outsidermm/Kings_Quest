@@ -1,4 +1,5 @@
 from .base_character import BaseCharacter
+from ability import PLAYER_ABILITY_LIST, Ability
 
 
 class Warrior(BaseCharacter):
@@ -14,7 +15,12 @@ class Warrior(BaseCharacter):
         "physical_damage": 90,  # Physical Damage per attack
     }
     __name: str = None
-    __unlocked_abilities: list = ["Power Slash"]
+    __unlocked_abilities: list[Ability] = [PLAYER_ABILITY_LIST["Power Slash"]]
+    __ability_list: list[Ability] = [
+        PLAYER_ABILITY_LIST["Power Slash"],
+        PLAYER_ABILITY_LIST["War Cry"],
+        PLAYER_ABILITY_LIST["Shield War"],
+    ]
     __character_level: int = 1
 
     def __init__(self, name: str, sprite_location: str) -> None:
@@ -32,10 +38,10 @@ class Warrior(BaseCharacter):
             pass  # Modify ability
         elif self.__character_level == 3:
             self.__character_level += 1
-            self.__unlocked_abilities.append("War Cry")
+            self.__unlocked_abilities.append(PLAYER_ABILITY_LIST["War Cry"])
 
     def unlock_ability(self) -> None:
-        self.__unlocked_abilities.append("Shield War")
+        self.__unlocked_abilities.append(PLAYER_ABILITY_LIST["Shield War"])
 
     def attack(self):
         pass
@@ -51,3 +57,9 @@ class Warrior(BaseCharacter):
 
     def get_character_level(self) -> int:
         return self.__character_level
+
+    def get_ability_list(self) -> list[Ability]:
+        return self.__ability_list
+
+    def get_unlocked_abilities(self) -> list[Ability]:
+        return self.__unlocked_abilities

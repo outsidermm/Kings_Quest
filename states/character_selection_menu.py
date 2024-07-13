@@ -30,18 +30,19 @@ class CharacterSelectionMenu(BaseState):
     __upgrade_character: bool = False
     __left_switch_character: bool = False
     __right_switch_character: bool = False
+    __ability_menu_active: bool = False
 
     # Define maximum values for the bars for normalization
     __CHARACTER_MAX_VAL: dict[str | float] = {
         "health_points": 1000,
         "physical_defense": 200,
         "magical_defense": 100,
-        "spell_power": 100,
-        "physical_power": 100,
-        "health_regeneration": 20,
+        "spell_power": 120,
+        "physical_power": 110,
+        "health_regeneration": 15,
         "mana_regeneration": 5,
         "mana_points": 200,
-        "physical_damage": 100,
+        "physical_damage": 110,
         "magical_damage": 30,
     }
 
@@ -72,7 +73,6 @@ class CharacterSelectionMenu(BaseState):
                 (0, 0), (self.get_screen().height, self.get_screen().width * 0.6)
             ),
             manager=self.get_ui_manager(),
-            anchors=({"left": "left"}),
             object_id=pygame_gui.core.ObjectID(class_id="@character_pic_panel"),
         )
 
@@ -155,7 +155,7 @@ class CharacterSelectionMenu(BaseState):
             relative_rect=ability_rec,
             text="View Abilities",
             manager=self.get_ui_manager(),
-            anchors=({"centerx": "centerx","bottom":"bottom"}),
+            anchors=({"centerx": "centerx", "bottom": "bottom"}),
             container=self.__character_info_panel,
             object_id=pygame_gui.core.ObjectID(class_id="@unlock_button"),
         )
@@ -224,7 +224,6 @@ class CharacterSelectionMenu(BaseState):
                 ),
                 image_surface=pygame.image.load(f"assets/statistics/{statistic}.webp"),
                 manager=self.get_ui_manager(),
-                anchors=({"left": "left"}),
                 container=self.__character_info_panel,
             )
 
@@ -262,6 +261,135 @@ class CharacterSelectionMenu(BaseState):
                 text=f"{numerical_statistic}/{self.__CHARACTER_MAX_VAL[statistic]}",
             )
 
+        self.__ability_menu = pygame_gui.elements.UIPanel(
+            relative_rect=pygame.Rect(
+                (0, 0),
+                (self.get_screen().width * 0.95, self.get_screen().height * 0.95),
+            ),
+            manager=self.get_ui_manager(),
+            anchors=({"center": "center"}),
+            object_id=pygame_gui.core.ObjectID(class_id="@ability_menu"),
+            starting_height=2,
+            visible=False,
+        )
+
+        ability_menu_close_button_rect = pygame.Rect((0, 0), (150, 50))
+        ability_menu_close_button_rect.right = -100
+        ability_menu_close_button_rect.bottom = -100
+
+        self.__ability_menu_header = pygame_gui.elements.UITextBox(
+            "ABILITIES",
+            relative_rect=pygame.Rect((-100, 50), (-1, -1)),
+            manager=self.get_ui_manager(),
+            anchors=({"centerx": "centerx"}),
+            container=self.__ability_menu,
+            object_id=pygame_gui.core.ObjectID(
+                class_id="@sub_title", object_id="#ability_header"
+            ),
+        )
+
+        self.__ability_menu_close = pygame_gui.elements.UIButton(
+            relative_rect=ability_menu_close_button_rect,
+            text="CLOSE",
+            manager=self.get_ui_manager(),
+            anchors=({"right": "right", "bottom": "bottom"}),
+            container=self.__ability_menu,
+            object_id=pygame_gui.core.ObjectID(class_id="@unlock_button"),
+        )
+
+        ability_init_y = 125
+        init_ability_icon_x = init_ability_text_x = 100
+        init_ability_title_x = 150
+        init_ability_button_x = -100
+        ability_y_gap = 150
+
+        self.__ability_header: list[pygame_gui.elements.UITextBox] = [None] * 3
+        self.__ability_description: list[pygame_gui.elements.UITextBox] = [None] * 3
+        self.__ability_icon: list[pygame_gui.elements.UIImage] = [None] * 3
+        self.__ability_button_list: list[pygame_gui.elements.UIButton] = [None] * 3
+
+        ability_button_text = {
+            0: "OWNED",
+            1: "Unlocked on LVL 4",
+            2: "Unlock for 600 XP",
+        }
+
+        for ability_count, ability in enumerate(
+            self.get_characters()[self.__selection_page].get_ability_list()
+        ):
+            self.__ability_header[ability_count] = pygame_gui.elements.UITextBox(
+                ability.get_name(),
+                relative_rect=pygame.Rect(
+                    (
+                        init_ability_title_x,
+                        ability_init_y + ability_count * ability_y_gap,
+                    ),
+                    (-1, -1),
+                ),
+                manager=self.get_ui_manager(),
+                container=self.__ability_menu,
+                object_id=pygame_gui.core.ObjectID(
+                    class_id="@sub_title", object_id="#ability_sub_title"
+                ),
+            )
+
+            self.__ability_icon[ability_count] = pygame_gui.elements.UIImage(
+                relative_rect=pygame.Rect(
+                    (
+                        init_ability_icon_x,
+                        ability_init_y + ability_count * ability_y_gap + 5,
+                    ),
+                    (40, 40),
+                ),
+                image_surface=pygame.image.load(ability.get_icon_URL()),
+                manager=self.get_ui_manager(),
+                container=self.__ability_menu,
+            )
+
+            self.__ability_description[ability_count] = pygame_gui.elements.UITextBox(
+                ability.get_description(),
+                relative_rect=pygame.Rect(
+                    (
+                        init_ability_text_x,
+                        ability_init_y + ability_count * ability_y_gap + 50,
+                    ),
+                    (self.get_screen().width * 0.6, -1),
+                ),
+                manager=self.get_ui_manager(),
+                container=self.__ability_menu,
+                object_id=pygame_gui.core.ObjectID(object_id="#ability_text"),
+            )
+
+            ability_button_rect = pygame.Rect(
+                (0, ability_init_y + ability_count * ability_y_gap), (200, 50)
+            )
+            ability_button_rect.right = -100
+            if (
+                ability
+                in self.get_characters()[self.__selection_page].get_unlocked_abilities()
+            ):
+                self.__ability_button_list[ability_count] = (
+                    pygame_gui.elements.UIButton(
+                        relative_rect=ability_button_rect,
+                        text=ability_button_text[0],
+                        manager=self.get_ui_manager(),
+                        anchors=({"right": "right"}),
+                        container=self.__ability_menu,
+                        object_id=pygame_gui.core.ObjectID(class_id="@lock_button"),
+                    )
+                )
+            else:
+                self.__ability_button_list[ability_count] = (
+                    pygame_gui.elements.UIButton(
+                        relative_rect=ability_button_rect,
+                        text=ability_button_text[ability_count],
+                        manager=self.get_ui_manager(),
+                        anchors=({"right": "right"}),
+                        container=self.__ability_menu,
+                        object_id=pygame_gui.core.ObjectID(class_id="@unlock_button"),
+                    )
+                )
+
     def handle_events(self, event: pygame.Event):
         if event.type == pygame_gui.UI_BUTTON_PRESSED:
             if event.ui_element == self.get_left_arrow_select():
@@ -272,6 +400,10 @@ class CharacterSelectionMenu(BaseState):
                 self.__upgrade_character = True
             if event.ui_element == self.__go_button:
                 self.__game_start = True
+            if event.ui_element == self.__view_ability_button:
+                self.__ability_menu_active = True
+            if event.ui_element == self.__ability_menu_close:
+                self.__ability_menu_active = False
 
     def run(self):
         character_switch = False
@@ -339,6 +471,46 @@ class CharacterSelectionMenu(BaseState):
                 self.__upgrade_botton.change_object_id(
                     pygame_gui.core.ObjectID(class_id="@lock_button")
                 )
+
+            for ability_count, ability in enumerate(
+                self.get_characters()[self.__selection_page].get_ability_list()
+            ):
+                self.__ability_header[ability_count].set_text(ability.get_name())
+                self.__ability_icon[ability_count].set_image(
+                    pygame.image.load(ability.get_icon_URL())
+                )
+                self.__ability_description[ability_count].set_text(
+                    ability.get_description()
+                )
+
+                ability_button_text = {
+                    0: "OWNED",
+                    1: "Unlocked on LVL 4",
+                    2: "Unlock for 600 XP",
+                }
+                if (
+                    ability
+                    in self.get_characters()[
+                        self.__selection_page
+                    ].get_unlocked_abilities()
+                ):
+                    self.__ability_button_list[ability_count].set_text(
+                        ability_button_text[0]
+                    )
+                    self.__ability_button_list[ability_count].change_object_id(
+                        pygame_gui.core.ObjectID(class_id="@lock_button")
+                    )
+                else:
+                    self.__ability_button_list[ability_count].set_text(
+                        ability_button_text[ability_count]
+                    )
+                    self.__ability_button_list[ability_count].change_object_id(
+                        pygame_gui.core.ObjectID(class_id="@unlock_button")
+                    )
+        if self.__ability_menu_active:
+            self.__ability_menu.show()
+        else:
+            self.__ability_menu.hide()
 
         if self.__game_start:
             pass

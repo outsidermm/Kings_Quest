@@ -1,4 +1,5 @@
 from .base_character import BaseCharacter
+from ability import PLAYER_ABILITY_LIST, Ability
 
 
 class Berserker(BaseCharacter):
@@ -15,8 +16,14 @@ class Berserker(BaseCharacter):
     }
 
     __name: str = None
-    __unlocked_abilities: list = ["Reckless Charge"]
+    __unlocked_abilities: list[Ability] = [PLAYER_ABILITY_LIST["Reckless Charge"]]
+    __ability_list: list[Ability] = [
+        PLAYER_ABILITY_LIST["Reckless Charge"],
+        PLAYER_ABILITY_LIST["Bloodlust"],
+        PLAYER_ABILITY_LIST["Berserk"],
+    ]
     __character_level: int = 1
+    __sprite_location = None
 
     def __init__(self, name: str, sprite_location: str) -> None:
         super().__init__(name, self.__statistics, sprite_location)
@@ -30,13 +37,13 @@ class Berserker(BaseCharacter):
             self.__statistics["Strength"] += 15
         elif self.__character_level == 2:
             self.__character_level += 1
-            pass  # Modify Reckless Charge
+            self.__unlocked_abilities[0].upgrade()
         elif self.__character_level == 3:
             self.__character_level += 1
-            self.__unlocked_abilities.append("Bloodlust")
+            self.__unlocked_abilities.append(PLAYER_ABILITY_LIST["Bloodlust"])
 
     def unlock_ability(self) -> None:
-        self.__unlocked_abilities.append("Berserk")
+        self.__unlocked_abilities.append(PLAYER_ABILITY_LIST["Berserk"])
 
     def attack(self) -> None:
         pass
@@ -52,3 +59,9 @@ class Berserker(BaseCharacter):
 
     def get_character_level(self) -> int:
         return self.__character_level
+
+    def get_ability_list(self) -> list[Ability]:
+        return self.__ability_list
+
+    def get_unlocked_abilities(self) -> list[Ability]:
+        return self.__unlocked_abilities
