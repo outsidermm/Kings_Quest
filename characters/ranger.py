@@ -4,17 +4,18 @@ from .base_character import BaseCharacter
 class Ranger(BaseCharacter):
 
     __statistics: dict = {
-        "HP": 600,
-        "Armor": 100,
-        "Magic Resistance": 60,
-        "Intelligence": 50,
-        "Strength": 70,
-        "Regeneration Rate": "8HP",
-        "MP": 150,
-        "Attack Damage": "70HP",
+        "health_points": 600,  # Health Points
+        "physical_defense": 100,  # Physical Defense
+        "magical_defense": 60,  # Magical Defense
+        "spell_power": 50,  # Spell Power
+        "physical_power": 70,  # Physical Power
+        "health_regeneration": 8,  # Health Regeneration per second
+        "mana_points": 150,  # Mana Points
+        "physical_damage": 70,  # Physical Damage per attack
     }
     __name: str = None
     __unlocked_abilities: list = ["Arrow Barrage"]
+    __character_level: int = 4
 
     def __init__(self, name: str, sprite_location: str) -> None:
         super().__init__(name, self.__statistics, sprite_location)
@@ -44,3 +45,9 @@ class Ranger(BaseCharacter):
 
     def get_sprite_location(self) -> str:
         return self.__sprite_location
+
+    def get_statistics(self) -> dict:
+        return self.__statistics
+
+    def get_character_level(self) -> int:
+        return self.__character_level

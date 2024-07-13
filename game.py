@@ -38,7 +38,10 @@ class Game:
             pygame_gui.UIManager((self.__SCREEN_WIDTH, self.__SCREEN_HEIGHT))
         )
 
-        self.get_ui_manager().get_theme().load_theme("./settings/menu_theme.json")
+        self.get_ui_manager().get_theme().load_theme("./settings/general.json")
+        self.get_ui_manager().get_theme().load_theme(
+            "settings/character_selection_theme.json"
+        )
 
         self.set_clock(pygame.time.Clock())
 
@@ -46,10 +49,10 @@ class Game:
 
         self.set_characters(
             [
-                Warrior("Aric", "assets/characters/1.png"),
-                Mage("Lyra", "assets/characters/2.png"),
-                Berserker("Berserker", "assets/characters/3.png"),
-                Ranger("Ranger", "assets/characters/4.png"),
+                Warrior("Aric", "assets/characters/Aric.png"),
+                Mage("Lyra", "assets/characters/Lyra.png"),
+                Berserker("Berserker", "assets/characters/Berserker.png"),
+                Ranger("Ranger", "assets/characters/Ranger.png"),
             ]
         )
 
@@ -99,7 +102,9 @@ class Game:
 
             self.get_ui_manager().update(time_delta)
 
-            self.get_states()[self.get_game_state_manager().get_state()[0]].render()
+            self.get_states()[self.get_game_state_manager().get_state()[0]].render(
+                time_delta
+            )
             self.get_screen().blit(
                 pygame.Surface((self.__SCREEN_HEIGHT, self.__SCREEN_WIDTH)), (0, 0)
             )

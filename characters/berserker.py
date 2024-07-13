@@ -4,17 +4,19 @@ from .base_character import BaseCharacter
 class Berserker(BaseCharacter):
 
     __statistics: dict = {
-        "HP": 1000,
-        "Armor": 150,
-        "Magic Resistance": 40,
-        "Intelligence": 20,
-        "Strength": 110,
-        "Regeneration Rate": "15HP",
-        "MP": 80,
-        "Attack Damage": "110HP",
+        "health_points": 1000,  # Health Points
+        "physical_defense": 150,  # Physical Defense
+        "magical_defense": 40,  # Magical Defense
+        "spell_power": 20,  # Spell Power
+        "physical_power": 110,  # Physical Power
+        "health_regeneration": 15,  # Health Regeneration per second
+        "mana_points": 80,  # Mana Points
+        "physical_damage": 110,  # Physical Damage per attack
     }
+
     __name: str = None
     __unlocked_abilities: list = ["Reckless Charge"]
+    __character_level: int = 1
 
     def __init__(self, name: str, sprite_location: str) -> None:
         super().__init__(name, self.__statistics, sprite_location)
@@ -44,3 +46,9 @@ class Berserker(BaseCharacter):
 
     def get_sprite_location(self) -> str:
         return self.__sprite_location
+
+    def get_statistics(self) -> dict:
+        return self.__statistics
+
+    def get_character_level(self) -> int:
+        return self.__character_level

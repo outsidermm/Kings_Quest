@@ -4,17 +4,18 @@ from .base_character import BaseCharacter
 class Warrior(BaseCharacter):
 
     __statistics: dict = {
-        "HP": 800,
-        "Armor": 200,
-        "Magic Resistance": 50,
-        "Intelligence": 40,
-        "Strength": 90,
-        "Regeneration Rate": "10HP",
-        "MP": 100,
-        "Attack Damage": "90HP",
+        "health_points": 800,  # Health Points
+        "physical_defense": 200,  # Physical Defense
+        "magical_defense": 50,  # Magical Defense
+        "spell_power": 40,  # Spell Power
+        "physical_power": 90,  # Physical Power
+        "health_regeneration": 10,  # Health Regeneration per second
+        "mana_points": 100,  # Mana Points
+        "physical_damage": 90,  # Physical Damage per attack
     }
     __name: str = None
     __unlocked_abilities: list = ["Power Slash"]
+    __character_level: int = 1
 
     def __init__(self, name: str, sprite_location: str) -> None:
         super().__init__(name, self.__statistics, sprite_location)
@@ -44,3 +45,9 @@ class Warrior(BaseCharacter):
 
     def get_sprite_location(self) -> str:
         return self.__sprite_location
+
+    def get_statistics(self) -> dict:
+        return self.__statistics
+
+    def get_character_level(self) -> int:
+        return self.__character_level

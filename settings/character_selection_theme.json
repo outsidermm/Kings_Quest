@@ -1,0 +1,96 @@
+{
+	"@arrow": {
+		"colours": {
+			"normal_bg": "#1C1C1C"
+		},
+		"font": {
+			"name": "futura",
+			"size": "60"
+		}
+	},
+    "@unlock_button": {
+		"colours": {
+			"normal_bg": "#1C1C1C"
+		},
+		"font": {
+			"size": "20"
+		}
+	},
+    "@lock_button": {
+		"colours": {
+            "normal_bg": "#555555",
+            "hovered_bg": "#555555",
+            "active_bg": "#555555",
+            "normal_text": "#999999",
+            "hovered_text": "#999999",
+            "active_text": "#999999",
+            "normal_border": "#333333",
+            "hovered_border": "#333333"
+		},
+		"font": {
+			"size": "20"
+		}
+	},
+    "@character_info_panel":
+    {
+        "colours":{
+            "dark_bg": "#1C1C1C",
+            "normal_border":"#1C1C1C"
+        },
+        "misc":
+        {
+            "boarder_width": "0",
+            "shadow_width": "0"
+        }
+    },
+    "@character_pic_panel":
+    {
+        "colours":{
+            "dark_bg": "#2E2E2E",
+            "normal_border":"#2E2E2E"
+        },
+        "misc":
+        {
+            "boarder_width": "0",
+            "shadow_width": "0"
+        }
+    },
+    "@statistic_text":
+    {
+        "colours": {
+			"dark_bg": "#1C1C1C"
+		}
+    },
+    "#character_name":
+    {
+        "colours":{
+            "dark_bg":"#1C1C1C"
+        }
+    },
+    "@statistics_bar":
+    {
+        "colours":
+        {
+            "normal_border": "#46DFFD",
+            "filled_bar": "#00A4CC",
+            "unfilled_bar": "#7DF9FF"
+        },
+        "misc":
+        {
+            "shape":"rounded_rectangle",
+            "shape_corner_radius":5,
+            "border_width": "3"
+        }
+    },
+    "@go_button":{
+        "colours": {
+            "normal_bg": "#1C1C1C",
+            "hovered_bg": "#1C1C1C",
+            "active_bg": "#1C1C1C"
+        },
+        "font": {
+            "size": "25",
+            "name": "futura"
+		}
+    }
+}

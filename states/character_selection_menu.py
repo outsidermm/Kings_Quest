@@ -5,11 +5,45 @@ from state_manager import GameStateManager
 from characters.base_character import BaseCharacter
 
 
+class StatisticBar(pygame_gui.elements.UIStatusBar):
+    def __init__(
+        self,
+        text: str = None,
+        *args,
+        **kwargs,
+    ):
+        self.__bar_text = text
+        super().__init__(*args, **kwargs)
+
+    def status_text(self) -> str:
+        return self.__bar_text
+
+    def set_text(self, text: str):
+        self.__bar_text = text
+
+
 class CharacterSelectionMenu(BaseState):
 
     __characters: list[BaseCharacter] = None
-    __selected_character: BaseCharacter = None
     __selection_page = 0
+    __game_start: bool = False
+    __upgrade_character: bool = False
+    __left_switch_character: bool = False
+    __right_switch_character: bool = False
+
+    # Define maximum values for the bars for normalization
+    __CHARACTER_MAX_VAL: dict[str | float] = {
+        "health_points": 1000,
+        "physical_defense": 200,
+        "magical_defense": 100,
+        "spell_power": 100,
+        "physical_power": 100,
+        "health_regeneration": 20,
+        "mana_regeneration": 5,
+        "mana_points": 200,
+        "physical_damage": 100,
+        "magical_damage": 30,
+    }
 
     def __init__(
         self,
@@ -23,6 +57,15 @@ class CharacterSelectionMenu(BaseState):
         self.__characater_count = len(characters)
         self.__characater_name_list = [character.get_name() for character in characters]
 
+    def progress_bar(self, statistic: str) -> float:
+        return (
+            self.get_characters()[self.__selection_page].get_statistics()[statistic]
+            / self.__CHARACTER_MAX_VAL[statistic]
+            if statistic
+            in self.get_characters()[self.__selection_page].get_statistics().keys()
+            else 0
+        )
+
     def start(self) -> None:
         self.__character_picture_panel = pygame_gui.elements.UIPanel(
             relative_rect=pygame.Rect(
@@ -30,52 +73,194 @@ class CharacterSelectionMenu(BaseState):
             ),
             manager=self.get_ui_manager(),
             anchors=({"left": "left"}),
+            object_id=pygame_gui.core.ObjectID(class_id="@character_pic_panel"),
+        )
+
+        self.__character_picture = pygame_gui.elements.UIImage(
+            relative_rect=pygame.Rect(
+                (0, -75),
+                (self.get_screen().height * 0.8, self.get_screen().width * 0.48),
+            ),
+            image_surface=pygame.image.load(
+                self.get_characters()[self.__selection_page].get_sprite_location()
+            ).convert_alpha(),
+            manager=self.get_ui_manager(),
+            anchors=({"center": "center"}),
+            container=self.__character_picture_panel,
+        )
+
+        right_arrow = pygame.Rect((0, 0), (125, 70))
+        right_arrow.right = -50
+        right_arrow.bottom = -75
+        self.set_right_arrow_select(
+            pygame_gui.elements.UIButton(
+                relative_rect=right_arrow,
+                text="→",
+                manager=self.get_ui_manager(),
+                anchors=({"right": "right", "bottom": "bottom"}),
+                container=self.__character_picture_panel,
+                object_id=pygame_gui.core.ObjectID(class_id="@arrow"),
+            )
+        )
+
+        left_arrow = pygame.Rect((50, 0), (125, 70))
+        left_arrow.bottom = -75
+        self.set_left_arrow_select(
+            pygame_gui.elements.UIButton(
+                relative_rect=left_arrow,
+                text="←",
+                manager=self.get_ui_manager(),
+                anchors=({"bottom": "bottom"}),
+                container=self.__character_picture_panel,
+                object_id=pygame_gui.core.ObjectID(class_id="@arrow"),
+            )
+        )
+
+        select_rect = pygame.Rect((0, 0), (125, 70))
+        select_rect.bottom = -75
+        self.__go_button = pygame_gui.elements.UIButton(
+            relative_rect=select_rect,
+            text="START",
+            manager=self.get_ui_manager(),
+            anchors=({"centerx": "centerx", "bottom": "bottom"}),
+            container=self.__character_picture_panel,
+            object_id=pygame_gui.core.ObjectID(class_id="@go_button"),
         )
 
         right_info = pygame.Rect(
-            (0, 0), (self.get_screen().width * 0.4, self.get_screen().height)
+            (0, 0), (self.get_screen().width * 0.45, self.get_screen().height)
         )
-        right_info.right = -30
+        right_info.right = 0
         self.__character_info_panel = pygame_gui.elements.UIPanel(
             relative_rect=right_info,
             manager=self.get_ui_manager(),
             anchors=({"right": "right"}),
+            object_id=pygame_gui.core.ObjectID(class_id="@character_info_panel"),
         )
 
         self.__character_name = pygame_gui.elements.UITextBox(
-            "Character 1",
-            relative_rect=pygame.Rect(
-                (self.get_screen().height * 0.05, self.get_screen().width * 0.05),
-                (150, 150),
-            ),
+            self.__characater_name_list[0],
+            relative_rect=pygame.Rect((50, 30), (-1, -1)),
             manager=self.get_ui_manager(),
             anchors=({"left": "left"}),
             container=self.__character_info_panel,
+            object_id=pygame_gui.core.ObjectID(
+                class_id="@sub_title", object_id="#character_name"
+            ),
         )
 
-        self.set_left_arrow_select(
-            pygame_gui.elements.UIButton(
-                relative_rect=pygame.Rect(
-                    (50, self.get_screen().height - 100), (150, 70)
-                ),
-                text="<-",
-                manager=self.get_ui_manager(),
-                anchors=({"left": "left"}),
-                container=self.__character_picture_panel,
-            )
+        ability_rec = pygame.Rect((0, 0), (475, 60))
+        ability_rec.bottom = -35
+        self.__view_ability_button = pygame_gui.elements.UIButton(
+            relative_rect=ability_rec,
+            text="View Abilities",
+            manager=self.get_ui_manager(),
+            anchors=({"centerx": "centerx","bottom":"bottom"}),
+            container=self.__character_info_panel,
+            object_id=pygame_gui.core.ObjectID(class_id="@unlock_button"),
         )
 
-        self.set_right_arrow_select(
-            pygame_gui.elements.UIButton(
-                relative_rect=pygame.Rect(
-                    (-200, self.get_screen().height - 100), (150, 70)
-                ),
-                text="->",
+        upgrade_button_location = pygame.Rect((50, 30), (200, 60))
+        upgrade_button_location.right = -50
+        if self.get_characters()[self.__selection_page].get_character_level() == 1:
+            self.__upgrade_botton = pygame_gui.elements.UIButton(
+                relative_rect=upgrade_button_location,
+                text="Upgrade for 200 XP",
                 manager=self.get_ui_manager(),
                 anchors=({"right": "right"}),
                 container=self.__character_info_panel,
+                object_id=pygame_gui.core.ObjectID(class_id="@unlock_button"),
             )
+        elif self.get_characters()[self.__selection_page].get_character_level() == 2:
+            self.__upgrade_botton = pygame_gui.elements.UIButton(
+                relative_rect=upgrade_button_location,
+                text="Upgrade for 400 XP",
+                manager=self.get_ui_manager(),
+                anchors=({"right": "right"}),
+                container=self.__character_info_panel,
+                object_id=pygame_gui.core.ObjectID(class_id="@unlock_button"),
+            )
+        elif self.get_characters()[self.__selection_page].get_character_level() == 3:
+            self.__upgrade_botton = pygame_gui.elements.UIButton(
+                relative_rect=upgrade_button_location,
+                text="Upgrade for 800 XP",
+                manager=self.get_ui_manager(),
+                anchors=({"right": "right"}),
+                container=self.__character_info_panel,
+                object_id=pygame_gui.core.ObjectID(class_id="@unlock_button"),
+            )
+        else:
+            self.__upgrade_botton = pygame_gui.elements.UIButton(
+                relative_rect=upgrade_button_location,
+                text="MAX LEVEL",
+                manager=self.get_ui_manager(),
+                anchors=({"right": "right"}),
+                container=self.__character_info_panel,
+                object_id=pygame_gui.core.ObjectID(class_id="@lock_button"),
+            )
+
+        init_img_x = 50
+        init_text_x = 100
+        init_bar_x = 300
+        init_y = 108
+        gap_per_statistics = 50
+        self.__statistic_img: list[pygame_gui.elements.UIImage] = [None] * len(
+            self.__CHARACTER_MAX_VAL
         )
+        self.__statistic_text: list[pygame_gui.elements.UITextBox] = [None] * len(
+            self.__CHARACTER_MAX_VAL
+        )
+        self.__statistic_bar: list[StatisticBar] = [None] * len(
+            self.__CHARACTER_MAX_VAL
+        )
+
+        for statistic_count, (statistic, value) in enumerate(
+            self.__CHARACTER_MAX_VAL.items()
+        ):
+            self.__statistic_img[statistic_count] = pygame_gui.elements.UIImage(
+                relative_rect=pygame.Rect(
+                    (init_img_x, init_y + statistic_count * gap_per_statistics + 5),
+                    (40, 40),
+                ),
+                image_surface=pygame.image.load(f"assets/statistics/{statistic}.webp"),
+                manager=self.get_ui_manager(),
+                anchors=({"left": "left"}),
+                container=self.__character_info_panel,
+            )
+
+            self.__statistic_text[statistic_count] = pygame_gui.elements.UITextBox(
+                " ".join(word.capitalize() for word in statistic.split("_")),
+                relative_rect=pygame.Rect(
+                    (init_text_x, init_y + statistic_count * gap_per_statistics),
+                    (300, -1),
+                ),
+                manager=self.get_ui_manager(),
+                anchors=({"left": "left"}),
+                container=self.__character_info_panel,
+                object_id=pygame_gui.core.ObjectID(class_id="@statistic_text"),
+            )
+
+            bar_location = pygame.Rect(
+                (init_bar_x, init_y + statistic_count * gap_per_statistics + 12.5),
+                (200, 30),
+            )
+            bar_location.right = -50
+            numerical_statistic = (
+                self.get_characters()[self.__selection_page].get_statistics()[statistic]
+                if statistic
+                in self.get_characters()[self.__selection_page].get_statistics().keys()
+                else 0
+            )
+
+            self.__statistic_bar[statistic_count] = StatisticBar(
+                relative_rect=bar_location,
+                manager=self.get_ui_manager(),
+                anchors=({"right": "right"}),
+                percent_method=(lambda stat=statistic: self.progress_bar(stat)),
+                container=self.__character_info_panel,
+                object_id=pygame_gui.core.ObjectID(class_id="@statistics_bar"),
+                text=f"{numerical_statistic}/{self.__CHARACTER_MAX_VAL[statistic]}",
+            )
 
     def handle_events(self, event: pygame.Event):
         if event.type == pygame_gui.UI_BUTTON_PRESSED:
@@ -83,28 +268,87 @@ class CharacterSelectionMenu(BaseState):
                 self.__left_switch_character = True
             if event.ui_element == self.get_right_arrow_select():
                 self.__right_switch_character = True
+            if event.ui_element == self.__upgrade_botton:
+                self.__upgrade_character = True
+            if event.ui_element == self.__go_button:
+                self.__game_start = True
 
     def run(self):
+        character_switch = False
         if self.__left_switch_character:
+            character_switch = True
             self.__selection_page = (
                 self.__selection_page - 1
             ) % self.__characater_count
-            self.__character_name.set_text(
-                self.__characater_name_list[self.__selection_page]
-            )
         elif self.__right_switch_character:
             self.__selection_page = (
                 self.__selection_page + 1
             ) % self.__characater_count
+            character_switch = True
+
+        if character_switch:
             self.__character_name.set_text(
                 self.__characater_name_list[self.__selection_page]
             )
+            self.__character_picture.set_image(
+                pygame.image.load(
+                    self.get_characters()[self.__selection_page].get_sprite_location()
+                ).convert_alpha()
+            )
+
+            for statistic_count, (statistic, value) in enumerate(
+                self.__CHARACTER_MAX_VAL.items()
+            ):
+
+                numerical_statistic = (
+                    self.get_characters()[self.__selection_page].get_statistics()[
+                        statistic
+                    ]
+                    if statistic
+                    in self.get_characters()[self.__selection_page]
+                    .get_statistics()
+                    .keys()
+                    else 0
+                )
+
+                self.__statistic_bar[statistic_count].set_text(
+                    f"{numerical_statistic}/{self.__CHARACTER_MAX_VAL[statistic]}"
+                )
+
+            if self.get_characters()[self.__selection_page].get_character_level() == 1:
+                self.__upgrade_botton.set_text("Upgrade for 200 XP")
+                self.__upgrade_botton.change_object_id(
+                    pygame_gui.core.ObjectID(class_id="@unlock_button")
+                )
+            elif (
+                self.get_characters()[self.__selection_page].get_character_level() == 2
+            ):
+                self.__upgrade_botton.set_text("Upgrade for 400 XP")
+                self.__upgrade_botton.change_object_id(
+                    pygame_gui.core.ObjectID(class_id="@unlock_button")
+                )
+            elif (
+                self.get_characters()[self.__selection_page].get_character_level() == 3
+            ):
+                self.__upgrade_botton.set_text("Upgrade for 800 XP")
+                self.__upgrade_botton.change_object_id(
+                    pygame_gui.core.ObjectID(class_id="@unlock_button")
+                )
+            else:
+                self.__upgrade_botton.set_text("MAX LEVEL")
+                self.__upgrade_botton.change_object_id(
+                    pygame_gui.core.ObjectID(class_id="@lock_button")
+                )
+
+        if self.__game_start:
+            pass
+            # self.get_game_state_manager().set_state("gameplay")
 
     def reset_event_polling(self) -> None:
         self.__left_switch_character = False
         self.__right_switch_character = False
 
-    def render(self):
+    def render(self, time_delta):
         pass
 
     def get_screen(self) -> pygame.Surface:

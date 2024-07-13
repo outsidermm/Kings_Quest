@@ -1,0 +1,91 @@
+{
+	"button": {
+		"colours": {
+			"normal_bg": "Black",
+			"hovered_bg": "#2C2C2C",
+			"normal_text": "#46DFFD",
+			"hovered_text": "White",
+			"normal_border": "#46DFFD",
+			"hovered_border": "White"
+		},
+		"misc": {
+			"border_width": "3"
+		},
+		"font": {
+			"name": "futura",
+			"size": "20",
+			"bold": "0",
+			"italic": "0",
+			"regular_resource": {
+				"package": "assets.fonts",
+				"resource": "Regular.ttf"
+			}
+		}
+	},
+	"text_box": {
+		"colours": {
+			"dark_bg": "Black",
+			"normal_text": "#46DFFD"
+		},
+		"font": {
+			"name": "futura",
+			"size": "26",
+			"bold": "0",
+			"italic": "0",
+			"regular_resource": {
+				"package": "assets.fonts",
+				"resource": "Regular.ttf"
+			}
+		},
+		"misc": {
+			"text_vert_alignment": "center",
+			"border_width": "0",
+            "shadow_wdith": "0"
+		}
+	},
+	"@sub_title": {
+		"colours": {
+			"normal_text": "#46DFFD",
+			"dark_bg": "Black"
+		},
+		"font": {
+			"name": "phosphate",
+			"size": "50",
+			"bold": "1",
+			"italic": "0",
+			"regular_resource": {
+				"package": "assets.fonts",
+				"resource": "Title.ttf"
+			}
+		},
+		"misc": {
+			"text_horiz_alignment": "left",
+			"padding": "0",
+			"border_width": "0",
+			"shadow_width": "0"
+		}
+	},
+    "@title": {
+		"colours": {
+			"normal_text": "#46DFFD",
+			"normal_border": "Black",
+			"dark_bg": "Black"
+		},
+		"font": {
+			"name": "phosphate",
+			"size": "120",
+			"bold": "1",
+			"italic": "0",
+			"regular_resource": {
+				"package": "assets.fonts",
+				"resource": "Title.ttf"
+			}
+		},
+		"misc": {
+			"text_horiz_alignment": "center",
+			"padding": "0",
+			"border_width": "0",
+			"shadow_wdith": "0"
+		}
+	}
+}
