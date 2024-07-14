@@ -68,6 +68,7 @@ class StartMenu(BaseState):
                 (self.__screen_width, self.__screen_height),
             )
         )
+        pygame.display.set_caption("King's Quest")
 
     def handle_events(self, event: pygame.Event) -> None:
         if event.type == pygame_gui.UI_BUTTON_PRESSED:
