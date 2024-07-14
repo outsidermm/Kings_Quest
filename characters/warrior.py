@@ -31,8 +31,8 @@ class Warrior(BaseCharacter):
     def upgrade(self):
         if self.__character_level == 1:
             self.__character_level += 1
-            self.__statistics["HP"] += 100
-            self.__statistics["Strength"] += 90
+            self.__statistics["health_points"] += 100
+            self.__statistics["physical_power"] += 90
         elif self.__character_level == 2:
             self.__character_level += 1
             pass  # Modify ability

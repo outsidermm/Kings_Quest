@@ -33,8 +33,8 @@ class Berserker(BaseCharacter):
     def upgrade(self) -> None:
         if self.__character_level == 1:
             self.__character_level += 1
-            self.__statistics["HP"] += 150
-            self.__statistics["Strength"] += 15
+            self.__statistics["health_points"] += 150
+            self.__statistics["physical_power"] += 15
         elif self.__character_level == 2:
             self.__character_level += 1
             self.__unlocked_abilities[0].upgrade()

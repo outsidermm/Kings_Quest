@@ -128,5 +128,16 @@
         "colours": {
             "dark_bg": "#20272d"
         }
+    },
+    "#upgrade_menu_text": {
+        "colours": {
+            "dark_bg": "#2E2E2E"
+        },
+        "font": {
+            "name": "futura",
+            "size": "30",
+            "bold":"1"
+        }
+        
     }
 }

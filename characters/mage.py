@@ -34,8 +34,8 @@ class Mage(BaseCharacter):
     def upgrade(self) -> None:
         if self.__character_level == 1:
             self.__character_level += 1
-            self.__statistics["Intelligence"] += 15
-            self.__statistics["MP"] += 50
+            self.__statistics["spell_power"] += 15
+            self.__statistics["mana_points"] += 50
         elif self.__character_level == 2:
             self.__character_level += 1
             self.__unlocked_abilities[0].upgrade()
