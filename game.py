@@ -1,7 +1,13 @@
 import pygame
 import pygame_gui
 from state_manager import GameStateManager
-from states.menu import Menu
+from states.start_menu import StartMenu
+from states.character_selection_menu import CharacterSelectionMenu
+from characters.mage import Mage
+from characters.ranger import Ranger
+from characters.warrior import Warrior
+from characters.berserker import Berserker
+from characters.base_character import BaseCharacter
 
 
 class Game:
@@ -9,8 +15,11 @@ class Game:
     __ui_manager = None
     __game_state_manager = None
     __clock = None
-    __menu = None
     __states = None
+    __characters: list[BaseCharacter] = None
+
+    __start_menu = None
+    __character_selection_menu = None
 
     def __init__(self) -> None:
         pygame.init()
@@ -29,19 +38,45 @@ class Game:
             pygame_gui.UIManager((self.__SCREEN_WIDTH, self.__SCREEN_HEIGHT))
         )
 
-        self.get_ui_manager().get_theme().load_theme("./settings/menu_theme.json")
+        self.get_ui_manager().get_theme().load_theme("./settings/general.json")
+        self.get_ui_manager().get_theme().load_theme(
+            "settings/character_selection_theme.json"
+        )
 
         self.set_clock(pygame.time.Clock())
 
-        self.set_game_state_manager(GameStateManager("menu"))
+        self.set_game_state_manager(GameStateManager("start_menu"))
 
-        self.set_menu(
-            Menu(
+        self.set_characters(
+            [
+                Warrior("Aric", "assets/characters/Aric.png"),
+                Mage("Lyra", "assets/characters/Lyra.png"),
+                Berserker("Berserker", "assets/characters/Berserker.png"),
+                Ranger("Ranger", "assets/characters/Ranger.png"),
+            ]
+        )
+
+        self.set_start_menu(
+            StartMenu(
                 self.get_screen(), self.get_ui_manager(), self.get_game_state_manager()
             )
         )
 
-        self.set_states({"menu": self.__menu})
+        self.set_character_selection_menu(
+            CharacterSelectionMenu(
+                self.get_screen(),
+                self.get_ui_manager(),
+                self.get_game_state_manager(),
+                self.get_characters(),
+            )
+        )
+
+        self.set_states(
+            {
+                "start_menu": self.get_start_menu(),
+                "character_selection_menu": self.get_character_selection_menu(),
+            }
+        )
 
     def run(self) -> None:
         while True:
@@ -51,17 +86,25 @@ class Game:
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     quit()
-                self.get_states()[
-                    self.get_game_state_manager().get_state()
-                ].handle_events(event)
-
                 self.get_ui_manager().process_events(event)
 
-            self.get_states()[self.get_game_state_manager().get_state()].run()
+                self.get_states()[
+                    self.get_game_state_manager().get_state()[0]
+                ].handle_events(event)
+
+            self.get_states()[self.get_game_state_manager().get_state()[0]].run()
+            if self.get_game_state_manager().get_state()[1]:
+                self.get_ui_manager().clear_and_reset()
+                self.get_states()[self.get_game_state_manager().get_state()[0]].start()
+            self.get_states()[
+                self.get_game_state_manager().get_state()[0]
+            ].reset_event_polling()
 
             self.get_ui_manager().update(time_delta)
 
-            self.get_states()[self.get_game_state_manager().get_state()].render()
+            self.get_states()[self.get_game_state_manager().get_state()[0]].render(
+                time_delta
+            )
             self.get_screen().blit(
                 pygame.Surface((self.__SCREEN_HEIGHT, self.__SCREEN_WIDTH)), (0, 0)
             )
@@ -98,8 +141,22 @@ class Game:
     def get_states(self) -> dict:
         return self.__states
 
-    def get_menu(self) -> Menu:
-        return self.__menu
+    def get_start_menu(self) -> StartMenu:
+        return self.__start_menu
 
-    def set_menu(self, menu: Menu) -> None:
-        self.__menu = menu
+    def set_start_menu(self, start_menu: StartMenu) -> None:
+        self.__start_menu = start_menu
+
+    def get_characters(self) -> list[BaseCharacter]:
+        return self.__characters
+
+    def set_characters(self, characters: list[BaseCharacter]) -> None:
+        self.__characters = characters
+
+    def set_character_selection_menu(
+        self, character_selection_menu: CharacterSelectionMenu
+    ) -> None:
+        self.__character_selection_menu = character_selection_menu
+
+    def get_character_selection_menu(self) -> CharacterSelectionMenu:
+        return self.__character_selection_menu
