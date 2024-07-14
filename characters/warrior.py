@@ -33,8 +33,8 @@ class Warrior(BaseCharacter):
         )
 
     def upgrade(self):
-        new_statistic : dict[str,int]= self.get_statistics()
-        new_unlocked_abilities :list[Ability]= self.get_unlocked_abilities()
+        new_statistic: dict[str, int] = self.get_statistics()
+        new_unlocked_abilities: list[Ability] = self.get_unlocked_abilities()
         if self.__character_level == 1:
             self.set_character_level(2)
             new_statistic["health_points"] += 100
@@ -49,7 +49,7 @@ class Warrior(BaseCharacter):
         self.set_unlocked_abilities(new_unlocked_abilities)
 
     def unlock_ability(self) -> None:
-        new_unlocked_abilities :list[Ability]= self.get_unlocked_abilities()
+        new_unlocked_abilities: list[Ability] = self.get_unlocked_abilities()
         new_unlocked_abilities.append(PLAYER_ABILITY_LIST["Shield War"])
         self.set_unlocked_abilities(new_unlocked_abilities)
 

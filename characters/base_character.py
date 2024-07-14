@@ -1,5 +1,5 @@
 import abc
-from ability import PLAYER_ABILITY_LIST, Ability
+from ability import Ability
 
 
 class BaseCharacter(abc.ABC):
@@ -56,21 +56,21 @@ class BaseCharacter(abc.ABC):
 
     def get_unlocked_abilities(self) -> list[Ability]:
         return self.__unlocked_abilities
-    
+
     def set_name(self, name: str) -> None:
         self.__name = name
 
     def set_sprite_location(self, sprite_location: str) -> None:
         self.__sprite_location = sprite_location
-    
+
     def set_statistics(self, statistics: dict[str, int]) -> None:
         self.__statistics = statistics
-    
+
     def set_character_level(self, character_level: int) -> None:
         self.__character_level = character_level
 
     def set_abilities(self, abilities: list[Ability]) -> None:
         self.__abilities = abilities
-    
+
     def set_unlocked_abilities(self, unlocked_abilities: list[Ability]) -> None:
         self.__unlocked_abilities = unlocked_abilities
