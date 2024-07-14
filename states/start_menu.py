@@ -1,7 +1,8 @@
 from .base_state import BaseState
 from state_manager import GameStateManager
 import pygame, pygame_gui
-import os
+from pygame_gui.elements import UIButton, UITextBox
+from pygame_gui.core import ObjectID
 
 
 class StartMenu(BaseState):
@@ -25,19 +26,17 @@ class StartMenu(BaseState):
         self.__screen_height = self.get_screen().get_rect().height
 
         self.set_game_title(
-            pygame_gui.elements.UITextBox(
+            UITextBox(
                 "King's Quest",
                 pygame.Rect((0, -self.__screen_height * 0.3), (1000, 200)),
                 self.get_ui_manager(),
                 anchors=({"center": "center"}),
-                object_id=pygame_gui.core.ObjectID(
-                    class_id="@title", object_id="#game_title"
-                ),
+                object_id=ObjectID(class_id="@title", object_id="#game_title"),
             )
         )
 
         self.set_play_button(
-            pygame_gui.elements.UIButton(
+            UIButton(
                 relative_rect=pygame.Rect((0, 0), (500, 70)),
                 text="PLAY",
                 manager=self.get_ui_manager(),
@@ -46,7 +45,7 @@ class StartMenu(BaseState):
         )
 
         self.set_setting_button(
-            pygame_gui.elements.UIButton(
+            UIButton(
                 relative_rect=pygame.Rect((0, self.__screen_height * 0.15), (500, 70)),
                 text="SETTINGS",
                 manager=self.get_ui_manager(),
@@ -55,7 +54,7 @@ class StartMenu(BaseState):
         )
 
         self.set_quit_button(
-            pygame_gui.elements.UIButton(
+            UIButton(
                 relative_rect=pygame.Rect((0, self.__screen_height * 0.3), (500, 70)),
                 text="QUIT",
                 manager=self.get_ui_manager(),
@@ -69,6 +68,7 @@ class StartMenu(BaseState):
                 (self.__screen_width, self.__screen_height),
             )
         )
+        pygame.display.set_caption("King's Quest")
 
     def handle_events(self, event: pygame.Event) -> None:
         if event.type == pygame_gui.UI_BUTTON_PRESSED:
@@ -142,28 +142,28 @@ class StartMenu(BaseState):
     def set_quit_button_pressed(self, quit_button_pressed: bool) -> None:
         self.__quit_button_pressed = quit_button_pressed
 
-    def get_play_button(self) -> pygame_gui.elements.UIButton:
+    def get_play_button(self) -> UIButton:
         return self.__play_button
 
-    def get_setting_button(self) -> pygame_gui.elements.UIButton:
+    def get_setting_button(self) -> UIButton:
         return self.__setting_button
 
-    def get_quit_button(self) -> pygame_gui.elements.UIButton:
+    def get_quit_button(self) -> UIButton:
         return self.__quit_button
 
-    def set_play_button(self, play_button: pygame_gui.elements.UIButton) -> None:
+    def set_play_button(self, play_button: UIButton) -> None:
         self.__play_button = play_button
 
-    def set_setting_button(self, setting_button: pygame_gui.elements.UIButton) -> None:
+    def set_setting_button(self, setting_button: UIButton) -> None:
         self.__setting_button = setting_button
 
-    def set_quit_button(self, quit_button: pygame_gui.elements.UIButton) -> None:
+    def set_quit_button(self, quit_button: UIButton) -> None:
         self.__quit_button = quit_button
 
-    def get_game_title(self) -> pygame_gui.elements.UITextBox:
+    def get_game_title(self) -> UITextBox:
         return self.__game_title
 
-    def set_game_title(self, game_title: pygame_gui.elements.UITextBox) -> None:
+    def set_game_title(self, game_title: UITextBox) -> None:
         self.__game_title = game_title
 
     def get_GUIBackground(self) -> pygame.Surface:

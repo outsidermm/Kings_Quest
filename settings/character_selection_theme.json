@@ -109,11 +109,6 @@
             "shape_corner_radius":5
         }
     },
-    "#ability_header": {
-		"colours": {
-			"dark_bg": "#20272d"
-		}
-    },
     "#ability_sub_title":{
         "colours": {
             "dark_bg": "#20272d"
