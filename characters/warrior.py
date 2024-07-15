@@ -53,9 +53,6 @@ class Warrior(BaseCharacter):
         new_unlocked_abilities.append(PLAYER_ABILITY_LIST["Shield War"])
         self.set_unlocked_abilities(new_unlocked_abilities)
 
-    def attack(self):
-        pass
-
     def get_name(self) -> str:
         return super().get_name()
 

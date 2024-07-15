@@ -32,10 +32,6 @@ class BaseCharacter(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def attack(self) -> None:
-        pass
-
-    @abc.abstractmethod
     def unlock_ability(self) -> None:
         pass
 

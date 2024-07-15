@@ -54,9 +54,6 @@ class Berserker(BaseCharacter):
         new_unlocked_abilities.append(PLAYER_ABILITY_LIST["Berserk"])
         self.set_unlocked_abilities(new_unlocked_abilities)
 
-    def attack(self) -> None:
-        pass
-
     def get_name(self) -> str:
         return super().get_name()
 

@@ -54,9 +54,6 @@ class Ranger(BaseCharacter):
         new_unlocked_abilities.append(PLAYER_ABILITY_LIST["Fatal Shadow"])
         self.set_unlocked_abilities(new_unlocked_abilities)
 
-    def attack(self) -> None:
-        pass
-
     def get_name(self) -> str:
         return super().get_name()
 
