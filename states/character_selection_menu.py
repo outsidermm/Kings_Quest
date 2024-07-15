@@ -5,8 +5,10 @@ from pygame_gui.elements import UIButton, UIImage, UITextBox, UIStatusBar, UIPan
 from pygame_gui.core import ObjectID
 from state_manager import GameStateManager
 from characters.base_character import BaseCharacter
+from .turn_based_fight_state import TurnBasedFight
 from xp import XP
 from typing import Any
+from characters.berserker import Berserker
 
 
 # TODO Need to show highlights made
@@ -576,7 +578,9 @@ class CharacterSelectionMenu(BaseState):
             self.__upgrade_character_panel[1].hide()
 
         if self.__game_start:
-            pass
+            self.get_ui_manager().clear_and_reset()
+            self.get_screen().fill((0, 0, 0))
+            self.get_game_state_manager().set_state("turn_based_fight")
 
         if self.__update_GUI:
             self.__character_name.set_text(
