@@ -87,5 +87,16 @@
 			"border_width": "0",
 			"shadow_wdith": "0"
 		}
+	},
+	"#transparent_panel":
+	{
+		"colours": {
+			"dark_bg":"#00000000",
+			"normal_border": "#00000000"
+		},
+		"misc": {
+			"border_width": "0",
+			"shadow_width": "0"
+		}
 	}
 }
