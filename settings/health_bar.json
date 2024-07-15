@@ -1,0 +1,39 @@
+{
+    "#full-bar": {
+        "colours":
+        {
+            "dark_bg":"#333333"
+        },
+        "misc":{
+            "shape":"rounded_rectangle",
+            "shape_corner_radius":"5",
+            "border_width":"0",
+            "shadow_width":"0"
+        }
+    },
+    "#transition-bar":{
+        "colours":
+        {
+            "dark_bg":"#FFFF00"
+        },
+        "misc":{
+            "shape":"rounded_rectangle",
+            "shape_corner_radius":"5",
+            "border_width":"0",
+            "shadow_width":"0"
+        }
+    },
+    "#current_value-bar":
+    {
+        "colours":
+        {
+            "dark_bg":"#FF0000"
+        },
+        "misc":{
+            "shape":"rounded_rectangle",
+            "shape_corner_radius":"5",
+            "border_width":"0",
+            "shadow_width":"0"
+        }
+    }
+}
