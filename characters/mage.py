@@ -3,17 +3,17 @@ from ability import PLAYER_ABILITY_LIST, Ability
 
 
 class Mage(BaseCharacter):
-
     __statistics: dict[str, int] = {
-        "health_points": 500,  # Health Points
-        "physical_defense": 50,  # Physical Defense
-        "magical_defense": 100,  # Magical Defense
-        "spell_power": 120,  # Spell Power
-        "physical_power": 30,  # Physical Power
-        "mana_regeneration": 5,  # Mana Regeneration per second
-        "mana_points": 200,  # Mana Points
-        "magical_damage": 30,  # Magical Damage per attack
+        "health_points": 800,  # Health Points
+        "physical_defense": 80,  # Physical Defense
+        "magical_defense": 150,  # Magical Defense
+        "spell_power": 130,  # Spell Power
+        "physical_power": 20,  # Physical Power
+        "mana_regeneration": 10,  # Mana Regeneration per second
+        "mana_points": 250,  # Mana Points
+        "magical_damage": 60,  # Magical Damage per attack
     }
+    
     __unlocked_abilities: list[Ability] = [
         PLAYER_ABILITY_LIST["Fireball"],
         PLAYER_ABILITY_LIST["Mana Surge"],

@@ -5,14 +5,14 @@ from ability import PLAYER_ABILITY_LIST, Ability
 class Berserker(BaseCharacter):
 
     __statistics: dict[str, int] = {
-        "health_points": 1000,  # Health Points
-        "physical_defense": 150,  # Physical Defense
-        "magical_defense": 40,  # Magical Defense
+        "health_points": 1200,  # Health Points
+        "physical_defense": 200,  # Physical Defense
+        "magical_defense": 60,  # Magical Defense
         "spell_power": 20,  # Spell Power
-        "physical_power": 110,  # Physical Power
+        "physical_power": 100,  # Physical Power
         "health_regeneration": 15,  # Health Regeneration per second
-        "mana_points": 80,  # Mana Points
-        "physical_damage": 110,  # Physical Damage per attack
+        "mana_points": 100,  # Mana Points
+        "physical_damage": 90,  # Physical Damage per attack
     }
 
     __unlocked_abilities: list[Ability] = [PLAYER_ABILITY_LIST["Reckless Charge"]]

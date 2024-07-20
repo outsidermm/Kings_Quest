@@ -5,14 +5,14 @@ from ability import PLAYER_ABILITY_LIST, Ability
 class Warrior(BaseCharacter):
 
     __statistics: dict = {
-        "health_points": 800,  # Health Points
-        "physical_defense": 200,  # Physical Defense
-        "magical_defense": 50,  # Magical Defense
+        "health_points": 1100,  # Health Points
+        "physical_defense": 250,  # Physical Defense
+        "magical_defense": 70,  # Magical Defense
         "spell_power": 40,  # Spell Power
         "physical_power": 90,  # Physical Power
-        "health_regeneration": 10,  # Health Regeneration per second
-        "mana_points": 100,  # Mana Points
-        "physical_damage": 90,  # Physical Damage per attack
+        "health_regeneration": 20,  # Health Regeneration per second
+        "mana_points": 120,  # Mana Points
+        "physical_damage": 70,  # Physical Damage per attack
     }
     __unlocked_abilities: list[Ability] = [PLAYER_ABILITY_LIST["Power Slash"]]
     __abilities: list[Ability] = [
