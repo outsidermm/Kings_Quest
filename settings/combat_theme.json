@@ -1,0 +1,261 @@
+{
+    "#choice_text0":{
+		"colours": {
+			"normal_bg": "#1C1C1C",
+			"hovered_bg": "#34495E",
+            "active_bg":"#2C3E50",
+			"normal_text": "#FFFFFF",
+			"hovered_text": "#ECF0F1",
+            "active_text":"#ECF0F1",
+			"normal_border": "#34495E",
+			"hovered_border": "#1C1C1C",
+            "active_border":"#1C1C1C"
+		},
+		"font": {
+			"name": "futura",
+			"size": "20",
+			"bold": "1",
+			"regular_resource": {
+				"package": "assets.fonts",
+				"resource": "Regular.ttf"
+			}
+		},
+		"misc": {
+			"border_width": "2",
+            "shape":"rounded_rectangle",
+            "shape_corner_radius":"5"
+		}
+    },
+    "#choice_text1": {
+        "colours": {
+            "normal_bg": "#2C3E50",
+            "hovered_bg": "#3E5C7F",
+            "active_bg": "#1C1C1C",
+            "normal_text": "#FFFFFF",
+            "hovered_text": "#ECF0F1",
+            "active_text": "#ECF0F1",
+            "normal_border": "#1C1C1C",
+            "hovered_border": "#2C3E50",
+            "active_border": "#2C3E50"
+        },
+        "font": {
+            "name": "futura",
+            "size": "20",
+            "bold": "1",
+            "regular_resource": {
+                "package": "assets.fonts",
+                "resource": "Regular.ttf"
+            }
+        },
+        "misc": {
+            "border_width": "2",
+            "shape": "rounded_rectangle",
+            "shape_corner_radius": "5"
+        }
+    },
+    "#choice_text2": {
+        "colours": {
+            "normal_bg": "#16A085",
+            "hovered_bg": "#1ABC9C",
+            "active_bg": "#1C1C1C",
+            "normal_text": "#FFFFFF",
+            "hovered_text": "#ECF0F1",
+            "active_text": "#ECF0F1",
+            "normal_border": "#1C1C1C",
+            "hovered_border": "#16A085",
+            "active_border": "#16A085"
+        },
+        "font": {
+            "name": "futura",
+            "size": "20",
+            "bold": "1",
+            "regular_resource": {
+                "package": "assets.fonts",
+                "resource": "Regular.ttf"
+            }
+        },
+        "misc": {
+            "border_width": "2",
+            "shape": "rounded_rectangle",
+            "shape_corner_radius": "5"
+        }
+    },
+    "#choice_text3": {
+        "colours": {
+            "normal_bg": "#8E44AD",
+            "hovered_bg": "#9B59B6",
+            "active_bg": "#1C1C1C",
+            "normal_text": "#FFFFFF",
+            "hovered_text": "#ECF0F1",
+            "active_text": "#ECF0F1",
+            "normal_border": "#1C1C1C",
+            "hovered_border": "#8E44AD",
+            "active_border": "#8E44AD"
+        },
+        "font": {
+            "name": "futura",
+            "size": "20",
+            "bold": "1",
+            "regular_resource": {
+                "package": "assets.fonts",
+                "resource": "Regular.ttf"
+            }
+        },
+        "misc": {
+            "border_width": "2",
+            "shape": "rounded_rectangle",
+            "shape_corner_radius": "5"
+        }
+    },
+    "#visual_dialogue_box": {
+        "colours": {
+            "dark_bg": "#1C1C1C",
+            "normal_border": "#34495E"
+        },
+        "misc": {
+            "border_width": "2",
+            "shape": "rounded_rectangle",
+            "shape_corner_radius": "10"
+        }
+    },
+    "@Normal Attack": {
+        "images": {
+            "normal_image":
+            {
+                "path":"assets/abilities_downsize_opague/Normal Attack.png"
+            }
+        }
+    },
+    "@Power Slash": {
+        "images": {
+          "normal_image": {
+            "path": "assets/abilities_downsize_opague/Power Slash.png"
+          }
+        }
+      },
+      "@Shield War": {
+        "images": {
+          "normal_image": {
+            "path": "assets/abilities_downsize_opague/Shield War.png"
+          }
+        }
+      },
+      "@War Cry": {
+        "images": {
+          "normal_image": {
+            "path": "assets/abilities_downsize_opague/War Cry.png"
+          }
+        }
+      },
+      "@Fireball": {
+        "images": {
+          "normal_image": {
+            "path": "assets/abilities_downsize_opague/Fireball.png"
+          }
+        }
+      },
+      "@Arcane Shield": {
+        "images": {
+          "normal_image": {
+            "path": "assets/abilities_downsize_opague/Arcane Shield.png"
+          }
+        }
+      },
+      "@Mana Surge": {
+        "images": {
+          "normal_image": {
+            "path": "assets/abilities_downsize_opague/Mana Surge.png"
+          }
+        }
+      },
+      "@Arrow Barrage": {
+        "images": {
+          "normal_image": {
+            "path": "assets/abilities_downsize_opague/Arrow Barrage.png"
+          }
+        }
+      },
+      "@Natural Grace": {
+        "images": {
+          "normal_image": {
+            "path": "assets/abilities_downsize_opague/Natural Grace.png"
+          }
+        }
+      },
+      "@Fatal Shadow": {
+        "images": {
+          "normal_image": {
+            "path": "assets/abilities_downsize_opague/Fatal Shadow.png"
+          }
+        }
+      },
+      "@Berserk": {
+        "images": {
+          "normal_image": {
+            "path": "assets/abilities_downsize_opague/Berserk.png"
+          }
+        }
+      },
+      "@Bloodlust": {
+        "images": {
+          "normal_image": {
+            "path": "assets/abilities_downsize_opague/Bloodlust.png"
+          }
+        }
+      },
+      "@Reckless Charge": {
+        "images": {
+          "normal_image": {
+            "path": "assets/abilities_downsize_opague/Reckless Charge.png"
+          }
+        }
+      },
+    "tool_tip":{
+        "misc":{
+            "rect_width":"-1"
+        }
+    },
+    "tool_tip.text_box":{
+        "colours":{
+            "dark_bg":"rgba(0, 0, 0, 100)",
+            "normal_text":"#FFFFFF"
+        },
+        "font":{
+            "name":"futura",
+            "size":"15",
+            "bold":"0",
+            "regular_resource":{
+                "package":"assets.fonts",
+                "resource":"Regular.ttf"
+            }
+        },
+        "misc":{
+            "shape":"rounded_rectangle",
+            "shape_corner_radius":"5",
+            "border_width":"0",
+            "shadow_width":"0"
+        }
+    },
+    "#tutorial_text":{
+        "colours":{
+            "dark_bg":"rgba(0, 0, 0, 100)",
+            "normal_text":"#FFFFFF"
+        },
+        "font":{
+            "name":"futura",
+            "size":"15",
+            "bold":"0",
+            "regular_resource":{
+                "package":"assets.fonts",
+                "resource":"Regular.ttf"
+            }
+        },
+        "misc":{
+            "shape":"rounded_rectangle",
+            "shape_corner_radius":"5",
+            "border_width":"0",
+            "shadow_width":"0",
+            "text_horiz_alignment":"center"
+        }   
+    }
+}
