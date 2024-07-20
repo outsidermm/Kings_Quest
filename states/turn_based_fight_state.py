@@ -100,7 +100,6 @@ class TurnBasedFight(BaseState):
             pygame.Rect((30, 30), (250, 25)),
             self.__player.get_statistics()["health_points"],
             self.__player.get_statistics()["health_points"],
-            delta_animation_speed=5,
             icon_sprite=pygame.image.load("assets/statistics/health_points.webp"),
         )
 
@@ -118,8 +117,8 @@ class TurnBasedFight(BaseState):
             pygame.Rect((30, 30), (250, 25)),
             self.__enemy.get_statistics()["health_points"],
             self.__enemy.get_statistics()["health_points"],
-            delta_animation_speed=5,
             icon_sprite=pygame.image.load("assets/statistics/health_points.webp"),
+            flip=True,
         )
 
         player_choice_container_width = self.get_screen().width - 650
