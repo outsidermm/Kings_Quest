@@ -1,5 +1,5 @@
 from .base_character import BaseCharacter
-from ability import PLAYER_ABILITY_LIST, Ability
+from ability import PLAYER_ABILITY_LIST, Ability, ENEMY_ABILITY_LIST
 
 
 class Warrior(BaseCharacter):
@@ -15,6 +15,9 @@ class Warrior(BaseCharacter):
         "physical_damage": 70,  # Physical Damage per attack
     }
     __unlocked_abilities: list[Ability] = [PLAYER_ABILITY_LIST["Power Slash"]]
+    # Reckless Charge
+    # "Rending Claws"
+
     __abilities: list[Ability] = [
         PLAYER_ABILITY_LIST["Power Slash"],
         PLAYER_ABILITY_LIST["War Cry"],

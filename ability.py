@@ -30,6 +30,17 @@ class Ability:
         self.__icon_URL = icon_URL
         self.__duration = duration
 
+    def copy(self) -> "Ability":
+        return Ability(
+            self.__name,
+            self.__description,
+            self.__ability_statistics,
+            self.__cost,
+            self.__duration,
+            self.__icon_URL,
+            self.__upgrades,
+        )
+
     def upgrade(self) -> None:
         for upgrade in self.__upgrades:
             if upgrade[0] in self.__ability_statistics.keys():
@@ -129,7 +140,7 @@ PLAYER_ABILITY_LIST: dict[str, Ability] = {
     ),
     "Arcane Shield": Ability(
         "Arcane Shield",
-        "Blocks 100 incoming magic damage for 1 turn. Cooldown: 2 turns",
+        "Blocks 100 incoming damage for 1 turn. Cooldown: 2 turns",
         {"cooldown": 2, "absorption": 100},
         [("mana_points", 25)],
         1,  # Duration
@@ -171,7 +182,7 @@ PLAYER_ABILITY_LIST: dict[str, Ability] = {
     "Berserk": Ability(
         "Berserk",
         "Increases physical power by 50 percent for 3 turns, but reduces physical defense by 75. Cooldown: 3 turns",
-        {"physical_power": 55, "cooldown": 3, "physical_defense_reduction": -75},
+        {"physical_power": 55, "cooldown": 3, "physical_defense_reduction": 75},
         [("mana_points", 25)],
         3,  # Duration
         "assets/abilities/Berserk.webp",

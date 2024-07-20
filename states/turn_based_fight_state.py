@@ -24,7 +24,7 @@ class TurnBasedFight(BaseState):
     __player_health_bar: HealthBar = None
     __enemy_health_bar: HealthBar = None
     __ability_selected: Ability = -1
-    __ability_button_list: list[UIButton] = [None]*4
+    __ability_button_list: list[UIButton] = [None] * 17
     __attacking: bool = False
     __turn_end: bool = False
     __mouse_pressed: bool = False
@@ -34,16 +34,16 @@ class TurnBasedFight(BaseState):
 
     # Define maximum values for the bars for normalization
     __CHARACTER_MAX_VAL: dict[str, int] = {
-        "health_points": 1150,  # Berserker's 1000 + 150 upgrade
-        "physical_defense": 200,  # Warrior
-        "magical_defense": 100,  # Mage
-        "spell_power": 135,  # Mage's 120 + 15 upgrade
+        "health_points": 1350,  # Berserker's max health points
+        "physical_defense": 250,  # Warrior's max physical defense
+        "magical_defense": 150,  # Mage's max magical defense
+        "spell_power": 145,  # Mage's 130 + 15 upgrade
         "physical_power": 200,  # Warrior's 90 + 90 upgrade
-        "health_regeneration": 15,  # Berserker
-        "mana_regeneration": 5,  # Mage
-        "mana_points": 250,  # Mage's 200 + 50 upgrade
-        "physical_damage": 110,  # Berserker
-        "magical_damage": 30,  # Mage
+        "health_regeneration": 20,  # Warrior's max health regeneration
+        "mana_regeneration": 10,  # Mage's max mana regeneration
+        "mana_points": 300,  # Mage's 250 + 50 upgrade
+        "physical_damage": 110,  # Berserker's max physical damage
+        "magical_damage": 60,  # Mage's max magical damage
     }
 
     def __init__(
@@ -132,14 +132,16 @@ class TurnBasedFight(BaseState):
 
         self.__tutorial_text = UITextBox(
             html_text="Press the allocated button to use an action (ability / normal attack)",
-            relative_rect=pygame.Rect((0, 200), (self.get_screen().width*0.8, -1)),
+            relative_rect=pygame.Rect((0, 200), (self.get_screen().width * 0.8, -1)),
             anchors=({"centerx": "centerx"}),
             manager=self.get_ui_manager(),
             object_id=ObjectID(object_id="#tutorial_text"),
         )
 
         unlocked_abilities_number = len(self.__player.get_unlocked_abilities())
-        ability_x_gap = (player_choice_container_width - (unlocked_abilities_number+1) * 125)/(unlocked_abilities_number+2)
+        ability_x_gap = (
+            player_choice_container_width - (unlocked_abilities_number + 1) * 125
+        ) / (unlocked_abilities_number + 2)
         init_ability_button_y = 25
 
         normal_attack_tool_tip = f"Deal {self.__player.get_statistics()['physical_damage'] if "physical_damage" in self.__player.get_statistics().keys() else 0} physical damage and {self.__player.get_statistics()['magical_damage'] if "magical_damage" in self.__player.get_statistics().keys() else 0} magical damage to the enemy"
@@ -160,7 +162,7 @@ class TurnBasedFight(BaseState):
                 text=ability.get_name(),
                 relative_rect=pygame.Rect(
                     (
-                        ability_x_gap + (ability_count+1) * 125 + ability_x_gap,
+                        ability_x_gap + (ability_count + 1) * 125 + ability_x_gap,
                         init_ability_button_y,
                     ),
                     (125, 100),
@@ -183,7 +185,7 @@ class TurnBasedFight(BaseState):
             object_id=ObjectID(object_id="#visual_dialogue_box"),
         )
 
-        self.__player_controller = CombatController(self.__player,self.__player_sprite)
+        self.__player_controller = CombatController(self.__player, self.__player_sprite)
         self.__enemy_controller = CombatController(self.__enemy, self.__enemy_sprite)
 
     def handle_events(self, event: pygame.Event) -> None:
@@ -191,15 +193,24 @@ class TurnBasedFight(BaseState):
             if event.ui_element == self.__ability_button_list[0]:
                 self.__ability_selected = None
             else:
-                for ability_button_index in [1,2,3]:
-                    if event.ui_element == self.__ability_button_list[ability_button_index]:
-                        self.__ability_selected = self.__player.get_unlocked_abilities()[ability_button_index-1]
-        
+                for ability_button_index in [1, 2, 3]:
+                    if (
+                        event.ui_element
+                        == self.__ability_button_list[ability_button_index]
+                    ):
+                        self.__ability_selected = (
+                            self.__player.get_unlocked_abilities()[
+                                ability_button_index - 1
+                            ]
+                        )
+
         if pygame.mouse.get_pressed()[0]:
             self.__mouse_pressed = True
             mouse_pos = pygame.mouse.get_pos()
             if self.__enemy_sprite.rect.collidepoint(mouse_pos):
-                self.__enemy_hit_height = self.__enemy_sprite.rect.height - (mouse_pos[1] - self.__enemy_sprite.rect.y)
+                self.__enemy_hit_height = self.__enemy_sprite.rect.height - (
+                    mouse_pos[1] - self.__enemy_sprite.rect.y
+                )
             else:
                 self.__enemy_hit_height = 0
 
@@ -207,42 +218,68 @@ class TurnBasedFight(BaseState):
         self.__combat_round_initalised = True
         if not self.__combat_round_initalised:
             pass  # Initialize the combat round - 3,2,1 GO
-        
+
         if (
             self.__enemy.get_statistics()["health_points"] > 0
             and self.__player.get_statistics()["health_points"] > 0
             and self.__combat_round_initalised
         ):
             if self.__round_counter % 2 == 0:
-                if self.__ability_selected == -1: # When the user has not picked the ability to use
-                    self.__tutorial_text.set_text("Press the allocated button to use an action (ability / normal attack)")
+                # When the user has not picked the ability to use and is not stunned
+                if (
+                    self.__ability_selected == -1
+                    and not self.__player_controller.is_stunned()
+                ):
+                    self.__tutorial_text.set_text(
+                        "Press the allocated button to use an action (ability / normal attack)"
+                    )
 
-                elif not self.__attacking: # When the user is aiming for the enemies
-                    locked_ability_decision = self.__ability_selected # lock in to the ability selected
-                    self.__tutorial_text.set_text("Use your mouse to try and hit the enemy's key body parts! You only have one chance!")
+                elif not self.__attacking:  # When the user is aiming for the enemies
+                    if self.__player_controller.is_stunned():
+                        self.__tutorial_text.set_text("You are stunned and cannot act!")
+                    else:
+                        locked_ability_decision = (
+                            self.__ability_selected
+                        )  # lock in to the ability selected
+                        self.__tutorial_text.set_text(
+                            "Use your mouse to try and hit the enemy's key body parts! You only have one chance!"
+                        )
 
-                    if self.__mouse_pressed: # If the user has clicked, then attack with the given values
+                    # If the user has clicked, then attack with the given values
+                    if self.__mouse_pressed or self.__player_controller.is_stunned():
+                        print(self.__player.get_statistics())
+                        print(self.__enemy.get_statistics())
                         self.__attacking = True
                         # Regenerate before turn action occurs
                         self.__player_controller.regenerate()
                         self.__enemy_controller.regenerate()
-                        #Compute damage and debuffs, apply buffs
-                        physical_damage, magical_damage, debuff_dict = self.__player_controller.attack(self.__enemy_hit_height, locked_ability_decision)
-                        print(physical_damage, magical_damage, debuff_dict)
+                        # Compute damage and debuffs, apply buffs
+                        physical_damage, magical_damage, debuff_dict = (
+                            self.__player_controller.attack(
+                                self.__enemy_hit_height, locked_ability_decision
+                            )
+                        )
                         # Apply the damage and debuffs to the enemy
-                        self.__enemy_controller.face_damage(physical_damage, magical_damage, debuff_dict)
-
-                elif self.__attacking and not self.__turn_end: # Attacking, perform animation, update the health bars
-                    pass
+                        self.__enemy_controller.face_damage(
+                            physical_damage, magical_damage, debuff_dict
+                        )
+                        print(self.__player.get_statistics())
+                        print(self.__enemy.get_statistics())
+                elif (
+                    self.__attacking and not self.__turn_end
+                ):  # Attacking, perform animation, update the health bars
+                    self.__turn_end = True
                 elif self.__turn_end:
 
-                    self.__ability_selected = -1 # Reset turn action flags
+                    self.__ability_selected = -1  # Reset turn action flags
                     self.__attacking = False
-
+                    self.__round_counter += 1
 
                 # Regeneration
             else:
-                random_choice = random.randint(0,4)
+                random_choice = random.randint(0, 4)
+                print("enemy round")
+                self.__round_counter += 1
                 # if random_choice == 4:
                 #     self.__enemy_controller.attack(0)
                 # else:
@@ -264,6 +301,16 @@ class TurnBasedFight(BaseState):
     def render(self, time_delta):
         self.__player_health_bar.update(self.__player.get_statistics()["health_points"])
         self.__enemy_health_bar.update(self.__enemy.get_statistics()["health_points"])
+
+        for ability in self.__player.get_unlocked_abilities():
+            if self.__player_controller.is_ability_on_cooldown(ability):
+                self.__ability_button_list[
+                    self.__player.get_unlocked_abilities().index(ability) + 1
+                ].disable()
+            else:
+                self.__ability_button_list[
+                    self.__player.get_unlocked_abilities().index(ability) + 1
+                ].enable()
 
     def get_screen(self) -> pygame.Surface:
         return super().get_screen()

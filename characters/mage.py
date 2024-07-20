@@ -13,7 +13,7 @@ class Mage(BaseCharacter):
         "mana_points": 250,  # Mana Points
         "magical_damage": 60,  # Magical Damage per attack
     }
-    
+
     __unlocked_abilities: list[Ability] = [
         PLAYER_ABILITY_LIST["Fireball"],
         PLAYER_ABILITY_LIST["Mana Surge"],
