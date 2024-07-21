@@ -1,26 +1,23 @@
 from .base_character import BaseCharacter
-from ability import PLAYER_ABILITY_LIST, Ability, ENEMY_ABILITY_LIST
+from ability import Ability, ENEMY_ABILITY_LIST
 
 
-class DungeonMaster(BaseCharacter):
+class DreadNought(BaseCharacter):
 
     __statistics: dict[str, int] = {
-        "health_points": 1200,  # Health Points
-        "physical_defense": 200,  # Physical Defense
-        "magical_defense": 60,  # Magical Defense
-        "spell_power": 20,  # Spell Power
-        "physical_power": 100,  # Physical Power
-        "health_regeneration": 15,  # Health Regeneration per second
-        "mana_points": 100,  # Mana Points
-        "physical_damage": 90,  # Physical Damage per attack
+        "health_points": 3000,  # High health to sustain long battles
+        "physical_defense": 200,  # Strong physical defense
+        "magical_defense": 150,  # Strong magical defense
+        "spell_power": 120,  # High spell power for powerful magic attacks
+        "physical_power": 150,  # High physical power for powerful physical attacks
+        "health_regeneration": 20,  # Moderate health regeneration
+        "mana_regeneration": 10,  # Moderate mana regeneration for sustained spell casting
+        "mana_points": 250,  # Adequate mana pool for various spells
+        "physical_damage": 70,  # Moderate physical damage per attack
+        "magical_damage": 40,  # Moderate magical damage per attack
     }
 
     __unlocked_abilities: list[Ability] = [
-        ENEMY_ABILITY_LIST["Savage Roar"],
-        ENEMY_ABILITY_LIST["Flame Breath"],
-        ENEMY_ABILITY_LIST["Tail Swipe"],
-    ]
-    __abilities: list[Ability] = [
         ENEMY_ABILITY_LIST["Savage Roar"],
         ENEMY_ABILITY_LIST["Flame Breath"],
         ENEMY_ABILITY_LIST["Tail Swipe"],
@@ -31,7 +28,7 @@ class DungeonMaster(BaseCharacter):
             name,
             self.__statistics,
             sprite_location,
-            self.__abilities,
+            self.__unlocked_abilities,
             self.__unlocked_abilities,
         )
 
