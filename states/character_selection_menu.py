@@ -207,12 +207,10 @@ class CharacterSelectionMenu(BaseState):
             self.__upgrade_button.set_text("MAX LEVEL")
             self.__upgrade_button.change_object_id(ObjectID(class_id="@lock_button"))
 
-        init_img_x = 50
-        init_text_x = 100
+        init_text_x = 50
         init_bar_x = 300
         init_y = 108
         gap_per_statistics = 50
-        self.__statistic_img: list[UIImage] = [None] * len(self.__CHARACTER_MAX_VAL)
         self.__statistic_text: list[UITextBox] = [None] * len(self.__CHARACTER_MAX_VAL)
         self.__statistic_bar: list[StatisticBar] = [None] * len(
             self.__CHARACTER_MAX_VAL
@@ -221,18 +219,9 @@ class CharacterSelectionMenu(BaseState):
         for statistic_count, (statistic, value) in enumerate(
             self.__CHARACTER_MAX_VAL.items()
         ):
-            self.__statistic_img[statistic_count] = UIImage(
-                relative_rect=pygame.Rect(
-                    (init_img_x, init_y + statistic_count * gap_per_statistics + 5),
-                    (40, 40),
-                ),
-                image_surface=pygame.image.load(f"assets/statistics/{statistic}.webp"),
-                manager=self.get_ui_manager(),
-                container=self.__character_info_panel,
-            )
-
             self.__statistic_text[statistic_count] = UITextBox(
-                " ".join(word.capitalize() for word in statistic.split("_")),
+                html_text=f'<img src="assets/icons_48/{statistic}.png"> '
+                    f"{" ".join(word.capitalize() for word in statistic.split("_"))}",
                 relative_rect=pygame.Rect(
                     (init_text_x, init_y + statistic_count * gap_per_statistics),
                     (300, -1),

@@ -98,5 +98,16 @@
 			"border_width": "0",
 			"shadow_width": "0"
 		}
+	},
+	"#semi-transparent_panel":
+	{
+		"colours": {
+			"dark_bg":"rgba(0, 0, 0, 100)",
+			"normal_border":"rgba(0, 0, 0, 100)"
+		},
+		"misc": {
+			"border_width": "0",
+			"shadow_width": "0"
+		}
 	}
 }

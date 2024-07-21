@@ -89,19 +89,65 @@ class TurnBasedFight(BaseState):
             manager=self.get_ui_manager(),
         )
         self.__player_info_container = UIPanel(
-            relative_rect=pygame.Rect((-5, 0), (325, 200)),
+            relative_rect=pygame.Rect((-5, 0), (325, 315)),
             manager=self.get_ui_manager(),
-            object_id=ObjectID(object_id="#transparent_panel"),
+            object_id=ObjectID(object_id="#semi-transparent_panel"),
         )
+
+        # icon_rect = (
+        #     pygame.Rect(
+        #         (position.right + icon_sprite_gap-icon_size[0],
+        #         position.top),
+        #         icon_size
+        #     )
+        #     if self.__flip
+        #     else pygame.Rect(
+        #         (position.left - icon_sprite_gap,
+        #         position.top),
+        #         icon_size
+        #     )
+        # )
 
         self.__player_health_bar = HealthBar(
             self.get_ui_manager(),
             self.__player_info_container,
-            pygame.Rect((100, 30), (225, 25)),
+            pygame.Rect((100, 20), (225, 30)),
             self.__player.get_statistics()["health_points"],
             self.__player.get_statistics()["health_points"],
-            icon_sprite=pygame.image.load("assets/statistics/health_points.webp"),
         )
+
+        icon_sprite = pygame.transform.scale(
+            pygame.image.load("assets/statistics/health_points.webp"), (48, 48)
+        )
+        UIImage(
+            pygame.Rect((50, 40), (48, 48)),
+            image_surface=icon_sprite,
+            manager=self.get_ui_manager(),
+            container=self.__player_info_container,
+        )
+
+        self.__player_HUD_text: dict[str, UITextBox] = {}
+        HUD_init_text_y = 30
+        HUD_text_x = 100
+        HUD_step = 30
+        for statistic_count, (statistic_name, statistic_value) in enumerate(
+            self.__player.get_statistics().items()
+        ):
+            if (
+                statistic_name in self.__CHARACTER_MAX_VAL.keys()
+                and statistic_name != "health_points"
+            ):
+                self.__player_HUD_text[statistic_name] = UITextBox(
+                    html_text=f'<img src="assets/icons_18/{statistic_name}.png"> '
+                    f"{" ".join(word.capitalize() for word in statistic_name.split("_"))}: {statistic_value}",
+                    relative_rect=pygame.Rect(
+                        (HUD_text_x, HUD_init_text_y + statistic_count * HUD_step),
+                        (-1, -1),
+                    ),
+                    manager=self.get_ui_manager(),
+                    object_id=ObjectID(object_id="#HUD-text"),
+                    container=self.__player_info_container,
+                )
 
         enemy_info_rect = pygame.Rect((0, 0), (325, 200))
         enemy_info_rect.right = 5
@@ -111,7 +157,7 @@ class TurnBasedFight(BaseState):
             manager=self.get_ui_manager(),
             object_id=ObjectID(object_id="#transparent_panel"),
         )
-        
+
         enemy_health_bar_rect = pygame.Rect((0, 30), (225, 25))
         enemy_health_bar_rect.right = 225
         self.__enemy_health_bar = HealthBar(
@@ -120,7 +166,6 @@ class TurnBasedFight(BaseState):
             enemy_health_bar_rect,
             self.__enemy.get_statistics()["health_points"],
             self.__enemy.get_statistics()["health_points"],
-            icon_sprite=pygame.image.load("assets/statistics/health_points.webp"),
             flip=True,
         )
 
@@ -134,7 +179,7 @@ class TurnBasedFight(BaseState):
 
         self.__tutorial_text = UITextBox(
             html_text="Press the allocated button to use an action (ability / normal attack)",
-            relative_rect=pygame.Rect((0, 200), (self.get_screen().width * 0.8, -1)),
+            relative_rect=pygame.Rect((0, 200), (self.get_screen().width * 0.4, -1)),
             anchors=({"centerx": "centerx"}),
             manager=self.get_ui_manager(),
             object_id=ObjectID(object_id="#tutorial_text"),

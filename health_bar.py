@@ -23,14 +23,11 @@ class HealthBar:
         init_value: int,
         max_value: int,
         delta_animation_speed: float = 2,
-        icon_sprite: pygame.Surface = None,
-        icon_size: Tuple[int, int] = (64,64),
-        icon_sprite_gap: float = 75,
         flip: bool = False,
     ) -> None:
         self.__target_value: int = init_value
         self.__current_value: int = init_value
-        self.__max_value :int = max_value
+        self.__max_value: int = max_value
         self.__delta_animation_speed = delta_animation_speed
         self.__value_ratio = max_value / position.width
         self.__position = position
@@ -38,33 +35,9 @@ class HealthBar:
         self.__container = container
         self.__flip = flip
 
-
         init_current_value_rect, init_transition_value_rect = (
             self.compute_health_bar_rect_size(self.__target_value, self.__current_value)
         )
-
-        icon_rect = (
-            pygame.Rect(
-                (position.right + icon_sprite_gap-icon_size[0],
-                position.top),
-                icon_size
-            )
-            if self.__flip
-            else pygame.Rect(
-                (position.left - icon_sprite_gap,
-                position.top),
-                icon_size
-            )
-        )
-
-
-        icon_sprite = pygame.transform.scale(icon_sprite, icon_size)
-        UIPanel(
-            relative_rect=icon_rect,
-            container=self.__container,
-            manager=self.__ui_manager,
-            object_id=ObjectID(object_id="#icon"),
-        ).image = icon_sprite
 
         UIPanel(
             relative_rect=position,
@@ -86,16 +59,16 @@ class HealthBar:
             manager=self.__ui_manager,
             object_id=ObjectID(object_id="#transition-bar"),
         )
-        
-        self.__hp_text = pygame_gui.elements.UILabel(
+
+        self.__hp_text = pygame_gui.elements.UITextBox(
             relative_rect=pygame.Rect(
                 (position.left, position.top),
                 (position.width, position.height),
             ),
-            text=f"HP: {self.__current_value} / {max_value}",
+            html_text=f"HP: {self.__current_value} / {max_value}",
             manager=self.__ui_manager,
             container=self.__container,
-            object_id=ObjectID(object_id="#hp_text"),
+            object_id=ObjectID(object_id="#HUD-text"),
         )
 
     def update(self, target_value: int) -> None:
