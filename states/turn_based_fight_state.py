@@ -293,10 +293,6 @@ class TurnBasedFight(BaseState):
                     self.__round_counter += 1
                 else:
                     if not self.__is_enemy_attacking:
-                        print(
-                            len(self.__enemy.get_unlocked_abilities())
-                            - len(self.__enemy_controller.get_cooldown_abilities())
-                        )
                         random_ability_choice = random.randint(
                             0,
                             len(self.__enemy.get_unlocked_abilities())

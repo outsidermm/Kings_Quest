@@ -5,15 +5,15 @@ from ability import Ability, ENEMY_ABILITY_LIST
 class DreadNought(BaseCharacter):
 
     __statistics: dict[str, int] = {
-    "health_points": 3000,
+    "health_points": 2000,
     "physical_defense": 250,
-    "magical_defense": 200,
+    "magical_defense": 150,
     "spell_power": 150,
-    "physical_power": 180,
+    "physical_power": 120,
     "health_regeneration": 25,
     "mana_regeneration": 15,
     "mana_points": 300,
-    "physical_damage": 70,
+    "physical_damage": 60,
     "magical_damage": 60,
 }
 
