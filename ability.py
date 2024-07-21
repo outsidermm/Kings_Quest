@@ -209,24 +209,24 @@ PLAYER_ABILITY_LIST: dict[str, Ability] = {
 ENEMY_ABILITY_LIST: dict[str, Ability] = {
     "Savage Roar": Ability(
         "Savage Roar",
-        "Reduces the attack damage of all enemies by 20 percent for 2 turns. Cooldown: 4 turns",
-        {"cooldown": 4, "physical_damage_reduction": -20},
+        "Reduces the attack damage of all enemies by 15 percent for 2 turns. Cooldown: 4 turns",
+        {"cooldown": 4, "physical_damage_reduction": -15},
         [],
         2,  # Duration
         "assets/abilities/Savage Roar.webp",
     ),
     "Flame Breath": Ability(
         "Flame Breath",
-        "Deals 300 magical damage to all enemies. Cooldown: 4 turns",
-        {"magical_damage": 60, "cooldown": 4},
+        "Deals 50 more magical damage to all enemies. Cooldown: 4 turns",
+        {"magical_damage": 50, "cooldown": 4},
         [],
         1,  # Duration
         "assets/abilities/Flame Breath.webp",
     ),
     "Tail Swipe": Ability(
         "Tail Swipe",
-        "Deals 250 physical damage to a single target and stuns them for 1 turn. Cooldown: 3 turns",
-        {"physical_damage": 100, "cooldown": 3, "stun": 1},
+        "Deals 70 more physical damage and stuns them for 1 turn. Cooldown: 3 turns",
+        {"physical_damage": 70, "cooldown": 3, "stun": 1},
         [],
         1,  # Duration
         "assets/abilities/Tail Swipe.webp",

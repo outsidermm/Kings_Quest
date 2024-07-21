@@ -5,17 +5,17 @@ from ability import Ability, ENEMY_ABILITY_LIST
 class DreadNought(BaseCharacter):
 
     __statistics: dict[str, int] = {
-        "health_points": 3000,  # High health to sustain long battles
-        "physical_defense": 200,  # Strong physical defense
-        "magical_defense": 150,  # Strong magical defense
-        "spell_power": 120,  # High spell power for powerful magic attacks
-        "physical_power": 150,  # High physical power for powerful physical attacks
-        "health_regeneration": 20,  # Moderate health regeneration
-        "mana_regeneration": 10,  # Moderate mana regeneration for sustained spell casting
-        "mana_points": 250,  # Adequate mana pool for various spells
-        "physical_damage": 70,  # Moderate physical damage per attack
-        "magical_damage": 40,  # Moderate magical damage per attack
-    }
+    "health_points": 3000,
+    "physical_defense": 250,
+    "magical_defense": 200,
+    "spell_power": 150,
+    "physical_power": 180,
+    "health_regeneration": 25,
+    "mana_regeneration": 15,
+    "mana_points": 300,
+    "physical_damage": 70,
+    "magical_damage": 60,
+}
 
     __unlocked_abilities: list[Ability] = [
         ENEMY_ABILITY_LIST["Savage Roar"],

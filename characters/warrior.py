@@ -1,19 +1,19 @@
 from .base_character import BaseCharacter
-from ability import PLAYER_ABILITY_LIST, Ability, ENEMY_ABILITY_LIST
+from ability import PLAYER_ABILITY_LIST, Ability
 
 
 class Warrior(BaseCharacter):
 
     __statistics: dict = {
-        "health_points": 1100,  # Health Points
-        "physical_defense": 250,  # Physical Defense
-        "magical_defense": 70,  # Magical Defense
-        "spell_power": 40,  # Spell Power
-        "physical_power": 90,  # Physical Power
-        "health_regeneration": 20,  # Health Regeneration per second
-        "mana_points": 120,  # Mana Points
-        "physical_damage": 70,  # Physical Damage per attack
-    }
+    "health_points": 1150,
+    "physical_defense": 220,
+    "magical_defense": 80,
+    "spell_power": 40,
+    "physical_power": 100,
+    "health_regeneration": 15,
+    "mana_points": 150,
+    "physical_damage": 75,
+}
     __unlocked_abilities: list[Ability] = [PLAYER_ABILITY_LIST["Power Slash"]]
     # Reckless Charge
     # "Rending Claws"

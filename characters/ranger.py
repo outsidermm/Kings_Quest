@@ -5,15 +5,15 @@ from ability import PLAYER_ABILITY_LIST, Ability
 class Ranger(BaseCharacter):
 
     __statistics: dict = {
-        "health_points": 1000,  # Health Points
-        "physical_defense": 120,  # Physical Defense
-        "magical_defense": 80,  # Magical Defense
-        "spell_power": 60,  # Spell Power
-        "physical_power": 70,  # Physical Power
-        "health_regeneration": 10,  # Health Regeneration per second
-        "mana_points": 180,  # Mana Points
-        "physical_damage": 60,  # Physical Damage per attack
-    }
+    "health_points": 950,
+    "physical_defense": 110,
+    "magical_defense": 90,
+    "spell_power": 60,
+    "physical_power": 80,
+    "health_regeneration": 12,
+    "mana_points": 200,
+    "physical_damage": 70,
+}
     __unlocked_abilities: list[Ability] = [PLAYER_ABILITY_LIST["Arrow Barrage"]]
     __abilities: list[Ability] = [
         PLAYER_ABILITY_LIST["Arrow Barrage"],
