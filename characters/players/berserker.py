@@ -1,19 +1,19 @@
-from .base_character import BaseCharacter
+from characters.players.base_player import BasePlayer
 from ability import PLAYER_ABILITY_LIST, Ability
 
 
-class Berserker(BaseCharacter):
+class Berserker(BasePlayer):
 
     __statistics: dict[str, int] = {
-        "health_points": 1200,  # Health Points
-        "physical_defense": 200,  # Physical Defense
-        "magical_defense": 60,  # Magical Defense
-        "spell_power": 20,  # Spell Power
-        "physical_power": 100,  # Physical Power
-        "health_regeneration": 15,  # Health Regeneration per second
-        "mana_points": 100,  # Mana Points
-        "physical_damage": 90,  # Physical Damage per attack
-    }
+    "health_points": 1300,
+    "physical_defense": 150,
+    "magical_defense": 50,
+    "spell_power": 20,
+    "physical_power": 120,
+    "health_regeneration": 10,
+    "mana_points": 100,
+    "physical_damage": 80,
+}
 
     __unlocked_abilities: list[Ability] = [PLAYER_ABILITY_LIST["Reckless Charge"]]
     __abilities: list[Ability] = [

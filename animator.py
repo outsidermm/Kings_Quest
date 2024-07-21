@@ -22,7 +22,6 @@ class Animation:
         self.__is_loop = loop
         self.__image_duration = image_duration
         self.__is_flipped = is_flipped
-        print(self.__is_flipped)
 
     # copy the instant of itself to decrease memory usage
     def copy(self):

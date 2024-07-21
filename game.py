@@ -4,11 +4,11 @@ from state_manager import GameStateManager
 from states.start_menu import StartMenu
 from states.turn_based_fight_state import TurnBasedFight
 from states.character_selection_menu import CharacterSelectionMenu
-from characters.mage import Mage
-from characters.ranger import Ranger
-from characters.warrior import Warrior
-from characters.berserker import Berserker
-from characters.dreadnought import DreadNought
+from characters.players.mage import Mage
+from characters.players.ranger import Ranger
+from characters.players.warrior import Warrior
+from characters.players.berserker import Berserker
+from characters.enemies.dreadnought import DreadNought
 from characters.base_character import BaseCharacter
 
 

@@ -110,7 +110,6 @@ class CombatController:
                         self.__player_statistic[modifer] -= value
                 self.__ability_histories.remove(player_ability)
 
-        print("Critical Rate: ", critical_rate)
         critical_dmg_addition = random.randint(0, int(critical_rate))
         physical_dmg = magical_dmg = 0
         if (
