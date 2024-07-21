@@ -5,17 +5,17 @@ from ability import Ability, ENEMY_ABILITY_LIST
 class DreadNought(BaseEnemy):
 
     __statistics: dict[str, int] = {
-    "health_points": 2000,
-    "physical_defense": 250,
-    "magical_defense": 150,
-    "spell_power": 150,
-    "physical_power": 120,
-    "health_regeneration": 25,
-    "mana_regeneration": 15,
-    "mana_points": 300,
-    "physical_damage": 60,
-    "magical_damage": 60,
-}
+        "health_points": 1700,
+        "physical_defense": 200,
+        "magical_defense": 150,
+        "spell_power": 150,
+        "physical_power": 120,
+        "health_regeneration": 15,
+        "mana_regeneration": 15,
+        "mana_points": 250,
+        "physical_damage": 60,
+        "magical_damage": 40,
+    }
 
     __abilities: list[Ability] = [
         ENEMY_ABILITY_LIST["Savage Roar"],

@@ -5,15 +5,15 @@ from ability import PLAYER_ABILITY_LIST, Ability
 class Berserker(BasePlayer):
 
     __statistics: dict[str, int] = {
-    "health_points": 1300,
-    "physical_defense": 150,
-    "magical_defense": 50,
-    "spell_power": 20,
-    "physical_power": 120,
-    "health_regeneration": 10,
-    "mana_points": 100,
-    "physical_damage": 80,
-}
+        "health_points": 1300,
+        "physical_defense": 150,
+        "magical_defense": 50,
+        "spell_power": 20,
+        "physical_power": 120,
+        "health_regeneration": 10,
+        "mana_points": 100,
+        "physical_damage": 80,
+    }
 
     __unlocked_abilities: list[Ability] = [PLAYER_ABILITY_LIST["Reckless Charge"]]
     __abilities: list[Ability] = [

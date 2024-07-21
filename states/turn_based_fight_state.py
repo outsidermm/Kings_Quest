@@ -12,7 +12,7 @@ import random
 from ability import Ability
 from gui.combat_hud import CombatHUD
 from animator import Animation
-from image_utilities import load_images
+from utilities import load_images
 
 
 class TurnBasedFight(BaseState):
@@ -302,9 +302,7 @@ class TurnBasedFight(BaseState):
                         random_ability_choice = (
                             None
                             if random_ability_choice == 0
-                            else self.__enemy.get_abilities()[
-                                random_ability_choice - 1
-                            ]
+                            else self.__enemy.get_abilities()[random_ability_choice - 1]
                         )
                         self.__player_controller.regenerate()
                         self.__enemy_controller.regenerate()
