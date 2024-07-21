@@ -1,29 +1,26 @@
-from .base_character import BaseCharacter
+from characters.players.base_player import BasePlayer
 from ability import PLAYER_ABILITY_LIST, Ability
 
 
-class Mage(BaseCharacter):
-    __statistics: dict[str, int] = {
-    "health_points": 850,
-    "physical_defense": 70,
-    "magical_defense": 160,
-    "spell_power": 140,
-    "physical_power": 20,
-    "mana_regeneration": 15,
-    "mana_points": 300,
-    "magical_damage": 70,
-}
+class Ranger(BasePlayer):
 
-    __unlocked_abilities: list[Ability] = [
-        PLAYER_ABILITY_LIST["Fireball"],
-        PLAYER_ABILITY_LIST["Mana Surge"],
-    ]
+    __statistics: dict = {
+    "health_points": 950,
+    "physical_defense": 110,
+    "magical_defense": 90,
+    "spell_power": 60,
+    "physical_power": 80,
+    "health_regeneration": 12,
+    "mana_points": 200,
+    "physical_damage": 70,
+}
+    __unlocked_abilities: list[Ability] = [PLAYER_ABILITY_LIST["Arrow Barrage"]]
     __abilities: list[Ability] = [
-        PLAYER_ABILITY_LIST["Fireball"],
-        PLAYER_ABILITY_LIST["Arcane Shield"],
-        PLAYER_ABILITY_LIST["Mana Surge"],
+        PLAYER_ABILITY_LIST["Arrow Barrage"],
+        PLAYER_ABILITY_LIST["Natural Grace"],
+        PLAYER_ABILITY_LIST["Fatal Shadow"],
     ]
-    __character_level: int = 2
+    __character_level: int = 4
 
     def __init__(self, name: str, sprite_location: str) -> None:
         super().__init__(
@@ -41,20 +38,20 @@ class Mage(BaseCharacter):
         new_unlocked_abilities: list[Ability] = self.get_unlocked_abilities()
         if self.__character_level == 1:
             self.set_character_level(2)
-            new_statistic["spell_power"] += 15
-            new_statistic["mana_points"] += 50
+            new_statistic["health_points"] += 100
+            new_statistic["physical_power"] += 10
         elif self.__character_level == 2:
             self.set_character_level(3)
             new_unlocked_abilities[0].upgrade()
         elif self.__character_level == 3:
             self.set_character_level(4)
-            new_unlocked_abilities.append(PLAYER_ABILITY_LIST["Arcane Shield"])
+            new_unlocked_abilities.append(PLAYER_ABILITY_LIST["Natural Grace"])
         self.set_statistics(new_statistic)
         self.set_unlocked_abilities(new_unlocked_abilities)
 
     def unlock_ability(self) -> None:
         new_unlocked_abilities: list[Ability] = self.get_unlocked_abilities()
-        new_unlocked_abilities.append(PLAYER_ABILITY_LIST["Mana Surge"])
+        new_unlocked_abilities.append(PLAYER_ABILITY_LIST["Fatal Shadow"])
         self.set_unlocked_abilities(new_unlocked_abilities)
 
     def get_name(self) -> str:

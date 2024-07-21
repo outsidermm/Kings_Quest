@@ -1,8 +1,8 @@
-from .base_character import BaseCharacter
+from characters.enemies.base_enemy import BaseEnemy
 from ability import Ability, ENEMY_ABILITY_LIST
 
 
-class DreadNought(BaseCharacter):
+class DreadNought(BaseEnemy):
 
     __statistics: dict[str, int] = {
     "health_points": 2000,
@@ -17,7 +17,7 @@ class DreadNought(BaseCharacter):
     "magical_damage": 60,
 }
 
-    __unlocked_abilities: list[Ability] = [
+    __abilities: list[Ability] = [
         ENEMY_ABILITY_LIST["Savage Roar"],
         ENEMY_ABILITY_LIST["Flame Breath"],
         ENEMY_ABILITY_LIST["Tail Swipe"],
@@ -28,15 +28,8 @@ class DreadNought(BaseCharacter):
             name,
             self.__statistics,
             sprite_location,
-            self.__unlocked_abilities,
-            self.__unlocked_abilities,
+            self.__abilities,
         )
-
-    def upgrade(self) -> None:
-        pass
-
-    def unlock_ability(self) -> None:
-        pass
 
     def get_name(self) -> str:
         return super().get_name()
@@ -50,9 +43,6 @@ class DreadNought(BaseCharacter):
     def get_abilities(self) -> list[Ability]:
         return super().get_abilities()
 
-    def get_unlocked_abilities(self) -> list[Ability]:
-        return super().get_unlocked_abilities()
-
     def set_name(self, name: str) -> None:
         super().set_name(name)
 
@@ -64,6 +54,3 @@ class DreadNought(BaseCharacter):
 
     def set_abilities(self, abilities: list[Ability]) -> None:
         super().set_abilities(abilities)
-
-    def set_unlocked_abilities(self, unlocked_abilities: list[Ability]) -> None:
-        super().set_unlocked_abilities(unlocked_abilities)
