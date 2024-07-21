@@ -8,9 +8,11 @@ from characters.base_character import BaseCharacter
 from xp import XP
 from gui.combat_hud import CombatHUD
 from combat_controller import CombatController
-from gui.health_bar import HealthBar
 import random
 from ability import Ability
+from gui.combat_hud import CombatHUD
+from animator import Animation
+from image_utilities import load_images
 
 
 class TurnBasedFight(BaseState):
@@ -21,30 +23,19 @@ class TurnBasedFight(BaseState):
     __combat_round_initalised: bool = False
     __player_controller: CombatController = None
     __enemy_controller: CombatController = None
-    __player_health_bar: HealthBar = None
-    __enemy_health_bar: HealthBar = None
+    __player_HUD: CombatHUD = None
+    __enemy_HUD: CombatHUD = None
     __ability_selected: Ability = -1
     __ability_button_list: list[UIButton] = [None] * 17
     __attacking: bool = False
     __turn_end: bool = False
     __mouse_pressed: bool = False
     __enemy_hit_height: float = 0
+    __player_animation: Animation = None
+    __enemy_animation: Animation = None
 
     __xp: XP = None
-
-    # Define maximum values for the bars for normalization
-    __CHARACTER_MAX_VAL: dict[str, int] = {
-        "health_points": 1350,  # Berserker's max health points
-        "physical_defense": 250,  # Warrior's max physical defense
-        "magical_defense": 150,  # Mage's max magical defense
-        "spell_power": 145,  # Mage's 130 + 15 upgrade
-        "physical_power": 200,  # Warrior's 90 + 90 upgrade
-        "health_regeneration": 20,  # Warrior's max health regeneration
-        "mana_regeneration": 10,  # Mage's max mana regeneration
-        "mana_points": 300,  # Mage's 250 + 50 upgrade
-        "physical_damage": 110,  # Berserker's max physical damage
-        "magical_damage": 60,  # Mage's max magical damage
-    }
+    __ANIMATION_ASSETS: dict[str, Animation] = {}
 
     def __init__(
         self,
@@ -59,6 +50,26 @@ class TurnBasedFight(BaseState):
         self.__xp = XP()
         self.__player = player
         self.__enemy = enemy
+        self.__ANIMATION_ASSETS["player/idle"] = Animation(
+            load_images(f"characters/{self.__player.get_name()}/idle"),
+            image_duration=10,
+        )
+        self.__ANIMATION_ASSETS["player/attack"] = Animation(
+            load_images(f"characters/{self.__player.get_name()}/attack"),
+            image_duration=6,
+            loop=False,
+        )
+        self.__ANIMATION_ASSETS["enemy/idle"] = Animation(
+            load_images(f"characters/{self.__enemy.get_name()}/idle"),
+            image_duration=10,
+            is_flipped=True,
+        )
+        self.__ANIMATION_ASSETS["enemy/attack"] = Animation(
+            load_images(f"characters/{self.__enemy.get_name()}/attack"),
+            image_duration=6,
+            loop=False,
+            is_flipped=True,
+        )
 
     def start(self) -> None:
         self.__background_image = UIImage(
@@ -70,7 +81,7 @@ class TurnBasedFight(BaseState):
         )
         self.__player_sprite = UIImage(
             relative_rect=pygame.Rect(
-                (200, 300),
+                (self.get_screen().width * 0.3, 300),
                 (200, 200),
             ),
             image_surface=pygame.image.load(self.__player.get_sprite_location()),
@@ -78,7 +89,7 @@ class TurnBasedFight(BaseState):
         )
         self.__enemy_sprite = UIImage(
             relative_rect=pygame.Rect(
-                (400, 300),
+                (self.get_screen().width * 0.5, 300),
                 (200, 200),
             ),
             image_surface=pygame.transform.flip(
@@ -93,9 +104,11 @@ class TurnBasedFight(BaseState):
             manager=self.get_ui_manager(),
             object_id=ObjectID(object_id="#semi-transparent_panel"),
         )
-        
-        self.__player_HUD = CombatHUD(self.get_ui_manager(), self.__player, self.__player_info_container)
-        
+
+        self.__player_HUD = CombatHUD(
+            self.get_ui_manager(), self.__player, self.__player_info_container
+        )
+
         enemy_info_rect = pygame.Rect((0, 0), (325, 330))
         enemy_info_rect.right = 5
         self.__enemy_info_container = UIPanel(
@@ -105,7 +118,12 @@ class TurnBasedFight(BaseState):
             object_id=ObjectID(object_id="#semi-transparent_panel"),
         )
 
-        self.__enemy_HUD = CombatHUD(self.get_ui_manager(), self.__enemy, self.__enemy_info_container, is_flipped=True)
+        self.__enemy_HUD = CombatHUD(
+            self.get_ui_manager(),
+            self.__enemy,
+            self.__enemy_info_container,
+            is_flipped=True,
+        )
 
         player_choice_container_width = self.get_screen().width - 650
         self.__player_choice_container = UIPanel(
@@ -172,6 +190,9 @@ class TurnBasedFight(BaseState):
 
         self.__player_controller = CombatController(self.__player, self.__player_sprite)
         self.__enemy_controller = CombatController(self.__enemy, self.__enemy_sprite)
+
+        self.__player_animation = self.__ANIMATION_ASSETS["player/idle"].copy()
+        self.__enemy_animation = self.__ANIMATION_ASSETS["enemy/idle"].copy()
 
     def handle_events(self, event: pygame.Event) -> None:
         if event.type == pygame_gui.UI_BUTTON_PRESSED:
@@ -248,20 +269,30 @@ class TurnBasedFight(BaseState):
                         self.__enemy_controller.face_damage(
                             physical_damage, magical_damage, debuff_dict
                         )
+                        self.__player_animation = self.__ANIMATION_ASSETS[
+                            "player/attack"
+                        ].copy()
+
                         print(self.__player.get_statistics())
                         print(self.__enemy.get_statistics())
                 elif (
                     self.__attacking and not self.__turn_end
                 ):  # Attacking, perform animation, update the health bars
-                    self.__turn_end = True
+                    if self.__player_animation.is_done():
+                        self.__turn_end = True
+
                 elif self.__turn_end:
 
+                    self.__player_animation = self.__ANIMATION_ASSETS[
+                        "player/idle"
+                    ].copy()
                     self.__ability_selected = -1  # Reset turn action flags
                     self.__attacking = False
+                    self.__turn_end = False
                     self.__round_counter += 1
 
-                # Regeneration
             else:
+
                 random_choice = random.randint(0, 4)
                 print("enemy round")
                 self.__round_counter += 1
@@ -286,6 +317,12 @@ class TurnBasedFight(BaseState):
     def render(self, time_delta):
         self.__player_HUD.update()
         self.__enemy_HUD.update()
+
+        self.__player_animation.update()
+        self.__enemy_animation.update()
+
+        self.__player_sprite.image = self.__player_animation.img()
+        self.__enemy_sprite.image = self.__enemy_animation.img()
 
         for ability in self.__player.get_unlocked_abilities():
             if self.__player_controller.is_ability_on_cooldown(ability):

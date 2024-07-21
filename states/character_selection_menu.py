@@ -5,10 +5,8 @@ from pygame_gui.elements import UIButton, UIImage, UITextBox, UIStatusBar, UIPan
 from pygame_gui.core import ObjectID
 from state_manager import GameStateManager
 from characters.base_character import BaseCharacter
-from .turn_based_fight_state import TurnBasedFight
 from xp import XP
 from typing import Any
-from characters.berserker import Berserker
 
 
 # TODO Need to show highlights made

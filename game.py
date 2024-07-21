@@ -52,10 +52,10 @@ class Game:
 
         self.set_characters(
             [
-                Warrior("Aric", "assets/characters/Aric.png"),
-                Mage("Lyra", "assets/characters/Lyra.png"),
-                Berserker("Berserker", "assets/characters/Berserker.png"),
-                Ranger("Ranger", "assets/characters/Ranger.png"),
+                Warrior("Aric", "assets/characters/aric/idle/0.png"),
+                Mage("Lyra", "assets/characters/lyra/idle/0.png"),
+                Berserker("Berserker", "assets/characters/berserker/idle/0.png"),
+                Ranger("Ranger", "assets/characters/ranger/idle/0.png"),
             ]
         )
 

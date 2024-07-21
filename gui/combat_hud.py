@@ -1,5 +1,5 @@
 import pygame
-from pygame_gui.elements import  UITextBox, UIImage
+from pygame_gui.elements import UITextBox, UIImage
 from pygame_gui.core import ObjectID
 import pygame_gui
 from characters.base_character import BaseCharacter
@@ -13,7 +13,6 @@ class CombatHUD:
     __is_flipped: bool = False
     __health_bar: HealthBar = None
     __HUD_text: dict[str, UITextBox] = {}
-    
 
     __CHARACTER_MAX_VAL: dict[str, int] = {
         "health_points": 1350,  # Berserker's max health points
@@ -48,7 +47,7 @@ class CombatHUD:
             health_bar_rect.right = 240
         else:
             health_bar_rect.left = 85
-        
+
         self.__health_bar = HealthBar(
             self.__ui_manager,
             self.__container,
@@ -63,44 +62,50 @@ class CombatHUD:
             player_icon_rect.right = -35
         else:
             player_icon_rect.left = 35
-            
+
         UIImage(
             player_icon_rect,
             image_surface=pygame.transform.scale(
-            pygame.image.load("assets/icons_18/health_points.png"), (48, 48)
-        ),
-            anchors={"right":"right"} if self.__is_flipped else {"left":"left"},
+                pygame.image.load("assets/icons_18/health_points.png"), (48, 48)
+            ),
+            anchors={"right": "right"} if self.__is_flipped else {"left": "left"},
             manager=self.__ui_manager,
             container=self.__container,
         )
 
-        for statistic_count, statistic_name in enumerate(self.__CHARACTER_MAX_VAL.keys()):
+        for statistic_count, statistic_name in enumerate(
+            self.__CHARACTER_MAX_VAL.keys()
+        ):
             if statistic_name not in self.__player.get_statistics().keys():
-                self.__player.get_statistics()[statistic_name] =0
-    
+                self.__player.get_statistics()[statistic_name] = 0
+
             if statistic_name != "health_points":
-                statistic_rect = pygame.Rect((0, HUD_init_text_y + statistic_count * HUD_step),(225,30))
+                statistic_rect = pygame.Rect(
+                    (0, HUD_init_text_y + statistic_count * HUD_step), (225, 30)
+                )
                 if self.__is_flipped:
                     statistic_rect.right = -HUD_text_x
                 else:
                     statistic_rect.left = HUD_text_x
-                    
+
                 self.__HUD_text[statistic_name] = UITextBox(
                     html_text=f'<img src="assets/icons_18/{statistic_name}.png"> '
                     f"{" ".join(word.capitalize() for word in statistic_name.split("_"))}: {self.__player.get_statistics()[statistic_name]}",
                     relative_rect=statistic_rect,
                     manager=self.__ui_manager,
-                    anchors={"right":"right"} if self.__is_flipped else {"left":"left"},
+                    anchors=(
+                        {"right": "right"} if self.__is_flipped else {"left": "left"}
+                    ),
                     object_id=ObjectID(object_id="#HUD-text"),
                     container=self.__container,
                 )
-                
+
     def update(self):
         self.__health_bar.update(self.__player.get_statistics()["health_points"])
         for statistic_name in self.__CHARACTER_MAX_VAL.keys():
             if statistic_name not in self.__player.get_statistics().keys():
-                self.__player.get_statistics()[statistic_name] =0
-    
+                self.__player.get_statistics()[statistic_name] = 0
+
             if statistic_name != "health_points":
                 self.__HUD_text[statistic_name].set_text(
                     html_text=f'<img src="assets/icons_18/{statistic_name}.png"> '
