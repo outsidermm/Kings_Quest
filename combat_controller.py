@@ -193,6 +193,7 @@ class CombatController:
         if "absorption" in self.__player_statistic.keys():
             total_dmg -= debuff_dict["absorption"][0]
         self.__player_statistic["health_points"] -= int(total_dmg)
+        self.__player_statistic["health_points"] = max(0, self.__player_statistic["health_points"])
 
     def regenerate(self) -> None:
         if (

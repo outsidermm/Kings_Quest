@@ -97,7 +97,7 @@ class TurnBasedFight(BaseState):
         self.__player_health_bar = HealthBar(
             self.get_ui_manager(),
             self.__player_info_container,
-            pygame.Rect((30, 30), (250, 25)),
+            pygame.Rect((100, 30), (225, 25)),
             self.__player.get_statistics()["health_points"],
             self.__player.get_statistics()["health_points"],
             icon_sprite=pygame.image.load("assets/statistics/health_points.webp"),
@@ -111,10 +111,13 @@ class TurnBasedFight(BaseState):
             manager=self.get_ui_manager(),
             object_id=ObjectID(object_id="#transparent_panel"),
         )
+        
+        enemy_health_bar_rect = pygame.Rect((0, 30), (225, 25))
+        enemy_health_bar_rect.right = 225
         self.__enemy_health_bar = HealthBar(
             self.get_ui_manager(),
             self.__enemy_info_container,
-            pygame.Rect((30, 30), (250, 25)),
+            enemy_health_bar_rect,
             self.__enemy.get_statistics()["health_points"],
             self.__enemy.get_statistics()["health_points"],
             icon_sprite=pygame.image.load("assets/statistics/health_points.webp"),
