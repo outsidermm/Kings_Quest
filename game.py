@@ -2,6 +2,7 @@ import pygame
 import pygame_gui
 from state_manager import GameStateManager
 from states.start_menu import StartMenu
+from states.turn_based_fight_state import TurnBasedFight
 from states.character_selection_menu import CharacterSelectionMenu
 from characters.mage import Mage
 from characters.ranger import Ranger
@@ -38,10 +39,12 @@ class Game:
             pygame_gui.UIManager((self.__SCREEN_WIDTH, self.__SCREEN_HEIGHT))
         )
 
-        self.get_ui_manager().get_theme().load_theme("./settings/general.json")
+        self.get_ui_manager().get_theme().load_theme("settings/general.json")
         self.get_ui_manager().get_theme().load_theme(
             "settings/character_selection_theme.json"
         )
+        self.get_ui_manager().get_theme().load_theme("settings/combat_theme.json")
+        self.get_ui_manager().get_theme().load_theme("settings/health_bar.json")
 
         self.set_clock(pygame.time.Clock())
 
@@ -71,10 +74,19 @@ class Game:
             )
         )
 
+        self.__turn_based_fight_state = TurnBasedFight(
+            self.get_screen(),
+            self.get_ui_manager(),
+            self.get_game_state_manager(),
+            self.get_characters()[0],
+            self.get_characters()[1],
+        )
+
         self.set_states(
             {
                 "start_menu": self.get_start_menu(),
                 "character_selection_menu": self.get_character_selection_menu(),
+                "turn_based_fight": self.__turn_based_fight_state,
             }
         )
 

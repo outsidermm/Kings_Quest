@@ -5,14 +5,14 @@ from ability import PLAYER_ABILITY_LIST, Ability
 class Ranger(BaseCharacter):
 
     __statistics: dict = {
-        "health_points": 600,  # Health Points
-        "physical_defense": 100,  # Physical Defense
-        "magical_defense": 60,  # Magical Defense
-        "spell_power": 50,  # Spell Power
+        "health_points": 1000,  # Health Points
+        "physical_defense": 120,  # Physical Defense
+        "magical_defense": 80,  # Magical Defense
+        "spell_power": 60,  # Spell Power
         "physical_power": 70,  # Physical Power
-        "health_regeneration": 8,  # Health Regeneration per second
-        "mana_points": 150,  # Mana Points
-        "physical_damage": 70,  # Physical Damage per attack
+        "health_regeneration": 10,  # Health Regeneration per second
+        "mana_points": 180,  # Mana Points
+        "physical_damage": 60,  # Physical Damage per attack
     }
     __unlocked_abilities: list[Ability] = [PLAYER_ABILITY_LIST["Arrow Barrage"]]
     __abilities: list[Ability] = [
@@ -53,9 +53,6 @@ class Ranger(BaseCharacter):
         new_unlocked_abilities: list[Ability] = self.get_unlocked_abilities()
         new_unlocked_abilities.append(PLAYER_ABILITY_LIST["Fatal Shadow"])
         self.set_unlocked_abilities(new_unlocked_abilities)
-
-    def attack(self) -> None:
-        pass
 
     def get_name(self) -> str:
         return super().get_name()

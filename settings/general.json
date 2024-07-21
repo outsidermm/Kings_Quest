@@ -87,5 +87,27 @@
 			"border_width": "0",
 			"shadow_wdith": "0"
 		}
+	},
+	"#transparent_panel":
+	{
+		"colours": {
+			"dark_bg":"#00000000",
+			"normal_border": "#00000000"
+		},
+		"misc": {
+			"border_width": "0",
+			"shadow_width": "0"
+		}
+	},
+	"#semi-transparent_panel":
+	{
+		"colours": {
+			"dark_bg":"rgba(0, 0, 0, 100)",
+			"normal_border":"rgba(0, 0, 0, 100)"
+		},
+		"misc": {
+			"border_width": "0",
+			"shadow_width": "0"
+		}
 	}
 }
