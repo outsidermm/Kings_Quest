@@ -8,6 +8,7 @@ from characters.mage import Mage
 from characters.ranger import Ranger
 from characters.warrior import Warrior
 from characters.berserker import Berserker
+from characters.dreadnought import DreadNought
 from characters.base_character import BaseCharacter
 
 
@@ -79,7 +80,7 @@ class Game:
             self.get_ui_manager(),
             self.get_game_state_manager(),
             self.get_characters()[0],
-            self.get_characters()[1],
+            DreadNought("DreadNought", "assets/characters/dreadnought/idle/0000.png"),
         )
 
         self.set_states(

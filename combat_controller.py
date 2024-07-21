@@ -216,3 +216,6 @@ class CombatController:
             self.__player_statistic["mana_points"] += self.__player_statistic[
                 "mana_regeneration"
             ]
+
+    def get_cooldown_abilities(self) -> dict[str, int]:
+        return self.__cooldown_abilities

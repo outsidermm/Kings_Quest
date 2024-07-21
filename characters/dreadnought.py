@@ -2,25 +2,22 @@ from .base_character import BaseCharacter
 from ability import PLAYER_ABILITY_LIST, Ability, ENEMY_ABILITY_LIST
 
 
-class DungeonMaster(BaseCharacter):
+class DreadNought(BaseCharacter):
 
     __statistics: dict[str, int] = {
-        "health_points": 1200,  # Health Points
-        "physical_defense": 200,  # Physical Defense
-        "magical_defense": 60,  # Magical Defense
-        "spell_power": 20,  # Spell Power
-        "physical_power": 100,  # Physical Power
-        "health_regeneration": 15,  # Health Regeneration per second
-        "mana_points": 100,  # Mana Points
-        "physical_damage": 90,  # Physical Damage per attack
+        "health_points": 5000,
+        "physical_defense": 300,
+        "magical_defense": 250,
+        "spell_power": 200,
+        "physical_power": 250,
+        "health_regeneration": 50,
+        "mana_regeneration": 20,
+        "mana_points": 500,
+        "physical_damage": 150,
+        "magical_damage": 100,
     }
 
     __unlocked_abilities: list[Ability] = [
-        ENEMY_ABILITY_LIST["Savage Roar"],
-        ENEMY_ABILITY_LIST["Flame Breath"],
-        ENEMY_ABILITY_LIST["Tail Swipe"],
-    ]
-    __abilities: list[Ability] = [
         ENEMY_ABILITY_LIST["Savage Roar"],
         ENEMY_ABILITY_LIST["Flame Breath"],
         ENEMY_ABILITY_LIST["Tail Swipe"],
@@ -31,7 +28,7 @@ class DungeonMaster(BaseCharacter):
             name,
             self.__statistics,
             sprite_location,
-            self.__abilities,
+            self.__unlocked_abilities,
             self.__unlocked_abilities,
         )
 

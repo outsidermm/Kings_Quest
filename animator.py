@@ -26,7 +26,9 @@ class Animation:
 
     # copy the instant of itself to decrease memory usage
     def copy(self):
-        return Animation(self.__images, self.__image_duration, self.__is_loop,self.__is_flipped)
+        return Animation(
+            self.__images, self.__image_duration, self.__is_loop, self.__is_flipped
+        )
 
     def update(self) -> None:
         if self.__is_loop:
