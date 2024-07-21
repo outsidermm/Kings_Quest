@@ -207,14 +207,6 @@ PLAYER_ABILITY_LIST: dict[str, Ability] = {
 }
 
 ENEMY_ABILITY_LIST: dict[str, Ability] = {
-    "Rending Claws": Ability(
-        "Rending Claws",
-        "Deals 200 physical damage and causes bleeding (30 damage per turn for 3 turns). Cooldown: 3 turns",
-        {"physical_damage": 200, "cooldown": 3, "bleed": 30},
-        [],
-        3,  # Duration
-        "assets/abilities/Rending Claws.webp",
-    ),
     "Savage Roar": Ability(
         "Savage Roar",
         "Reduces the attack damage of all enemies by 20 percent for 2 turns. Cooldown: 4 turns",
@@ -222,22 +214,6 @@ ENEMY_ABILITY_LIST: dict[str, Ability] = {
         [],
         2,  # Duration
         "assets/abilities/Savage Roar.webp",
-    ),
-    "Dark Bolt": Ability(
-        "Dark Bolt",
-        "Deals 250 magical damage and reduces target's physical defense by 50 for 2 turns. Cooldown: 3 turns",
-        {"magical_damage": 250, "cooldown": 3, "physical_defense": -50},
-        [],
-        2,  # Duration
-        "assets/abilities/Dark Bolt.webp",
-    ),
-    "Life Drain": Ability(
-        "Life Drain",
-        "Deals 150 magical damage and heals caster for 100 HP. Cooldown: 3 turns",
-        {"magical_damage": 150, "cooldown": 3, "health_regeneration": 100},
-        [],
-        1,  # Duration
-        "assets/abilities/Life Drain.webp",
     ),
     "Flame Breath": Ability(
         "Flame Breath",

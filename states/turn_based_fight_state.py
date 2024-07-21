@@ -6,11 +6,13 @@ from pygame_gui.core import ObjectID
 from state_manager import GameStateManager
 from characters.base_character import BaseCharacter
 from xp import XP
-from typing import Tuple
+from gui.combat_hud import CombatHUD
 from combat_controller import CombatController
-from health_bar import HealthBar
 import random
 from ability import Ability
+from gui.combat_hud import CombatHUD
+from animator import Animation
+from image_utilities import load_images
 
 
 class TurnBasedFight(BaseState):
@@ -21,30 +23,19 @@ class TurnBasedFight(BaseState):
     __combat_round_initalised: bool = False
     __player_controller: CombatController = None
     __enemy_controller: CombatController = None
-    __player_health_bar: HealthBar = None
-    __enemy_health_bar: HealthBar = None
+    __player_HUD: CombatHUD = None
+    __enemy_HUD: CombatHUD = None
     __ability_selected: Ability = -1
     __ability_button_list: list[UIButton] = [None] * 17
     __attacking: bool = False
     __turn_end: bool = False
     __mouse_pressed: bool = False
     __enemy_hit_height: float = 0
+    __player_animation: Animation = None
+    __enemy_animation: Animation = None
 
     __xp: XP = None
-
-    # Define maximum values for the bars for normalization
-    __CHARACTER_MAX_VAL: dict[str, int] = {
-        "health_points": 1350,  # Berserker's max health points
-        "physical_defense": 250,  # Warrior's max physical defense
-        "magical_defense": 150,  # Mage's max magical defense
-        "spell_power": 145,  # Mage's 130 + 15 upgrade
-        "physical_power": 200,  # Warrior's 90 + 90 upgrade
-        "health_regeneration": 20,  # Warrior's max health regeneration
-        "mana_regeneration": 10,  # Mage's max mana regeneration
-        "mana_points": 300,  # Mage's 250 + 50 upgrade
-        "physical_damage": 110,  # Berserker's max physical damage
-        "magical_damage": 60,  # Mage's max magical damage
-    }
+    __ANIMATION_ASSETS: dict[str, Animation] = {}
 
     def __init__(
         self,
@@ -59,6 +50,26 @@ class TurnBasedFight(BaseState):
         self.__xp = XP()
         self.__player = player
         self.__enemy = enemy
+        self.__ANIMATION_ASSETS["player/idle"] = Animation(
+            load_images(f"characters/{self.__player.get_name()}/idle"),
+            image_duration=10,
+        )
+        self.__ANIMATION_ASSETS["player/attack"] = Animation(
+            load_images(f"characters/{self.__player.get_name()}/attack"),
+            image_duration=6,
+            loop=False,
+        )
+        self.__ANIMATION_ASSETS["enemy/idle"] = Animation(
+            load_images(f"characters/{self.__enemy.get_name()}/idle"),
+            image_duration=10,
+            is_flipped=True,
+        )
+        self.__ANIMATION_ASSETS["enemy/attack"] = Animation(
+            load_images(f"characters/{self.__enemy.get_name()}/attack"),
+            image_duration=6,
+            loop=False,
+            is_flipped=True,
+        )
 
     def start(self) -> None:
         self.__background_image = UIImage(
@@ -70,7 +81,7 @@ class TurnBasedFight(BaseState):
         )
         self.__player_sprite = UIImage(
             relative_rect=pygame.Rect(
-                (200, 300),
+                (self.get_screen().width * 0.3, 300),
                 (200, 200),
             ),
             image_surface=pygame.image.load(self.__player.get_sprite_location()),
@@ -78,7 +89,7 @@ class TurnBasedFight(BaseState):
         )
         self.__enemy_sprite = UIImage(
             relative_rect=pygame.Rect(
-                (400, 300),
+                (self.get_screen().width * 0.5, 300),
                 (200, 200),
             ),
             image_surface=pygame.transform.flip(
@@ -89,84 +100,29 @@ class TurnBasedFight(BaseState):
             manager=self.get_ui_manager(),
         )
         self.__player_info_container = UIPanel(
-            relative_rect=pygame.Rect((-5, 0), (325, 315)),
+            relative_rect=pygame.Rect((-5, 0), (325, 330)),
             manager=self.get_ui_manager(),
             object_id=ObjectID(object_id="#semi-transparent_panel"),
         )
 
-        # icon_rect = (
-        #     pygame.Rect(
-        #         (position.right + icon_sprite_gap-icon_size[0],
-        #         position.top),
-        #         icon_size
-        #     )
-        #     if self.__flip
-        #     else pygame.Rect(
-        #         (position.left - icon_sprite_gap,
-        #         position.top),
-        #         icon_size
-        #     )
-        # )
-
-        self.__player_health_bar = HealthBar(
-            self.get_ui_manager(),
-            self.__player_info_container,
-            pygame.Rect((100, 20), (225, 30)),
-            self.__player.get_statistics()["health_points"],
-            self.__player.get_statistics()["health_points"],
+        self.__player_HUD = CombatHUD(
+            self.get_ui_manager(), self.__player, self.__player_info_container
         )
 
-        icon_sprite = pygame.transform.scale(
-            pygame.image.load("assets/statistics/health_points.webp"), (48, 48)
-        )
-        UIImage(
-            pygame.Rect((50, 40), (48, 48)),
-            image_surface=icon_sprite,
-            manager=self.get_ui_manager(),
-            container=self.__player_info_container,
-        )
-
-        self.__player_HUD_text: dict[str, UITextBox] = {}
-        HUD_init_text_y = 30
-        HUD_text_x = 100
-        HUD_step = 30
-        for statistic_count, (statistic_name, statistic_value) in enumerate(
-            self.__player.get_statistics().items()
-        ):
-            if (
-                statistic_name in self.__CHARACTER_MAX_VAL.keys()
-                and statistic_name != "health_points"
-            ):
-                self.__player_HUD_text[statistic_name] = UITextBox(
-                    html_text=f'<img src="assets/icons_18/{statistic_name}.png"> '
-                    f"{" ".join(word.capitalize() for word in statistic_name.split("_"))}: {statistic_value}",
-                    relative_rect=pygame.Rect(
-                        (HUD_text_x, HUD_init_text_y + statistic_count * HUD_step),
-                        (-1, -1),
-                    ),
-                    manager=self.get_ui_manager(),
-                    object_id=ObjectID(object_id="#HUD-text"),
-                    container=self.__player_info_container,
-                )
-
-        enemy_info_rect = pygame.Rect((0, 0), (325, 200))
+        enemy_info_rect = pygame.Rect((0, 0), (325, 330))
         enemy_info_rect.right = 5
         self.__enemy_info_container = UIPanel(
             relative_rect=enemy_info_rect,
             anchors={"right": "right"},
             manager=self.get_ui_manager(),
-            object_id=ObjectID(object_id="#transparent_panel"),
+            object_id=ObjectID(object_id="#semi-transparent_panel"),
         )
 
-        enemy_health_bar_rect = pygame.Rect((0, 30), (225, 25))
-        enemy_health_bar_rect.right = 225
-        self.__enemy_health_bar = HealthBar(
+        self.__enemy_HUD = CombatHUD(
             self.get_ui_manager(),
+            self.__enemy,
             self.__enemy_info_container,
-            enemy_health_bar_rect,
-            self.__enemy.get_statistics()["health_points"],
-            self.__enemy.get_statistics()["health_points"],
-            flip=True,
+            is_flipped=True,
         )
 
         player_choice_container_width = self.get_screen().width - 650
@@ -196,7 +152,7 @@ class TurnBasedFight(BaseState):
             text="Normal Attack",
             relative_rect=pygame.Rect(
                 (ability_x_gap, init_ability_button_y),
-                (125, 100),
+                (130, 100),
             ),
             manager=self.get_ui_manager(),
             container=self.__player_choice_container,
@@ -234,6 +190,9 @@ class TurnBasedFight(BaseState):
 
         self.__player_controller = CombatController(self.__player, self.__player_sprite)
         self.__enemy_controller = CombatController(self.__enemy, self.__enemy_sprite)
+
+        self.__player_animation = self.__ANIMATION_ASSETS["player/idle"].copy()
+        self.__enemy_animation = self.__ANIMATION_ASSETS["enemy/idle"].copy()
 
     def handle_events(self, event: pygame.Event) -> None:
         if event.type == pygame_gui.UI_BUTTON_PRESSED:
@@ -310,20 +269,30 @@ class TurnBasedFight(BaseState):
                         self.__enemy_controller.face_damage(
                             physical_damage, magical_damage, debuff_dict
                         )
+                        self.__player_animation = self.__ANIMATION_ASSETS[
+                            "player/attack"
+                        ].copy()
+
                         print(self.__player.get_statistics())
                         print(self.__enemy.get_statistics())
                 elif (
                     self.__attacking and not self.__turn_end
                 ):  # Attacking, perform animation, update the health bars
-                    self.__turn_end = True
+                    if self.__player_animation.is_done():
+                        self.__turn_end = True
+
                 elif self.__turn_end:
 
+                    self.__player_animation = self.__ANIMATION_ASSETS[
+                        "player/idle"
+                    ].copy()
                     self.__ability_selected = -1  # Reset turn action flags
                     self.__attacking = False
+                    self.__turn_end = False
                     self.__round_counter += 1
 
-                # Regeneration
             else:
+
                 random_choice = random.randint(0, 4)
                 print("enemy round")
                 self.__round_counter += 1
@@ -346,8 +315,14 @@ class TurnBasedFight(BaseState):
         self.__mouse_pressed = False
 
     def render(self, time_delta):
-        self.__player_health_bar.update(self.__player.get_statistics()["health_points"])
-        self.__enemy_health_bar.update(self.__enemy.get_statistics()["health_points"])
+        self.__player_HUD.update()
+        self.__enemy_HUD.update()
+
+        self.__player_animation.update()
+        self.__enemy_animation.update()
+
+        self.__player_sprite.image = self.__player_animation.img()
+        self.__enemy_sprite.image = self.__enemy_animation.img()
 
         for ability in self.__player.get_unlocked_abilities():
             if self.__player_controller.is_ability_on_cooldown(ability):

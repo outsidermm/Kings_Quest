@@ -5,10 +5,8 @@ from pygame_gui.elements import UIButton, UIImage, UITextBox, UIStatusBar, UIPan
 from pygame_gui.core import ObjectID
 from state_manager import GameStateManager
 from characters.base_character import BaseCharacter
-from .turn_based_fight_state import TurnBasedFight
 from xp import XP
 from typing import Any
-from characters.berserker import Berserker
 
 
 # TODO Need to show highlights made
@@ -63,16 +61,16 @@ class CharacterSelectionMenu(BaseState):
 
     # Define maximum values for the bars for normalization
     __CHARACTER_MAX_VAL: dict[str, int] = {
-        "health_points": 1150,  # Berserker's 1000 + 150 upgrade
-        "physical_defense": 200,  # Warrior
-        "magical_defense": 100,  # Mage
-        "spell_power": 135,  # Mage's 120 + 15 upgrade
+        "health_points": 1350,  # Berserker's max health points
+        "physical_defense": 250,  # Warrior's max physical defense
+        "magical_defense": 150,  # Mage's max magical defense
+        "spell_power": 145,  # Mage's 130 + 15 upgrade
         "physical_power": 200,  # Warrior's 90 + 90 upgrade
-        "health_regeneration": 15,  # Berserker
-        "mana_regeneration": 5,  # Mage
-        "mana_points": 250,  # Mage's 200 + 50 upgrade
-        "physical_damage": 110,  # Berserker
-        "magical_damage": 30,  # Mage
+        "health_regeneration": 20,  # Warrior's max health regeneration
+        "mana_regeneration": 10,  # Mage's max mana regeneration
+        "mana_points": 300,  # Mage's 250 + 50 upgrade
+        "physical_damage": 110,  # Berserker's max physical damage
+        "magical_damage": 60,  # Mage's max magical damage
     }
 
     __UNLOCK_ABILITY_COST: int = 600
@@ -221,7 +219,7 @@ class CharacterSelectionMenu(BaseState):
         ):
             self.__statistic_text[statistic_count] = UITextBox(
                 html_text=f'<img src="assets/icons_48/{statistic}.png"> '
-                    f"{" ".join(word.capitalize() for word in statistic.split("_"))}",
+                f"{" ".join(word.capitalize() for word in statistic.split("_"))}",
                 relative_rect=pygame.Rect(
                     (init_text_x, init_y + statistic_count * gap_per_statistics),
                     (300, -1),
