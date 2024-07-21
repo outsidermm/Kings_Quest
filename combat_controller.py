@@ -14,6 +14,7 @@ class CombatController:
     __ability_histories: list[Ability] = []
     __cooldown_abilities: dict[str, int] = {}
     __player_sprite: UIImage = None
+    __is_stunned: bool = False
 
     __DEBUFF_STATISTIC_MAPPER = {
         "physical_defense_reduction": "physical_defense",
@@ -49,22 +50,23 @@ class CombatController:
         return ability.get_name() in self.__cooldown_abilities.keys()
 
     def is_stunned(self) -> bool:
-        return "stun" in self.__debuff_dict.keys() and self.__debuff_dict["stun"] > 0
+        return self.__is_stunned
+
+    def stunned_round(self) -> None:
+        for buff_name, (
+            buff_value,
+            buff_duration,
+        ) in self.__buff_dict.copy().items():
+            if buff_duration > 1:
+                self.__buff_dict[buff_name][1] -= 1
+            else:
+                del self.__buff_dict[buff_name]
+        self.__is_stunned = False
 
     def attack(
         self, hit_height: float, ability: Ability = None
     ) -> Tuple[int, int, dict[str, Tuple[int, int]]]:
         debuff_dict: dict[str, Tuple[int, int]] = {}
-        if "stun" in self.__debuff_dict.keys() and self.__debuff_dict["stun"] > 0:
-            for buff_name, (
-                buff_value,
-                buff_duration,
-            ) in self.__buff_dict.copy().items():
-                if buff_duration > 1:
-                    self.__buff_dict[buff_name][1] -= 1
-                else:
-                    del self.__buff_dict[buff_name]
-            return (0, 0, self.__debuff_dict)
 
         # Decrease cooldown of abilities
         for (
@@ -92,7 +94,6 @@ class CombatController:
                 elif modifer in self.__NEGATIVE_PLAYER_STATISTIC_MODIFERS:
                     debuff_dict[modifer] = (value, ability.get_duration())
                 elif modifer in self.__POSITIVE_PLAYER_STATISTIC_MODIFERS:
-
                     # The new ability will modifer the player statistic
                     if modifer in self.__player_statistic.keys():
                         self.__player_statistic[modifer] += value
@@ -143,7 +144,10 @@ class CombatController:
 
         # Add debuff to the player's original debuff statistic
         for debuff_name, (debuff_value, debuff_duration) in debuff_dict.items():
-            self.__debuff_dict[debuff_name] = (debuff_value, debuff_duration)
+            if debuff_name == "stun":
+                self.__is_stunned = True
+            else:
+                self.__debuff_dict[debuff_name] = (debuff_value, debuff_duration)
 
         # Decrease debuff modifer duration
         for debuff_name, (

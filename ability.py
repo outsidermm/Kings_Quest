@@ -198,7 +198,7 @@ PLAYER_ABILITY_LIST: dict[str, Ability] = {
     "Reckless Charge": Ability(
         "Reckless Charge",
         "Charges at the enemy, dealing 20 physical damage and stunning them for 1 turn. Cooldown: 2 turns",
-        {"stun": True, "physical_damage": 20, "cooldown": 2},
+        {"stun": 1, "physical_damage": 20, "cooldown": 2},
         [("mana_points", 20)],
         1,  # Duration
         "assets/abilities/Reckless Charge.webp",
@@ -218,7 +218,7 @@ ENEMY_ABILITY_LIST: dict[str, Ability] = {
     "Flame Breath": Ability(
         "Flame Breath",
         "Deals 300 magical damage to all enemies. Cooldown: 4 turns",
-        {"magical_damage": 300, "cooldown": 4},
+        {"magical_damage": 60, "cooldown": 4},
         [],
         1,  # Duration
         "assets/abilities/Flame Breath.webp",
@@ -226,7 +226,7 @@ ENEMY_ABILITY_LIST: dict[str, Ability] = {
     "Tail Swipe": Ability(
         "Tail Swipe",
         "Deals 250 physical damage to a single target and stuns them for 1 turn. Cooldown: 3 turns",
-        {"physical_damage": 250, "cooldown": 3, "stun": True},
+        {"physical_damage": 100, "cooldown": 3, "stun": 1},
         [],
         1,  # Duration
         "assets/abilities/Tail Swipe.webp",
