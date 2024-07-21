@@ -6,9 +6,9 @@ from pygame_gui.core import ObjectID
 from state_manager import GameStateManager
 from characters.base_character import BaseCharacter
 from xp import XP
-from typing import Tuple
+from gui.combat_hud import CombatHUD
 from combat_controller import CombatController
-from health_bar import HealthBar
+from gui.health_bar import HealthBar
 import random
 from ability import Ability
 
@@ -89,85 +89,23 @@ class TurnBasedFight(BaseState):
             manager=self.get_ui_manager(),
         )
         self.__player_info_container = UIPanel(
-            relative_rect=pygame.Rect((-5, 0), (325, 315)),
+            relative_rect=pygame.Rect((-5, 0), (325, 330)),
             manager=self.get_ui_manager(),
             object_id=ObjectID(object_id="#semi-transparent_panel"),
         )
-
-        # icon_rect = (
-        #     pygame.Rect(
-        #         (position.right + icon_sprite_gap-icon_size[0],
-        #         position.top),
-        #         icon_size
-        #     )
-        #     if self.__flip
-        #     else pygame.Rect(
-        #         (position.left - icon_sprite_gap,
-        #         position.top),
-        #         icon_size
-        #     )
-        # )
-
-        self.__player_health_bar = HealthBar(
-            self.get_ui_manager(),
-            self.__player_info_container,
-            pygame.Rect((100, 20), (225, 30)),
-            self.__player.get_statistics()["health_points"],
-            self.__player.get_statistics()["health_points"],
-        )
-
-        icon_sprite = pygame.transform.scale(
-            pygame.image.load("assets/statistics/health_points.webp"), (48, 48)
-        )
-        UIImage(
-            pygame.Rect((50, 40), (48, 48)),
-            image_surface=icon_sprite,
-            manager=self.get_ui_manager(),
-            container=self.__player_info_container,
-        )
-
-        self.__player_HUD_text: dict[str, UITextBox] = {}
-        HUD_init_text_y = 30
-        HUD_text_x = 100
-        HUD_step = 30
-        for statistic_count, (statistic_name, statistic_value) in enumerate(
-            self.__player.get_statistics().items()
-        ):
-            if (
-                statistic_name in self.__CHARACTER_MAX_VAL.keys()
-                and statistic_name != "health_points"
-            ):
-                self.__player_HUD_text[statistic_name] = UITextBox(
-                    html_text=f'<img src="assets/icons_18/{statistic_name}.png"> '
-                    f"{" ".join(word.capitalize() for word in statistic_name.split("_"))}: {statistic_value}",
-                    relative_rect=pygame.Rect(
-                        (HUD_text_x, HUD_init_text_y + statistic_count * HUD_step),
-                        (-1, -1),
-                    ),
-                    manager=self.get_ui_manager(),
-                    object_id=ObjectID(object_id="#HUD-text"),
-                    container=self.__player_info_container,
-                )
-
-        enemy_info_rect = pygame.Rect((0, 0), (325, 200))
+        
+        self.__player_HUD = CombatHUD(self.get_ui_manager(), self.__player, self.__player_info_container)
+        
+        enemy_info_rect = pygame.Rect((0, 0), (325, 330))
         enemy_info_rect.right = 5
         self.__enemy_info_container = UIPanel(
             relative_rect=enemy_info_rect,
             anchors={"right": "right"},
             manager=self.get_ui_manager(),
-            object_id=ObjectID(object_id="#transparent_panel"),
+            object_id=ObjectID(object_id="#semi-transparent_panel"),
         )
 
-        enemy_health_bar_rect = pygame.Rect((0, 30), (225, 25))
-        enemy_health_bar_rect.right = 225
-        self.__enemy_health_bar = HealthBar(
-            self.get_ui_manager(),
-            self.__enemy_info_container,
-            enemy_health_bar_rect,
-            self.__enemy.get_statistics()["health_points"],
-            self.__enemy.get_statistics()["health_points"],
-            flip=True,
-        )
+        self.__enemy_HUD = CombatHUD(self.get_ui_manager(), self.__enemy, self.__enemy_info_container, is_flipped=True)
 
         player_choice_container_width = self.get_screen().width - 650
         self.__player_choice_container = UIPanel(
@@ -196,7 +134,7 @@ class TurnBasedFight(BaseState):
             text="Normal Attack",
             relative_rect=pygame.Rect(
                 (ability_x_gap, init_ability_button_y),
-                (125, 100),
+                (130, 100),
             ),
             manager=self.get_ui_manager(),
             container=self.__player_choice_container,
@@ -346,8 +284,8 @@ class TurnBasedFight(BaseState):
         self.__mouse_pressed = False
 
     def render(self, time_delta):
-        self.__player_health_bar.update(self.__player.get_statistics()["health_points"])
-        self.__enemy_health_bar.update(self.__enemy.get_statistics()["health_points"])
+        self.__player_HUD.update()
+        self.__enemy_HUD.update()
 
         for ability in self.__player.get_unlocked_abilities():
             if self.__player_controller.is_ability_on_cooldown(ability):

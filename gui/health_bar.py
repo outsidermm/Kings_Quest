@@ -13,7 +13,7 @@ class HealthBar:
     __position: pygame.Rect = None
     __ui_manager: pygame_gui.UIManager = None
     __container = None
-    __flip: bool = False
+    __is_flipped: bool = False
 
     def __init__(
         self,
@@ -23,7 +23,7 @@ class HealthBar:
         init_value: int,
         max_value: int,
         delta_animation_speed: float = 2,
-        flip: bool = False,
+        is_flipped: bool = False,
     ) -> None:
         self.__target_value: int = init_value
         self.__current_value: int = init_value
@@ -33,7 +33,7 @@ class HealthBar:
         self.__position = position
         self.__ui_manager = ui_manager
         self.__container = container
-        self.__flip = flip
+        self.__is_flipped = is_flipped
 
         init_current_value_rect, init_transition_value_rect = (
             self.compute_health_bar_rect_size(self.__target_value, self.__current_value)
@@ -45,7 +45,6 @@ class HealthBar:
             manager=self.__ui_manager,
             object_id=ObjectID(object_id="#full-bar"),
         )
-
         self.__current_value_bar = UIPanel(
             relative_rect=init_current_value_rect,
             container=self.__container,
@@ -93,7 +92,7 @@ class HealthBar:
         self.__transition_bar.set_dimensions(
             (transition_value_rect.width, transition_value_rect.height)
         )
-        if self.__flip:
+        if self.__is_flipped:
             self.__current_value_bar.set_relative_position(
                 (
                     self.__position.left
