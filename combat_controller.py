@@ -2,8 +2,8 @@ from characters.base_character import BaseCharacter
 from ability import Ability
 from typing import Tuple
 import random
+from utilities import min_max_bound
 from pygame_gui.elements import UIImage
-import copy
 
 
 class CombatController:
@@ -116,21 +116,27 @@ class CombatController:
             "physical_damage" in self.__player_statistic.keys()
             and "physical_power" in self.__player_statistic.keys()
         ):
-            physical_dmg = int(
-                self.__player_statistic["physical_damage"]
-                * self.__player_statistic["physical_power"]
-                / 50
-                + critical_dmg_addition
+            physical_dmg = max(
+                0,
+                int(
+                    self.__player_statistic["physical_damage"]
+                    * self.__player_statistic["physical_power"]
+                    / 50
+                    + critical_dmg_addition
+                ),
             )
         if (
             "magical_damage" in self.__player_statistic.keys()
             and "spell_power" in self.__player_statistic.keys()
         ):
-            magical_dmg = int(
-                self.__player_statistic["magical_damage"]
-                * self.__player_statistic["spell_power"]
-                / 50
-                + critical_dmg_addition
+            magical_dmg = max(
+                0,
+                int(
+                    self.__player_statistic["magical_damage"]
+                    * self.__player_statistic["spell_power"]
+                    / 50
+                    + critical_dmg_addition
+                ),
             )
         return (physical_dmg, magical_dmg, debuff_dict)
 
@@ -192,33 +198,35 @@ class CombatController:
 
         physical_dmg *= 1 - self.__player_statistic["physical_defense"] / 400
         magical_damage *= 1 - self.__player_statistic["magical_defense"] / 400
+        physical_dmg = max(0, physical_dmg)
+        magical_damage = max(0, magical_damage)
         total_dmg = physical_dmg + magical_damage
         if "absorption" in self.__player_statistic.keys():
-            total_dmg -= debuff_dict["absorption"][0]
-        self.__player_statistic["health_points"] -= int(total_dmg)
+            total_dmg = max(0, total_dmg - debuff_dict["absorption"][0])
         self.__player_statistic["health_points"] = max(
-            0, self.__player_statistic["health_points"]
+            0, self.__player_statistic["health_points"] - int(total_dmg)
         )
 
     def regenerate(self) -> None:
-        if (
-            "health_regeneration" in self.__player_statistic.keys()
-            and self.__player_statistic["health_points"]
-            + self.__player_statistic["health_regeneration"]
-            <= self.__player_statistic_cap["health_points"]
-        ):
-            self.__player_statistic["health_points"] += self.__player_statistic[
-                "health_regeneration"
-            ]
+        if "health_regeneration" in self.__player_statistic.keys():
+            self.__player_statistic["health_points"] = min_max_bound(
+                0,
+                self.__player_statistic_cap["health_points"],
+                self.__player_statistic["health_points"]
+                + self.__player_statistic["health_regeneration"],
+            )
         if (
             "mana_regeneration" in self.__player_statistic.keys()
             and self.__player_statistic["mana_points"]
             + self.__player_statistic["mana_regeneration"]
             <= self.__player_statistic_cap["mana_points"]
         ):
-            self.__player_statistic["mana_points"] += self.__player_statistic[
-                "mana_regeneration"
-            ]
+            self.__player_statistic["mana_points"] = min_max_bound(
+                0,
+                self.__player_statistic_cap["mana_points"],
+                self.__player_statistic["mana_points"]
+                + self.__player_statistic["mana_regeneration"],
+            )
 
     def get_cooldown_abilities(self) -> dict[str, int]:
         return self.__cooldown_abilities

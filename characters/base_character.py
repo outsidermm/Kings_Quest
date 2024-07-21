@@ -1,7 +1,7 @@
 from ability import Ability
 
 
-class BaseCharacter():
+class BaseCharacter:
 
     __name: str = ""
     __statistics: dict[str, int] = {}
@@ -43,4 +43,3 @@ class BaseCharacter():
 
     def set_abilities(self, abilities: list[Ability]) -> None:
         self.__abilities = abilities
-

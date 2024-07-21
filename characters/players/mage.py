@@ -4,15 +4,15 @@ from ability import PLAYER_ABILITY_LIST, Ability
 
 class Mage(BasePlayer):
     __statistics: dict[str, int] = {
-    "health_points": 850,
-    "physical_defense": 70,
-    "magical_defense": 160,
-    "spell_power": 140,
-    "physical_power": 20,
-    "mana_regeneration": 15,
-    "mana_points": 300,
-    "magical_damage": 70,
-}
+        "health_points": 850,
+        "physical_defense": 70,
+        "magical_defense": 160,
+        "spell_power": 140,
+        "physical_power": 20,
+        "mana_regeneration": 15,
+        "mana_points": 300,
+        "magical_damage": 70,
+    }
 
     __unlocked_abilities: list[Ability] = [
         PLAYER_ABILITY_LIST["Fireball"],
