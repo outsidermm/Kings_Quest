@@ -176,7 +176,7 @@ class CharacterSelectionMenu(BaseState):
             manager=self.get_ui_manager(),
             anchors=({"left": "left"}),
             container=self.__character_info_panel,
-            object_id=ObjectID(class_id="@sub_title", object_id="#character_name"),
+            object_id=ObjectID(class_id="@sub_title", object_id="#character_info"),
         )
 
         ability_rec = pygame.Rect((0, 0), (475, 60))
@@ -227,7 +227,7 @@ class CharacterSelectionMenu(BaseState):
                 ),
                 manager=self.get_ui_manager(),
                 container=self.__character_info_panel,
-                object_id=ObjectID(class_id="@statistic_text"),
+                object_id=ObjectID(object_id="#character_info"),
             )
 
             bar_location = pygame.Rect(

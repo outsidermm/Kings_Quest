@@ -14,7 +14,7 @@
 		"font": {
 			"name": "futura",
 			"size": "20",
-			"bold": "0",
+			"bold": "1",
 			"italic": "0",
 			"regular_resource": {
 				"package": "assets.fonts",
@@ -40,7 +40,13 @@
 		"misc": {
 			"text_vert_alignment": "center",
 			"border_width": "0",
-            "shadow_wdith": "0"
+			"shadow_wdith": "0"
+		}
+	},
+	"panel": {
+		"misc": {
+			"border_width": "0",
+			"shadow_width": "0"
 		}
 	},
 	"@sub_title": {
@@ -60,12 +66,10 @@
 		},
 		"misc": {
 			"text_horiz_alignment": "left",
-			"padding": "0",
-			"border_width": "0",
-			"shadow_width": "0"
+			"padding": "0"
 		}
 	},
-    "@title": {
+	"@title": {
 		"colours": {
 			"normal_text": "#46DFFD",
 			"normal_border": "Black",
@@ -83,31 +87,19 @@
 		},
 		"misc": {
 			"text_horiz_alignment": "center",
-			"padding": "0",
-			"border_width": "0",
-			"shadow_wdith": "0"
+			"padding": "0"
 		}
 	},
-	"#transparent_panel":
-	{
+	"#transparent_panel": {
 		"colours": {
-			"dark_bg":"#00000000",
+			"dark_bg": "#00000000",
 			"normal_border": "#00000000"
-		},
-		"misc": {
-			"border_width": "0",
-			"shadow_width": "0"
 		}
 	},
-	"#semi-transparent_panel":
-	{
+	"#semi-transparent_panel": {
 		"colours": {
-			"dark_bg":"rgba(0, 0, 0, 100)",
-			"normal_border":"rgba(0, 0, 0, 100)"
-		},
-		"misc": {
-			"border_width": "0",
-			"shadow_width": "0"
+			"dark_bg": "rgba(0, 0, 0, 100)",
+			"normal_border": "rgba(0, 0, 0, 100)"
 		}
 	}
 }
