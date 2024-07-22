@@ -3,7 +3,6 @@ import pygame, pygame_gui
 from pygame_gui.elements import UIButton, UIImage, UITextBox, UIPanel
 from pygame_gui.core import ObjectID
 from state_manager import GameStateManager
-from characters.base_character import BaseCharacter
 from characters.players.base_player import BasePlayer
 from characters.enemies.base_enemy import BaseEnemy
 from xp import XP
@@ -54,7 +53,6 @@ class TurnBasedFight(BaseState):
             game_state_manager,
         )
         self.__xp = XP()
-
 
     def start(self) -> None:
         self.__player = self.get_incoming_transition_data()["player"]
@@ -387,6 +385,8 @@ class TurnBasedFight(BaseState):
             pygame.Surface((self.get_screen().width, self.get_screen().height)), (0, 0)
         )
         self.get_ui_manager().draw_ui(self.get_screen())
+        if self.__is_enemy_attacking and not self.__enemy_animation.is_done():
+            self.tint_damage(self.get_screen(), 0.2)
         pygame.display.update()
 
     def end(self) -> None:
@@ -398,6 +398,10 @@ class TurnBasedFight(BaseState):
         self.__tutorial_text.kill()
         self.__visual_dialogue.kill()
         self.get_screen().fill((0, 0, 0))
+
+    def tint_damage(self, surface: pygame.Surface, scale: float) -> None:
+        GB = min(255, max(0, round(255 * (1 - scale))))
+        surface.fill((255, GB, GB), special_flags=pygame.BLEND_MULT)
 
     def get_screen(self) -> pygame.Surface:
         return super().get_screen()
