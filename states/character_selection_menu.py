@@ -1,4 +1,4 @@
-from .base_state import BaseState
+from states.base_state import BaseState
 import pygame, pygame_gui
 from pygame_gui.elements import UIButton, UIImage, UITextBox, UIPanel
 from pygame_gui.core import ObjectID
@@ -69,7 +69,7 @@ class CharacterSelectionMenu(BaseState):
             "character_selection_menu",
             screen,
             ui_manager,
-            "turn_based_fight",
+            "level_selection_menu",
             game_state_manager,
         )
         self.__characters = characters
@@ -471,7 +471,7 @@ class CharacterSelectionMenu(BaseState):
                     statistic_name,
                     max_statistic_value,
                 )
-            
+
             self.__character_name.set_text(
                 self.__characater_name_list[self.__selection_page]
             )

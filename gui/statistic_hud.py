@@ -39,7 +39,7 @@ class StatisticHUD:
     ) -> None:
         self.__statistics = statistics
         self.__max_statistic_value = max_statistic_value
-        
+
         init_text_x = 50
         init_bar_x = 300
         init_y = 108

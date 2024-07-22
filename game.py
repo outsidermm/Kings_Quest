@@ -4,6 +4,7 @@ from state_manager import GameStateManager
 from states.start_menu import StartMenu
 from states.turn_based_fight_state import TurnBasedFight
 from states.character_selection_menu import CharacterSelectionMenu
+from states.level_selection_menu import LevelSelectionMenu
 from characters.players.mage import Mage
 from characters.players.ranger import Ranger
 from characters.players.warrior import Warrior
@@ -76,6 +77,22 @@ class Game:
             )
         )
 
+        self.level_selection_menu = LevelSelectionMenu(
+            self.get_screen(),
+            self.get_ui_manager(),
+            self.get_game_state_manager(),
+            [
+                DreadNought(
+                    "DreadNought", "assets/characters/dreadnought/idle/0000.png"
+                ),
+                DreadNought(
+                    "DreadNought", "assets/characters/dreadnought/idle/0000.png"
+                ),
+                DreadNought(
+                    "DreadNought", "assets/characters/dreadnought/idle/0000.png"
+                ),
+            ],
+        )
         self.__turn_based_fight_state = TurnBasedFight(
             self.get_screen(),
             self.get_ui_manager(),
