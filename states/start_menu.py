@@ -99,13 +99,13 @@ class StartMenu(BaseState):
         elif self.get_quit_button_pressed():
             self.set_time_to_quit_app(True)
 
-    def render(self,time_delta :int) -> None:
+    def render(self, time_delta: int) -> None:
         self.get_ui_manager().update(time_delta)
-           
+
         self.get_screen().blit(self.__GUIBackground, (0, 0))
         self.get_ui_manager().draw_ui(self.get_screen())
         pygame.display.update()
-        
+
     def reset_event_polling(self) -> None:
         self.set_play_button_pressed(False)
         self.set_setting_button_pressed(False)

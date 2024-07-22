@@ -32,8 +32,8 @@ class TurnBasedFight(BaseState):
     __enemy_hit_height: float = 0
     __player_animation: Animation = None
     __enemy_animation: Animation = None
-    __is_enemy_attacking:bool = False
-    __quit_button_pressed:bool = False
+    __is_enemy_attacking: bool = False
+    __quit_button_pressed: bool = False
 
     __xp: XP = None
     __ANIMATION_ASSETS: dict[str, Animation] = {}
@@ -46,7 +46,13 @@ class TurnBasedFight(BaseState):
         enemy: BaseCharacter,
         xp: XP = None,
     ):
-        super().__init__("turn_based_fight",screen, ui_manager, "level_selection_menu",game_state_manager)
+        super().__init__(
+            "turn_based_fight",
+            screen,
+            ui_manager,
+            "level_selection_menu",
+            game_state_manager,
+        )
         self.__xp = XP()
         self.__enemy = enemy
 
@@ -73,7 +79,7 @@ class TurnBasedFight(BaseState):
             image_duration=6,
             loop=False,
         )
-        
+
         self.__background_image = UIImage(
             relative_rect=pygame.Rect(
                 (0, 0), (self.get_screen().get_width(), self.get_screen().get_height())
@@ -148,7 +154,6 @@ class TurnBasedFight(BaseState):
             player_choice_container_width - (unlocked_abilities_number + 1) * 130
         ) / (unlocked_abilities_number + 2)
         init_ability_button_y = 25
-        
 
         normal_attack_tool_tip = f"Deal {self.__player.get_statistics()['physical_damage'] if "physical_damage" in self.__player.get_statistics().keys() else 0} physical damage and {self.__player.get_statistics()['magical_damage'] if "magical_damage" in self.__player.get_statistics().keys() else 0} magical damage to the enemy"
         self.__ability_button_list[0] = UIButton(
@@ -168,7 +173,7 @@ class TurnBasedFight(BaseState):
                 text=ability.get_name(),
                 relative_rect=pygame.Rect(
                     (
-                        (ability_count+1)*130 + (ability_count+2) * ability_x_gap,
+                        (ability_count + 1) * 130 + (ability_count + 2) * ability_x_gap,
                         init_ability_button_y,
                     ),
                     (130, 100),
@@ -200,7 +205,7 @@ class TurnBasedFight(BaseState):
     def handle_events(self) -> None:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                self.__quit_button_pressed =True
+                self.__quit_button_pressed = True
             self.get_ui_manager().process_events(event)
             if event.type == pygame_gui.UI_BUTTON_PRESSED:
                 if event.ui_element == self.__ability_button_list[0]:
@@ -231,7 +236,7 @@ class TurnBasedFight(BaseState):
         if self.__quit_button_pressed:
             self.set_time_to_quit_app(True)
             return
-        
+
         self.__combat_round_initalised = True
         if not self.__combat_round_initalised:
             pass  # Initialize the combat round - 3,2,1 GO
@@ -352,7 +357,7 @@ class TurnBasedFight(BaseState):
         self.__mouse_pressed = False
         self.__quit_button_pressed = False
 
-    def render(self, time_delta:int):
+    def render(self, time_delta: int):
         self.__player_HUD.update()
         self.__enemy_HUD.update()
 
@@ -382,7 +387,7 @@ class TurnBasedFight(BaseState):
         self.get_ui_manager().draw_ui(self.get_screen())
         pygame.display.update()
 
-    def end(self)-> None:
+    def end(self) -> None:
         self.__player_sprite.kill()
         self.__enemy_sprite.kill()
         self.__player_info_container.kill()

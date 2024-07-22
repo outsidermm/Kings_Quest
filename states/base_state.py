@@ -6,7 +6,7 @@ import pygame_gui
 
 class BaseState(abc.ABC):
     __screen = None
-    __game_state_manager :GameStateManager= None
+    __game_state_manager: GameStateManager = None
     __ui_manager = None
     __target_state_name: str = None
     __state_name: str = None
@@ -49,7 +49,7 @@ class BaseState(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def render(self,time_delta:int) -> None:
+    def render(self, time_delta: int) -> None:
         pass
 
     @abc.abstractmethod

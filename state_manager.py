@@ -1,5 +1,4 @@
 import copy
-import pygame
 
 
 class GameStateManager:
@@ -14,12 +13,12 @@ class GameStateManager:
         if new_state.get_state_name() not in self.__states:
             self.__states[new_state.get_state_name()] = new_state
 
-    def run(self, time_delta:int) -> None:
+    def run(self, time_delta: int) -> None:
         if self.__active_state is not None:
             self.__active_state.handle_events()
             self.__active_state.run()
-            self.__active_state.reset_event_polling()
             self.__active_state.render(time_delta)
+            self.__active_state.reset_event_polling()
 
             if self.__active_state.get_time_to_transition():
                 self.__active_state.set_time_to_transition(False)

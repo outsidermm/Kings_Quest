@@ -22,8 +22,7 @@ class Game:
 
     __start_menu = None
     __character_selection_menu = None
-    __running :bool = True
-    
+    __running: bool = True
 
     def __init__(self) -> None:
         pygame.init()
@@ -89,9 +88,7 @@ class Game:
     def run(self) -> None:
         while self.__running:
             time_delta = self.get_clock().tick_busy_loop(self.__FPS)
-            self.__running = self.get_game_state_manager().run(
-                time_delta
-            )
+            self.__running = self.get_game_state_manager().run(time_delta)
 
         pygame.quit()
         quit()
