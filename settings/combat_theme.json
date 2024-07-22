@@ -11,15 +11,6 @@
       "hovered_border": "#1C1C1C",
       "active_border": "#1C1C1C"
     },
-    "font": {
-      "name": "futura",
-      "size": "20",
-      "bold": "1",
-      "regular_resource": {
-        "package": "assets.fonts",
-        "resource": "Regular.ttf"
-      }
-    },
     "misc": {
       "border_width": "2",
       "shape": "rounded_rectangle",
@@ -37,15 +28,6 @@
       "normal_border": "#1C1C1C",
       "hovered_border": "#2C3E50",
       "active_border": "#2C3E50"
-    },
-    "font": {
-      "name": "futura",
-      "size": "20",
-      "bold": "1",
-      "regular_resource": {
-        "package": "assets.fonts",
-        "resource": "Regular.ttf"
-      }
     },
     "misc": {
       "border_width": "2",
@@ -65,15 +47,6 @@
       "hovered_border": "#16A085",
       "active_border": "#16A085"
     },
-    "font": {
-      "name": "futura",
-      "size": "20",
-      "bold": "1",
-      "regular_resource": {
-        "package": "assets.fonts",
-        "resource": "Regular.ttf"
-      }
-    },
     "misc": {
       "border_width": "2",
       "shape": "rounded_rectangle",
@@ -91,15 +64,6 @@
       "normal_border": "#1C1C1C",
       "hovered_border": "#8E44AD",
       "active_border": "#8E44AD"
-    },
-    "font": {
-      "name": "futura",
-      "size": "20",
-      "bold": "1",
-      "regular_resource": {
-        "package": "assets.fonts",
-        "resource": "Regular.ttf"
-      }
     },
     "misc": {
       "border_width": "2",
@@ -221,18 +185,11 @@
     },
     "font": {
       "name": "futura",
-      "size": "15",
-      "bold": "0",
-      "regular_resource": {
-        "package": "assets.fonts",
-        "resource": "Regular.ttf"
-      }
+      "size": "15"
     },
     "misc": {
       "shape": "rounded_rectangle",
-      "shape_corner_radius": "5",
-      "border_width": "0",
-      "shadow_width": "0"
+      "shape_corner_radius": "5"
     }
   },
   "#tutorial_text": {
@@ -242,18 +199,11 @@
     },
     "font": {
       "name": "futura",
-      "size": "15",
-      "bold": "0",
-      "regular_resource": {
-        "package": "assets.fonts",
-        "resource": "Regular.ttf"
-      }
+      "size": "15"
     },
     "misc": {
       "shape": "rounded_rectangle",
       "shape_corner_radius": "5",
-      "border_width": "0",
-      "shadow_width": "0",
       "text_horiz_alignment": "center"
     }
   },
@@ -265,15 +215,7 @@
     "font": {
       "name": "futura",
       "size": "15",
-      "bold": "1",
-      "regular_resource": {
-        "package": "assets.fonts",
-        "resource": "Regular.ttf"
-      }
-    },
-    "misc": {
-      "border_width": "0",
-      "shadow_width": "0"
+      "bold": "1"
     }
   },
   "#icon": {

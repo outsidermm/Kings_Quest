@@ -1,5 +1,5 @@
 import pygame
-from pygame_gui.elements import UITextBox, UIImage
+from pygame_gui.elements import UITextBox, UIImage, UIPanel
 from pygame_gui.core import ObjectID
 import pygame_gui
 from characters.base_character import BaseCharacter
@@ -31,7 +31,7 @@ class CombatHUD:
         self,
         ui_manager: pygame_gui.UIManager,
         player: BaseCharacter,
-        container,
+        container: UIPanel,
         is_flipped: bool = False,
         HUD_init_text_y: int = 20,
         HUD_text_x: int = 75,
