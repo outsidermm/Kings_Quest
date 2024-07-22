@@ -145,9 +145,10 @@ class TurnBasedFight(BaseState):
 
         unlocked_abilities_number = len(self.__player.get_unlocked_abilities())
         ability_x_gap = (
-            player_choice_container_width - (unlocked_abilities_number + 1) * 125
+            player_choice_container_width - (unlocked_abilities_number + 1) * 130
         ) / (unlocked_abilities_number + 2)
         init_ability_button_y = 25
+        
 
         normal_attack_tool_tip = f"Deal {self.__player.get_statistics()['physical_damage'] if "physical_damage" in self.__player.get_statistics().keys() else 0} physical damage and {self.__player.get_statistics()['magical_damage'] if "magical_damage" in self.__player.get_statistics().keys() else 0} magical damage to the enemy"
         self.__ability_button_list[0] = UIButton(
@@ -167,10 +168,10 @@ class TurnBasedFight(BaseState):
                 text=ability.get_name(),
                 relative_rect=pygame.Rect(
                     (
-                        ability_x_gap + (ability_count + 1) * 125 + ability_x_gap,
+                        (ability_count+1)*130 + (ability_count+2) * ability_x_gap,
                         init_ability_button_y,
                     ),
-                    (125, 100),
+                    (130, 100),
                 ),
                 manager=self.get_ui_manager(),
                 container=self.__player_choice_container,
