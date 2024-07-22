@@ -47,7 +47,6 @@ class LevelSelectionMenu(BaseState):
         ui_manager: pygame_gui.UIManager,
         game_state_manager: GameStateManager,
         enemies: list[BaseEnemy],
-        xp: XP = None,
     ):
         super().__init__(
             "level_selection_menu",
@@ -107,6 +106,7 @@ class LevelSelectionMenu(BaseState):
         enemy_button_gap = (
             self.get_screen().get_width() - enemy_button_width * len(self.__enemies)
         ) / (len(self.__enemies) + 1)
+
         for enemy_button_count, enemy in enumerate(self.__enemies):
             self.__enemy_buttons[enemy_button_count] = UIButton(
                 relative_rect=pygame.Rect(
@@ -246,9 +246,8 @@ class LevelSelectionMenu(BaseState):
             return
 
         if self.__navigate_quest:
-            self.set_target_state_name("quest")
-            print("1")
-            # self.set_time_to_transition(True)
+            self.set_target_state_name("quest_menu")
+            self.set_time_to_transition(True)
             return
 
         if self.__navigate_combat:

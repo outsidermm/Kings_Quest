@@ -5,7 +5,6 @@ from pygame_gui.core import ObjectID
 from state_manager import GameStateManager
 from characters.players.base_player import BasePlayer
 from characters.enemies.base_enemy import BaseEnemy
-from xp import XP
 from gui.combat_hud import CombatHUD
 from combat_controller import CombatController
 import random
@@ -14,6 +13,7 @@ from gui.combat_hud import CombatHUD
 from animator import Animation
 from utilities import load_images
 from visual_dialogue import VisualDialogue
+from quest import Quest
 
 
 class TurnBasedFight(BaseState):
@@ -37,16 +37,15 @@ class TurnBasedFight(BaseState):
     __quit_button_pressed: bool = False
     __visual_dialogue: VisualDialogue = None
     __visual_dialogue_container: UIPanel = None
-
-    __xp: XP = None
     __ANIMATION_ASSETS: dict[str, Animation] = {}
+    __quests: list[Quest] = None
 
     def __init__(
         self,
         screen: pygame.Surface,
         ui_manager: pygame_gui.UIManager,
         game_state_manager: GameStateManager,
-        xp: XP = None,
+        quests: list[Quest],
     ):
         super().__init__(
             "turn_based_fight",
@@ -55,7 +54,7 @@ class TurnBasedFight(BaseState):
             "level_selection_menu",
             game_state_manager,
         )
-        self.__xp = XP()
+        self.__quests = quests
 
     def start(self) -> None:
         self.__player = self.get_incoming_transition_data()["player"]
@@ -258,7 +257,15 @@ class TurnBasedFight(BaseState):
                     self.__tutorial_text.set_text("You are stunned and cannot act!")
                     self.__player_controller.stunned_round()
                     pygame.time.wait(250)
-                    self.__visual_dialogue.set_dialogue(self.__player.get_name(), self.__enemy.get_name(), self.__player.get_statistics()["health_points"], self.__player.get_statistics()["mana_points"], 0, True, None)
+                    self.__visual_dialogue.set_dialogue(
+                        self.__player.get_name(),
+                        self.__enemy.get_name(),
+                        self.__player.get_statistics()["health_points"],
+                        self.__player.get_statistics()["mana_points"],
+                        0,
+                        True,
+                        None,
+                    )
                     self.__round_counter += 1
                 else:
                     # When the user has not picked the ability to use and is not stunned
@@ -297,10 +304,20 @@ class TurnBasedFight(BaseState):
                             self.__player_animation = self.__ANIMATION_ASSETS[
                                 "player/attack"
                             ].copy()
-                            self.__visual_dialogue.set_dialogue(self.__player.get_name(), self.__enemy.get_name(), self.__player.get_statistics()["health_points"], self.__player.get_statistics()["mana_points"], (physical_damage+magical_damage), False, locked_ability_decision)
+                            self.__visual_dialogue.set_dialogue(
+                                self.__player.get_name(),
+                                self.__enemy.get_name(),
+                                self.__player.get_statistics()["health_points"],
+                                self.__player.get_statistics()["mana_points"],
+                                (physical_damage + magical_damage),
+                                False,
+                                locked_ability_decision,
+                            )
                     # Attacking, perform animation, update the health bars
                     elif (
-                        self.__is_player_attacking and self.__player_animation.is_done() and self.__visual_dialogue.is_done()
+                        self.__is_player_attacking
+                        and self.__player_animation.is_done()
+                        and self.__visual_dialogue.is_done()
                     ):
                         self.__player_animation = self.__ANIMATION_ASSETS[
                             "player/idle"
@@ -317,7 +334,15 @@ class TurnBasedFight(BaseState):
                     )
                     self.__enemy_controller.stunned_round()
                     self.__round_counter += 1
-                    self.__visual_dialogue.set_dialogue( self.__enemy.get_name(), self.__player.get_name(),self.__enemy.get_statistics()["health_points"], self.__enemy.get_statistics()["mana_points"], 0, True, None)
+                    self.__visual_dialogue.set_dialogue(
+                        self.__enemy.get_name(),
+                        self.__player.get_name(),
+                        self.__enemy.get_statistics()["health_points"],
+                        self.__enemy.get_statistics()["mana_points"],
+                        0,
+                        True,
+                        None,
+                    )
                 else:
                     if not self.__is_enemy_attacking:
                         random_ability_choice = random.randint(
@@ -345,9 +370,21 @@ class TurnBasedFight(BaseState):
                             "enemy/attack"
                         ].copy()
                         self.__is_enemy_attacking = True
-                        self.__visual_dialogue.set_dialogue(self.__enemy.get_name(), self.__player.get_name(), self.__enemy.get_statistics()["health_points"], self.__enemy.get_statistics()["mana_points"], (physical_damage+magical_damage), False, random_ability_choice)
+                        self.__visual_dialogue.set_dialogue(
+                            self.__enemy.get_name(),
+                            self.__player.get_name(),
+                            self.__enemy.get_statistics()["health_points"],
+                            self.__enemy.get_statistics()["mana_points"],
+                            (physical_damage + magical_damage),
+                            False,
+                            random_ability_choice,
+                        )
 
-                    elif self.__is_enemy_attacking and self.__enemy_animation.is_done() and self.__visual_dialogue.is_done():
+                    elif (
+                        self.__is_enemy_attacking
+                        and self.__enemy_animation.is_done()
+                        and self.__visual_dialogue.is_done()
+                    ):
                         self.__enemy_animation = self.__ANIMATION_ASSETS[
                             "enemy/idle"
                         ].copy()
@@ -363,8 +400,9 @@ class TurnBasedFight(BaseState):
         else:
             # Draw
             pass
-        
+
         self.__visual_dialogue.update()
+
     def reset_event_polling(self) -> None:
         self.__mouse_pressed = False
         self.__quit_button_pressed = False

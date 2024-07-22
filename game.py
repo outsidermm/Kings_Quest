@@ -5,12 +5,16 @@ from states.start_menu import StartMenu
 from states.turn_based_fight_state import TurnBasedFight
 from states.character_selection_menu import CharacterSelectionMenu
 from states.level_selection_menu import LevelSelectionMenu
+from states.quest_menu import QuestMenu
 from characters.players.mage import Mage
 from characters.players.ranger import Ranger
 from characters.players.warrior import Warrior
 from characters.players.berserker import Berserker
 from characters.enemies.dreadnought import DreadNought
 from characters.base_character import BaseCharacter
+from characters.enemies.base_enemy import BaseEnemy
+from xp import XP
+from quest import Quest
 
 
 class Game:
@@ -20,6 +24,7 @@ class Game:
     __clock = None
     __states = None
     __characters: list[BaseCharacter] = None
+    __enemies: list[BaseEnemy] = None
 
     __start_menu = None
     __character_selection_menu = None
@@ -64,7 +69,17 @@ class Game:
                 Ranger("Ranger", "assets/characters/ranger/idle/0.png"),
             ]
         )
+        self.__enemies = [
+            DreadNought("DreadNought", "assets/characters/dreadnought/idle/0000.png"),
+            DreadNought("DreadNought", "assets/characters/dreadnought/idle/0000.png"),
+            DreadNought("DreadNought", "assets/characters/dreadnought/idle/0000.png"),
+        ]
 
+        self.__xp = XP(10000)
+        self.__quests = [
+            Quest("Fireball", "Cast 10 Fireballs", 10, 10, 1000),
+            Quest("Kill", "Kill 5 DreadNoughts", 0, 5, 2000),
+        ]
         self.set_start_menu(
             StartMenu(
                 self.get_screen(), self.get_ui_manager(), self.get_game_state_manager()
@@ -77,30 +92,29 @@ class Game:
                 self.get_ui_manager(),
                 self.get_game_state_manager(),
                 self.get_characters(),
+                xp=self.__xp,
             )
         )
-
         self.level_selection_menu = LevelSelectionMenu(
             self.get_screen(),
             self.get_ui_manager(),
             self.get_game_state_manager(),
-            [
-                DreadNought(
-                    "DreadNought", "assets/characters/dreadnought/idle/0000.png"
-                ),
-                DreadNought(
-                    "DreadNought", "assets/characters/dreadnought/idle/0000.png"
-                ),
-                DreadNought(
-                    "DreadNought", "assets/characters/dreadnought/idle/0000.png"
-                ),
-            ],
+            self.__enemies,
         )
+
+        self.quest_menu = QuestMenu(
+            self.get_screen(),
+            self.get_ui_manager(),
+            self.get_game_state_manager(),
+            quests=self.__quests,
+            xp=self.__xp,
+        )
+
         self.__turn_based_fight_state = TurnBasedFight(
             self.get_screen(),
             self.get_ui_manager(),
             self.get_game_state_manager(),
-            DreadNought("DreadNought", "assets/characters/dreadnought/idle/0000.png"),
+            quests=self.__quests,
         )
 
         self.get_game_state_manager().set_initial_state("start_menu")
