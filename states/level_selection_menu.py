@@ -15,6 +15,7 @@ class LevelSelectionMenu(BaseState):
     __quit_button_pressed: bool = False
     __show_enemy_info: int = -1
     __enemy_buttons: list[UIButton] = None
+    __GUI_background: pygame.Surface = None
 
     def __init__(
         self,
@@ -33,10 +34,14 @@ class LevelSelectionMenu(BaseState):
         )
         self.__enemies = enemies
         self.__enemy_buttons = [None] * len(self.__enemies)
-        
 
     def start(self) -> None:
-        enemy_button_width = enemy_button_height= 200
+        self.__GUI_background = pygame.transform.scale(
+            pygame.image.load("assets/GUIBackground.png"),
+            (self.get_screen().width, self.get_screen().height),
+        )
+
+        enemy_button_width = enemy_button_height = 200
         enemy_button_gap = (
             self.get_screen().get_width() - enemy_button_width * len(self.__enemies)
         ) / (len(self.__enemies) + 1)
@@ -45,7 +50,8 @@ class LevelSelectionMenu(BaseState):
                 relative_rect=pygame.Rect(
                     (
                         enemy_button_gap * (enemy_button_count + 1)
-                        + enemy_button_width * enemy_button_count,0
+                        + enemy_button_width * enemy_button_count,
+                        0,
                     ),
                     (enemy_button_width, enemy_button_height),
                 ),
@@ -73,15 +79,13 @@ class LevelSelectionMenu(BaseState):
             self.set_time_to_transition(True)
             return
 
-        print( self.__show_enemy_info)
         if self.__show_enemy_info != -1:
             pass
 
     def render(self, time_delta: int) -> None:
         self.get_ui_manager().update(time_delta)
-        self.get_screen().blit(
-            pygame.Surface((self.get_screen().width, self.get_screen().height)), (0, 0)
-        )
+        self.get_screen().blit(self.__GUI_background, (0, 0))
+
         self.get_ui_manager().draw_ui(self.get_screen())
         pygame.display.update()
 
