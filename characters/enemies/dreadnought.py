@@ -2,6 +2,7 @@ from characters.enemies.base_enemy import BaseEnemy
 from ability import Ability, ENEMY_ABILITY_LIST
 import copy
 
+
 class DreadNought(BaseEnemy):
 
     __statistics: dict[str, int] = {
@@ -32,10 +33,7 @@ class DreadNought(BaseEnemy):
         )
 
     def copy(self) -> "DreadNought":
-        return DreadNought(
-            self.get_name(),
-            self.get_sprite_location()
-        )
+        return DreadNought(self.get_name(), self.get_sprite_location())
 
     def get_name(self) -> str:
         return super().get_name()

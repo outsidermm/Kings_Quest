@@ -3,6 +3,7 @@ from ability import Ability
 from characters.base_character import BaseCharacter
 import copy
 
+
 class BasePlayer(abc.ABC, BaseCharacter):
 
     __unlocked_abilities: list[Ability] = []
@@ -26,9 +27,13 @@ class BasePlayer(abc.ABC, BaseCharacter):
             self.get_name(),
             copy.deepcopy(self.get_statistics()),  # Deep copy the statistics dictionary
             self.get_sprite_location(),
-            [ability.copy() for ability in self.get_abilities()],  # Deep copy the abilities list
-            [ability.copy() for ability in self.get_unlocked_abilities()],  # Deep copy the unlocked abilities list
-            self.get_character_level()
+            [
+                ability.copy() for ability in self.get_abilities()
+            ],  # Deep copy the abilities list
+            [
+                ability.copy() for ability in self.get_unlocked_abilities()
+            ],  # Deep copy the unlocked abilities list
+            self.get_character_level(),
         )
 
     @abc.abstractmethod

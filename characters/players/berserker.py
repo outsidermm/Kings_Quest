@@ -2,6 +2,7 @@ from characters.players.base_player import BasePlayer
 from ability import PLAYER_ABILITY_LIST, Ability
 import copy
 
+
 class Berserker(BasePlayer):
 
     __statistics: dict[str, int] = {
@@ -53,10 +54,7 @@ class Berserker(BasePlayer):
         self.set_unlocked_abilities(new_unlocked_abilities)
 
     def copy(self) -> "Berserker":
-        return Berserker(
-            self.get_name(),
-            self.get_sprite_location()
-        )
+        return Berserker(self.get_name(), self.get_sprite_location())
 
     def get_name(self) -> str:
         return super().get_name()

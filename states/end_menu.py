@@ -66,7 +66,6 @@ class EndMenu(BaseState):
         del outgoing_dict_without_winner_key["winner"]
         self.set_outgoing_transition_data(outgoing_dict_without_winner_key)
 
-
         self.__navigate_start_menu_button = UIButton(
             relative_rect=pygame.Rect((0, 175), (400, 75)),
             text="RETURN TO START MENU",

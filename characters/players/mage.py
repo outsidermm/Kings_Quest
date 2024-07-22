@@ -2,6 +2,7 @@ from characters.players.base_player import BasePlayer
 from ability import PLAYER_ABILITY_LIST, Ability
 import copy
 
+
 class Mage(BasePlayer):
     __statistics: dict[str, int] = {
         "health_points": 850,
@@ -54,10 +55,7 @@ class Mage(BasePlayer):
         self.set_unlocked_abilities(new_unlocked_abilities)
 
     def copy(self) -> "Mage":
-        return Mage(
-            self.get_name(),
-            self.get_sprite_location()
-        )
+        return Mage(self.get_name(), self.get_sprite_location())
 
     def get_name(self) -> str:
         return super().get_name()

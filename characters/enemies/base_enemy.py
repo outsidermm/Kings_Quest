@@ -2,6 +2,7 @@ from characters.base_character import BaseCharacter
 from ability import Ability
 import copy
 
+
 class BaseEnemy(BaseCharacter):
 
     def __init__(
