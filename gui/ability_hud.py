@@ -109,7 +109,7 @@ class AbilityHUD:
             self.__ability_button.set_text(self.__ABILITY_BUTTON_TEXT[ability_count])
             self.__ability_button.change_object_id(ObjectID(class_id="@unlock_button"))
 
-    def end(self) -> None:
+    def kill(self) -> None:
         self.__ability_button.kill()
         self.__ability_description.kill()
         self.__ability_icon.kill()
