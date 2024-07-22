@@ -21,7 +21,6 @@ class Berserker(BasePlayer):
         PLAYER_ABILITY_LIST["Bloodlust"],
         PLAYER_ABILITY_LIST["Berserk"],
     ]
-    __character_level: int = 1
 
     def __init__(self, name: str, sprite_location: str) -> None:
         super().__init__(
@@ -30,20 +29,19 @@ class Berserker(BasePlayer):
             sprite_location,
             self.__abilities,
             self.__unlocked_abilities,
-            self.__character_level,
         )
 
     def upgrade(self) -> None:
         new_statistic: dict[str, int] = self.get_statistics()
         new_unlocked_abilities: list[Ability] = self.get_unlocked_abilities()
-        if self.__character_level == 1:
+        if self.get_character_level() == 1:
             self.set_character_level(2)
             new_statistic["health_points"] += 150
             new_statistic["physical_power"] += 15
-        elif self.__character_level == 2:
+        elif self.get_character_level() == 2:
             self.set_character_level(3)
             new_unlocked_abilities[0].upgrade()
-        elif self.__character_level == 3:
+        elif self.get_character_level() == 3:
             self.set_character_level(4)
             new_unlocked_abilities.append(PLAYER_ABILITY_LIST["Bloodlust"])
         self.set_statistics(new_statistic)
