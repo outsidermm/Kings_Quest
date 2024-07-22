@@ -27,12 +27,8 @@ class BasePlayer(abc.ABC, BaseCharacter):
             self.get_name(),
             copy.deepcopy(self.get_statistics()),  # Deep copy the statistics dictionary
             self.get_sprite_location(),
-            [
-                ability.copy() for ability in self.get_abilities()
-            ],  # Deep copy the abilities list
-            [
-                ability.copy() for ability in self.get_unlocked_abilities()
-            ],  # Deep copy the unlocked abilities list
+            self.get_abilities(),
+            self.get_unlocked_abilities(),
             self.get_character_level(),
         )
 

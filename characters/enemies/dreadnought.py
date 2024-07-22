@@ -29,7 +29,7 @@ class DreadNought(BaseEnemy):
             name,
             copy.deepcopy(self.__statistics),
             sprite_location,
-            copy.deepcopy(self.__abilities),
+            self.__abilities,
         )
 
     def copy(self) -> "DreadNought":

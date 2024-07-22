@@ -26,7 +26,7 @@ class BaseCharacter:
             self.__name,
             copy.deepcopy(self.__statistics),
             self.__sprite_location,
-            copy.deepcopy(self.__abilities),
+            self.__abilities,
         )
 
     def get_name(self) -> str:

@@ -19,7 +19,7 @@ class BaseEnemy(BaseCharacter):
             self.get_name(),
             copy.deepcopy(self.get_statistics()),
             self.get_sprite_location(),
-            copy.deepcopy(self.get_abilities()),
+            self.get_abilities(),
         )
 
     def get_name(self) -> str:

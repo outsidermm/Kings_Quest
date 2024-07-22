@@ -28,8 +28,8 @@ class Berserker(BasePlayer):
             name,
             copy.deepcopy(self.__statistics),
             sprite_location,
-            copy.deepcopy(self.__abilities),
-            copy.deepcopy(self.__unlocked_abilities),
+            self.__abilities,
+            self.__unlocked_abilities,
         )
 
     def upgrade(self) -> None:
