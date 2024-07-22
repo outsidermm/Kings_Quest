@@ -43,6 +43,7 @@ class CharacterSelectionMenu(BaseState):
     __refund_upgrade: bool = False
     __purchase_ability: bool = False
     __last_pop_up_opened: str = None
+    __quit_button_pressed: bool = False
 
     __xp: XP = None
 
@@ -83,7 +84,7 @@ class CharacterSelectionMenu(BaseState):
         characters: list[BaseCharacter],
         xp: XP = None,
     ):
-        super().__init__(screen, ui_manager, game_state_manager)
+        super().__init__("character_selection_menu",screen, ui_manager,"turn_based_fight", game_state_manager)
         self.__characters = characters
         self.__characater_count = len(characters)
         self.__characater_name_list = [character.get_name() for character in characters]
@@ -440,30 +441,43 @@ class CharacterSelectionMenu(BaseState):
             object_id=ObjectID(class_id="@unlock_button"),
         )
 
-    def handle_events(self, event: pygame.Event) -> None:
-        if event.type == pygame_gui.UI_BUTTON_PRESSED:
-            if event.ui_element == self.get_left_arrow_select():
-                self.__left_switch_character = True
-            if event.ui_element == self.get_right_arrow_select():
-                self.__right_switch_character = True
-            if event.ui_element == self.__upgrade_button:
-                self.__upgrade_character = True
-            if event.ui_element == self.__go_button:
-                self.__game_start = True
-            if event.ui_element == self.__view_ability_button:
-                self.__ability_menu_active = True
-            if event.ui_element == self.__ability_menu_close:
-                self.__ability_menu_active = False
-            if event.ui_element == self.__upgrade_confirm:
-                self.__purchase_upgrade = True
-            if event.ui_element == self.__upgrade_cancel:
-                self.__refund_upgrade = True
-            if event.ui_element == self.__upgrade_dismiss:
-                self.__dismiss_upgrade = True
-            if event.ui_element == self.__ability_button_list[2]:
-                self.__purchase_ability = True
+    def handle_events(self) -> None:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                self.__quit_button_pressed =True
+            self.get_ui_manager().process_events(event)
+            if event.type == pygame_gui.UI_BUTTON_PRESSED:
+                if event.ui_element == self.get_left_arrow_select():
+                    self.__left_switch_character = True
+                if event.ui_element == self.get_right_arrow_select():
+                    self.__right_switch_character = True
+                if event.ui_element == self.__upgrade_button:
+                    self.__upgrade_character = True
+                if event.ui_element == self.__go_button:
+                    self.__game_start = True
+                if event.ui_element == self.__view_ability_button:
+                    self.__ability_menu_active = True
+                if event.ui_element == self.__ability_menu_close:
+                    self.__ability_menu_active = False
+                if event.ui_element == self.__upgrade_confirm:
+                    self.__purchase_upgrade = True
+                if event.ui_element == self.__upgrade_cancel:
+                    self.__refund_upgrade = True
+                if event.ui_element == self.__upgrade_dismiss:
+                    self.__dismiss_upgrade = True
+                if event.ui_element == self.__ability_button_list[2]:
+                    self.__purchase_ability = True
 
     def run(self) -> None:
+        if self.__quit_button_pressed:
+            self.get_game_state_manager().set_time_to_quit_app(True)
+            return
+
+        if self.__game_start:
+            self.set_outgoing_transition_data({"player":self.get_characters()[self.__selection_page]})
+            self.set_time_to_transition(True)
+            return 
+        
         if self.__left_switch_character:
             self.__selection_page = (
                 self.__selection_page - 1
@@ -564,11 +578,6 @@ class CharacterSelectionMenu(BaseState):
             self.__character_picture_panel.enable()
             self.__upgrade_character_panel[1].hide()
 
-        if self.__game_start:
-            self.get_ui_manager().clear_and_reset()
-            self.get_screen().fill((0, 0, 0))
-            self.get_game_state_manager().set_state("turn_based_fight")
-
         if self.__update_GUI:
             self.__character_name.set_text(
                 self.__characater_name_list[self.__selection_page]
@@ -641,6 +650,14 @@ class CharacterSelectionMenu(BaseState):
                         ObjectID(class_id="@unlock_button")
                     )
 
+    def render(self, time_delta:int) -> None:
+        self.get_ui_manager().update(time_delta)
+        self.get_screen().blit(
+            pygame.Surface((self.get_screen().width, self.get_screen().height)), (0, 0)
+        )
+        self.get_ui_manager().draw_ui(self.get_screen())
+        pygame.display.update()
+        
     def reset_event_polling(self) -> None:
         self.__left_switch_character = False
         self.__right_switch_character = False
@@ -650,9 +667,32 @@ class CharacterSelectionMenu(BaseState):
         self.__purchase_upgrade = False
         self.__dismiss_upgrade = False
         self.__update_GUI = False
+        self.__quit_button_pressed = False
+        
+    def end(self) -> None:
+        self.__character_info_panel.kill()
+        self.__character_picture_panel.kill()
+        self.__ability_menu.kill()
+        self.__right_arrow_select.kill()
+        self.__left_arrow_select.kill()
+        self.__go_button.kill()
+        self.__character_name.kill()
+        self.__view_ability_button.kill()
+        self.__upgrade_button.kill()
+        [statistic.kill() for statistic in self.__statistic_text]
+        [statistic_bar.kill() for statistic_bar in self.__statistic_bar]
+        [ability_header.kill() for ability_header in self.__ability_header]
+        [ability_description.kill() for ability_description in self.__ability_description]
+        [ability_icon.kill() for ability_icon in self.__ability_icon]
+        [ability_button.kill() for ability_button in self.__ability_button_list]
+        self.__ability_menu_close.kill()
+        self.__upgrade_confirm.kill()
+        self.__upgrade_cancel.kill()
+        self.__upgrade_dismiss.kill()
+        self.__xp_text.kill()
+        [upgrade_panel.kill() for upgrade_panel in self.__upgrade_character_panel]
+        self.get_screen().fill((0, 0, 0))
 
-    def render(self, time_delta):
-        pass
 
     def get_screen(self) -> pygame.Surface:
         return super().get_screen()
@@ -689,3 +729,15 @@ class CharacterSelectionMenu(BaseState):
 
     def set_left_arrow_select(self, left_arrow_select: UIButton) -> None:
         self.__left_arrow_select = left_arrow_select
+
+    def set_time_to_quit_app(self, time_to_quit_app: bool) -> None:
+        super().set_time_to_quit_app(time_to_quit_app)
+
+    def get_time_to_quit_app(self) -> bool:
+        return super().get_time_to_quit_app()
+
+    def set_time_to_transition(self, time_to_transition: bool) -> None:
+        super().set_time_to_transition(time_to_transition)
+
+    def get_time_to_transition(self) -> bool:
+        return super().get_time_to_transition()

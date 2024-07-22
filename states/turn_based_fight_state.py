@@ -32,7 +32,8 @@ class TurnBasedFight(BaseState):
     __enemy_hit_height: float = 0
     __player_animation: Animation = None
     __enemy_animation: Animation = None
-    __is_enemy_attacking = False
+    __is_enemy_attacking:bool = False
+    __quit_button_pressed:bool = False
 
     __xp: XP = None
     __ANIMATION_ASSETS: dict[str, Animation] = {}
@@ -42,23 +43,13 @@ class TurnBasedFight(BaseState):
         screen: pygame.Surface,
         ui_manager: pygame_gui.UIManager,
         game_state_manager: GameStateManager,
-        player: BaseCharacter,
         enemy: BaseCharacter,
         xp: XP = None,
     ):
-        super().__init__(screen, ui_manager, game_state_manager)
+        super().__init__("turn_based_fight",screen, ui_manager, "level_selection_menu",game_state_manager)
         self.__xp = XP()
-        self.__player = player
         self.__enemy = enemy
-        self.__ANIMATION_ASSETS["player/idle"] = Animation(
-            load_images(f"characters/{self.__player.get_name()}/idle"),
-            image_duration=10,
-        )
-        self.__ANIMATION_ASSETS["player/attack"] = Animation(
-            load_images(f"characters/{self.__player.get_name()}/attack"),
-            image_duration=6,
-            loop=False,
-        )
+
         self.__ANIMATION_ASSETS["enemy/idle"] = Animation(
             load_images(f"characters/{self.__enemy.get_name()}/idle"),
             is_flipped=True,
@@ -71,6 +62,18 @@ class TurnBasedFight(BaseState):
         )
 
     def start(self) -> None:
+        self.__player = self.get_incoming_transition_data()["player"]
+
+        self.__ANIMATION_ASSETS["player/idle"] = Animation(
+            load_images(f"characters/{self.__player.get_name()}/idle"),
+            image_duration=10,
+        )
+        self.__ANIMATION_ASSETS["player/attack"] = Animation(
+            load_images(f"characters/{self.__player.get_name()}/attack"),
+            image_duration=6,
+            loop=False,
+        )
+        
         self.__background_image = UIImage(
             relative_rect=pygame.Rect(
                 (0, 0), (self.get_screen().get_width(), self.get_screen().get_height())
@@ -193,33 +196,41 @@ class TurnBasedFight(BaseState):
         self.__player_animation = self.__ANIMATION_ASSETS["player/idle"].copy()
         self.__enemy_animation = self.__ANIMATION_ASSETS["enemy/idle"].copy()
 
-    def handle_events(self, event: pygame.Event) -> None:
-        if event.type == pygame_gui.UI_BUTTON_PRESSED:
-            if event.ui_element == self.__ability_button_list[0]:
-                self.__ability_selected = None
-            else:
-                for ability_button_index in [1, 2, 3]:
-                    if (
-                        event.ui_element
-                        == self.__ability_button_list[ability_button_index]
-                    ):
-                        self.__ability_selected = (
-                            self.__player.get_unlocked_abilities()[
-                                ability_button_index - 1
-                            ]
-                        )
+    def handle_events(self) -> None:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                self.__quit_button_pressed =True
+            self.get_ui_manager().process_events(event)
+            if event.type == pygame_gui.UI_BUTTON_PRESSED:
+                if event.ui_element == self.__ability_button_list[0]:
+                    self.__ability_selected = None
+                else:
+                    for ability_button_index in [1, 2, 3]:
+                        if (
+                            event.ui_element
+                            == self.__ability_button_list[ability_button_index]
+                        ):
+                            self.__ability_selected = (
+                                self.__player.get_unlocked_abilities()[
+                                    ability_button_index - 1
+                                ]
+                            )
 
-        if pygame.mouse.get_pressed()[0]:
-            self.__mouse_pressed = True
-            mouse_pos = pygame.mouse.get_pos()
-            if self.__enemy_sprite.rect.collidepoint(mouse_pos):
-                self.__enemy_hit_height = self.__enemy_sprite.rect.height - (
-                    mouse_pos[1] - self.__enemy_sprite.rect.y
-                )
-            else:
-                self.__enemy_hit_height = 0
+            if pygame.mouse.get_pressed()[0]:
+                self.__mouse_pressed = True
+                mouse_pos = pygame.mouse.get_pos()
+                if self.__enemy_sprite.rect.collidepoint(mouse_pos):
+                    self.__enemy_hit_height = self.__enemy_sprite.rect.height - (
+                        mouse_pos[1] - self.__enemy_sprite.rect.y
+                    )
+                else:
+                    self.__enemy_hit_height = 0
 
     def run(self) -> None:
+        if self.__quit_button_pressed:
+            self.set_time_to_quit_app(True)
+            return
+        
         self.__combat_round_initalised = True
         if not self.__combat_round_initalised:
             pass  # Initialize the combat round - 3,2,1 GO
@@ -338,8 +349,9 @@ class TurnBasedFight(BaseState):
 
     def reset_event_polling(self) -> None:
         self.__mouse_pressed = False
+        self.__quit_button_pressed = False
 
-    def render(self, time_delta):
+    def render(self, time_delta:int):
         self.__player_HUD.update()
         self.__enemy_HUD.update()
 
@@ -362,6 +374,22 @@ class TurnBasedFight(BaseState):
                 self.__ability_button_list[ability_index + 1].set_text(
                     self.__player.get_unlocked_abilities()[ability_index].get_name()
                 )
+        self.get_ui_manager().update(time_delta)
+        self.get_screen().blit(
+            pygame.Surface((self.get_screen().width, self.get_screen().height)), (0, 0)
+        )
+        self.get_ui_manager().draw_ui(self.get_screen())
+        pygame.display.update()
+
+    def end(self)-> None:
+        self.__player_sprite.kill()
+        self.__enemy_sprite.kill()
+        self.__player_info_container.kill()
+        self.__enemy_info_container.kill()
+        self.__player_choice_container.kill()
+        self.__tutorial_text.kill()
+        self.__visual_dialogue.kill()
+        self.get_screen().fill((0, 0, 0))
 
     def get_screen(self) -> pygame.Surface:
         return super().get_screen()
@@ -380,3 +408,15 @@ class TurnBasedFight(BaseState):
 
     def set_game_state_manager(self, game_state_manager: GameStateManager) -> None:
         super().set_game_state_manager(game_state_manager)
+
+    def set_time_to_quit_app(self, time_to_quit_app: bool) -> None:
+        super().set_time_to_quit_app(time_to_quit_app)
+
+    def get_time_to_quit_app(self) -> bool:
+        return super().get_time_to_quit_app()
+
+    def set_time_to_transition(self, time_to_transition: bool) -> None:
+        super().set_time_to_transition(time_to_transition)
+
+    def get_time_to_transition(self) -> bool:
+        return super().get_time_to_transition()

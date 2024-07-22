@@ -22,6 +22,8 @@ class Game:
 
     __start_menu = None
     __character_selection_menu = None
+    __running :bool = True
+    
 
     def __init__(self) -> None:
         pygame.init()
@@ -49,7 +51,7 @@ class Game:
 
         self.set_clock(pygame.time.Clock())
 
-        self.set_game_state_manager(GameStateManager("start_menu"))
+        self.set_game_state_manager(GameStateManager())
 
         self.set_characters(
             [
@@ -79,50 +81,20 @@ class Game:
             self.get_screen(),
             self.get_ui_manager(),
             self.get_game_state_manager(),
-            self.get_characters()[0],
             DreadNought("DreadNought", "assets/characters/dreadnought/idle/0000.png"),
         )
 
-        self.set_states(
-            {
-                "start_menu": self.get_start_menu(),
-                "character_selection_menu": self.get_character_selection_menu(),
-                "turn_based_fight": self.__turn_based_fight_state,
-            }
-        )
+        self.get_game_state_manager().set_initial_state("start_menu")
 
     def run(self) -> None:
-        while True:
+        while self.__running:
             time_delta = self.get_clock().tick_busy_loop(self.__FPS)
-
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    pygame.quit()
-                    quit()
-                self.get_ui_manager().process_events(event)
-
-                self.get_states()[
-                    self.get_game_state_manager().get_state()[0]
-                ].handle_events(event)
-
-            self.get_states()[self.get_game_state_manager().get_state()[0]].run()
-            if self.get_game_state_manager().get_state()[1]:
-                self.get_ui_manager().clear_and_reset()
-                self.get_states()[self.get_game_state_manager().get_state()[0]].start()
-            self.get_states()[
-                self.get_game_state_manager().get_state()[0]
-            ].reset_event_polling()
-
-            self.get_ui_manager().update(time_delta)
-
-            self.get_states()[self.get_game_state_manager().get_state()[0]].render(
+            self.__running = self.get_game_state_manager().run(
                 time_delta
             )
-            self.get_screen().blit(
-                pygame.Surface((self.__SCREEN_HEIGHT, self.__SCREEN_WIDTH)), (0, 0)
-            )
-            self.get_ui_manager().draw_ui(self.get_screen())
-            pygame.display.update()
+
+        pygame.quit()
+        quit()
 
     def get_screen(self) -> pygame.Surface:
         return self.__screen
