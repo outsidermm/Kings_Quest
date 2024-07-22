@@ -426,3 +426,9 @@ class TurnBasedFight(BaseState):
 
     def get_time_to_transition(self) -> bool:
         return super().get_time_to_transition()
+
+    def set_target_state_name(self, target_state_name: str) -> None:
+        super().set_target_state_name(target_state_name)
+
+    def get_target_state_name(self) -> str:
+        return super().get_target_state_name()

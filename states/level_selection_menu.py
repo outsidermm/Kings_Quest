@@ -16,6 +16,10 @@ class LevelSelectionMenu(BaseState):
     __show_enemy_info: int = -1
     __enemy_buttons: list[UIButton] = None
     __GUI_background: pygame.Surface = None
+    __navigate_character_selection_button: UIButton = None
+    __navigate_character_selection: bool = False
+    __navigate_quest_button: UIButton = None
+    __navigate_quest: bool = False
 
     def __init__(
         self,
@@ -41,7 +45,36 @@ class LevelSelectionMenu(BaseState):
             (self.get_screen().width, self.get_screen().height),
         )
 
-        enemy_button_width = enemy_button_height = 200
+        UITextBox(
+            "Level Selection",
+            pygame.Rect((0, -self.get_screen().height * 0.3), (1000, 200)),
+            self.get_ui_manager(),
+            anchors=({"center": "center"}),
+            object_id=ObjectID(class_id="@title", object_id="#game_title"),
+        )
+
+        navigate_character_selection_button_rect = pygame.Rect((75, 0), (300, 75))
+        navigate_character_selection_button_rect.bottom = -75
+        self.__navigate_character_selection_button = UIButton(
+            relative_rect=navigate_character_selection_button_rect,
+            text="← Reselect Character",
+            manager=self.get_ui_manager(),
+            anchors=({"bottom": "bottom"}),
+            object_id=ObjectID(class_id="@level_selection_text"),
+        )
+
+        navigate_quest_rect = pygame.Rect((0, 0), (300, 75))
+        navigate_quest_rect.bottomright = (-75, -75)
+        self.__navigate_quest_button = UIButton(
+            relative_rect=navigate_quest_rect,
+            text="Check Quest",
+            manager=self.get_ui_manager(),
+            anchors=({"right": "right", "bottom": "bottom"}),
+            object_id=ObjectID(class_id="@level_selection_text"),
+        )
+
+        enemy_button_width = 300
+        enemy_button_height = 200
         enemy_button_gap = (
             self.get_screen().get_width() - enemy_button_width * len(self.__enemies)
         ) / (len(self.__enemies) + 1)
@@ -58,6 +91,7 @@ class LevelSelectionMenu(BaseState):
                 text=f"{enemy_button_count+1}: {enemy.get_name()}",
                 anchors=({"centery": "centery"}),
                 manager=self.get_ui_manager(),
+                object_id=ObjectID(class_id="@level_selection_text"),
             )
 
     def handle_events(self) -> None:
@@ -66,6 +100,10 @@ class LevelSelectionMenu(BaseState):
                 self.__quit_button_pressed = True
             self.get_ui_manager().process_events(event)
             if event.type == pygame_gui.UI_BUTTON_PRESSED:
+                if event.ui_element == self.__navigate_character_selection_button:
+                    self.__navigate_character_selection = True
+                if event.ui_element == self.__navigate_quest_button:
+                    self.__navigate_quest = True
                 for enemy_button_index in range(len(self.__enemies)):
                     if event.ui_element == self.__enemy_buttons[enemy_button_index]:
                         self.__show_enemy_info = enemy_button_index
@@ -73,6 +111,17 @@ class LevelSelectionMenu(BaseState):
     def run(self) -> None:
         if self.__quit_button_pressed:
             self.set_time_to_quit_app(True)
+            return
+
+        if self.__navigate_character_selection:
+            self.set_target_state_name("character_selection_menu")
+            self.set_time_to_transition(True)
+            return
+
+        if self.__navigate_quest:
+            self.set_target_state_name("quest")
+            print("1")
+            # self.set_time_to_transition(True)
             return
 
         if self.__game_start:
@@ -92,8 +141,15 @@ class LevelSelectionMenu(BaseState):
     def reset_event_polling(self) -> None:
         self.__quit_button_pressed = False
         self.__show_enemy_info = -1
+        self.__navigate_character_selection = False
+        self.__navigate_quest = False
 
     def end(self) -> None:
+        [
+            self.__enemy_buttons[enemy_button_index].kill()
+            for enemy_button_index in range(len(self.__enemies))
+        ]
+        self.__navigate_character_selection_button.kill()
         self.get_screen().fill((0, 0, 0))
 
     def get_screen(self) -> pygame.Surface:
@@ -125,3 +181,9 @@ class LevelSelectionMenu(BaseState):
 
     def get_time_to_transition(self) -> bool:
         return super().get_time_to_transition()
+
+    def set_target_state_name(self, target_state_name: str) -> None:
+        super().set_target_state_name(target_state_name)
+
+    def get_target_state_name(self) -> str:
+        return super().get_target_state_name()

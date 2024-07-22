@@ -46,6 +46,9 @@ class Game:
         self.get_ui_manager().get_theme().load_theme(
             "settings/character_selection_theme.json"
         )
+        self.get_ui_manager().get_theme().load_theme(
+            "settings/level_selection_theme.json"
+        )
         self.get_ui_manager().get_theme().load_theme("settings/combat_theme.json")
         self.get_ui_manager().get_theme().load_theme("settings/health_bar.json")
 
