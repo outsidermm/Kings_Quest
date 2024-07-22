@@ -25,7 +25,6 @@ class StatisticHUD:
     __statistic_text: UITextBox = None
     __statistic_bar: StatisticBar = None
     __statistics: dict[str, int] = None
-    __statistic_name: str = None
     __max_statistic_value: int = None
 
     def __init__(
