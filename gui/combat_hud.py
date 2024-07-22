@@ -57,22 +57,6 @@ class CombatHUD:
             is_flipped=self.__is_flipped,
         )
 
-        player_icon_rect = pygame.Rect((0, 60), (48, 48))
-        if self.__is_flipped:
-            player_icon_rect.right = -35
-        else:
-            player_icon_rect.left = 35
-
-        UIImage(
-            player_icon_rect,
-            image_surface=pygame.transform.scale(
-                pygame.image.load("assets/icons_18/health_points.png"), (48, 48)
-            ),
-            anchors={"right": "right"} if self.__is_flipped else {"left": "left"},
-            manager=self.__ui_manager,
-            container=self.__container,
-        )
-
         for statistic_count, statistic_name in enumerate(
             self.__CHARACTER_MAX_VAL.keys()
         ):

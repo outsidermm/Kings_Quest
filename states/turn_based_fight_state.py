@@ -143,7 +143,7 @@ class TurnBasedFight(BaseState):
 
         self.__tutorial_text = UITextBox(
             html_text="Press the allocated button to use an action (ability / normal attack)",
-            relative_rect=pygame.Rect((0, 200), (self.get_screen().width * 0.4, -1)),
+            relative_rect=pygame.Rect((0, 200), (self.get_screen().width * 0.5, -1)),
             anchors=({"centerx": "centerx"}),
             manager=self.get_ui_manager(),
             object_id=ObjectID(object_id="#tutorial_text"),
@@ -298,6 +298,7 @@ class TurnBasedFight(BaseState):
                         ].copy()
                         self.__ability_selected = -1  # Reset turn action flags
                         self.__is_player_attacking = False
+                        pygame.time.wait(250)
                         self.__round_counter += 1
 
             else:
@@ -306,7 +307,6 @@ class TurnBasedFight(BaseState):
                         "You stunned the boss, you can hit again, good job!"
                     )
                     self.__enemy_controller.stunned_round()
-                    pygame.time.wait(250)
                     self.__round_counter += 1
                 else:
                     if not self.__is_enemy_attacking:
