@@ -69,7 +69,7 @@
 		"colours": {
 			"normal_text": "#46DFFD",
 			"normal_border": "Black",
-			"dark_bg": "Black"
+			"dark_bg": "rgba(0,0,0,0)"
 		},
 		"font": {
 			"name": "phosphate",
