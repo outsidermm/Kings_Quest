@@ -108,6 +108,9 @@ class CombatController:
                 for modifer, value in player_ability.get_statistics().items():
                     if modifer in self.__POSITIVE_PLAYER_STATISTIC_MODIFERS:
                         self.__player_statistic[modifer] -= value
+                        self.__player_statistic[modifer] = max(
+                            0, self.__player_statistic[modifer]
+                        )
                 self.__ability_histories.remove(player_ability)
 
         critical_dmg_addition = random.randint(0, int(critical_rate))
@@ -202,7 +205,7 @@ class CombatController:
         magical_damage = max(0, magical_damage)
         total_dmg = physical_dmg + magical_damage
         if "absorption" in self.__player_statistic.keys():
-            total_dmg = max(0, total_dmg - debuff_dict["absorption"][0])
+            total_dmg = max(0, total_dmg - self.__player_statistic["absorption"][0])
         self.__player_statistic["health_points"] = max(
             0, self.__player_statistic["health_points"] - int(total_dmg)
         )
@@ -215,12 +218,7 @@ class CombatController:
                 self.__player_statistic["health_points"]
                 + self.__player_statistic["health_regeneration"],
             )
-        if (
-            "mana_regeneration" in self.__player_statistic.keys()
-            and self.__player_statistic["mana_points"]
-            + self.__player_statistic["mana_regeneration"]
-            <= self.__player_statistic_cap["mana_points"]
-        ):
+        if "mana_regeneration" in self.__player_statistic.keys():
             self.__player_statistic["mana_points"] = min_max_bound(
                 0,
                 self.__player_statistic_cap["mana_points"],
@@ -230,3 +228,6 @@ class CombatController:
 
     def get_cooldown_abilities(self) -> dict[str, int]:
         return self.__cooldown_abilities
+
+    def get_player_statistic(self) -> dict[str, int]:
+        return self.__player_statistic
