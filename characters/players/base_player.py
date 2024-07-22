@@ -1,7 +1,7 @@
 import abc
 from ability import Ability
 from characters.base_character import BaseCharacter
-
+import copy
 
 class BasePlayer(abc.ABC, BaseCharacter):
 
@@ -20,6 +20,16 @@ class BasePlayer(abc.ABC, BaseCharacter):
         super().__init__(name, statistics, sprite_location, abilities)
         self.__character_level = character_level
         self.__unlocked_abilities = unlocked_abilities
+
+    def copy(self) -> "BasePlayer":
+        return self.__class__(
+            self.get_name(),
+            copy.deepcopy(self.get_statistics()),  # Deep copy the statistics dictionary
+            self.get_sprite_location(),
+            [ability.copy() for ability in self.get_abilities()],  # Deep copy the abilities list
+            [ability.copy() for ability in self.get_unlocked_abilities()],  # Deep copy the unlocked abilities list
+            self.get_character_level()
+        )
 
     @abc.abstractmethod
     def upgrade(self) -> None:

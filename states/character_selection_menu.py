@@ -350,7 +350,7 @@ class CharacterSelectionMenu(BaseState):
 
         if self.__navigate_level_selection:
             self.set_outgoing_transition_data(
-                {"player": self.get_characters()[self.__selection_page]}
+                {"player": self.get_characters()[self.__selection_page].copy()}
             )
             self.set_time_to_transition(True)
             return

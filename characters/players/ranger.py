@@ -1,6 +1,6 @@
 from characters.players.base_player import BasePlayer
 from ability import PLAYER_ABILITY_LIST, Ability
-
+import copy
 
 class Ranger(BasePlayer):
 
@@ -24,14 +24,13 @@ class Ranger(BasePlayer):
     def __init__(self, name: str, sprite_location: str) -> None:
         super().__init__(
             name,
-            self.__statistics,
+            copy.deepcopy(self.__statistics),
             sprite_location,
-            self.__abilities,
-            self.__unlocked_abilities,
+            copy.deepcopy(self.__abilities),
+            copy.deepcopy(self.__unlocked_abilities),
         )
 
     def upgrade(self) -> None:
-
         new_statistic: dict[str, int] = self.get_statistics()
         new_unlocked_abilities: list[Ability] = self.get_unlocked_abilities()
         if self.get_character_level() == 1:
@@ -51,6 +50,12 @@ class Ranger(BasePlayer):
         new_unlocked_abilities: list[Ability] = self.get_unlocked_abilities()
         new_unlocked_abilities.append(PLAYER_ABILITY_LIST["Fatal Shadow"])
         self.set_unlocked_abilities(new_unlocked_abilities)
+
+    def copy(self) -> "Ranger":
+        return Ranger(
+            self.get_name(),
+            self.get_sprite_location()
+        )
 
     def get_name(self) -> str:
         return super().get_name()

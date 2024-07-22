@@ -1,6 +1,6 @@
 from characters.enemies.base_enemy import BaseEnemy
 from ability import Ability, ENEMY_ABILITY_LIST
-
+import copy
 
 class DreadNought(BaseEnemy):
 
@@ -26,9 +26,15 @@ class DreadNought(BaseEnemy):
     def __init__(self, name: str, sprite_location: str) -> None:
         super().__init__(
             name,
-            self.__statistics,
+            copy.deepcopy(self.__statistics),
             sprite_location,
-            self.__abilities,
+            copy.deepcopy(self.__abilities),
+        )
+
+    def copy(self) -> "DreadNought":
+        return DreadNought(
+            self.get_name(),
+            self.get_sprite_location()
         )
 
     def get_name(self) -> str:
