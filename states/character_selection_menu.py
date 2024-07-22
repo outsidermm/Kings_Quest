@@ -454,7 +454,24 @@ class CharacterSelectionMenu(BaseState):
             self.__character_picture_panel.enable()
             self.__upgrade_character_panel[1].hide()
 
+    def render(self, time_delta: int) -> None:
         if self.__update_GUI:
+            for ability_count, ability in enumerate(
+                self.get_characters()[self.__selection_page].get_abilities()
+            ):
+                self.__ability_HUDs[ability_count].update(
+                    self.get_characters()[self.__selection_page], ability, ability_count
+                )
+
+            for statistic_count, (statistic_name, max_statistic_value) in enumerate(
+                self.__CHARACTER_MAX_VAL.items()
+            ):
+                self.__statistic_HUDs[statistic_count].update(
+                    self.get_characters()[self.__selection_page].get_statistics(),
+                    statistic_name,
+                    max_statistic_value,
+                )
+            
             self.__character_name.set_text(
                 self.__characater_name_list[self.__selection_page]
             )
@@ -474,24 +491,6 @@ class CharacterSelectionMenu(BaseState):
                 self.__upgrade_button.set_text("MAX LEVEL")
                 self.__upgrade_button.change_object_id(
                     ObjectID(class_id="@lock_button")
-                )
-
-    def render(self, time_delta: int) -> None:
-        if self.__update_GUI:
-            for ability_count, ability in enumerate(
-                self.get_characters()[self.__selection_page].get_abilities()
-            ):
-                self.__ability_HUDs[ability_count].update(
-                    self.get_characters()[self.__selection_page], ability, ability_count
-                )
-
-            for statistic_count, (statistic_name, max_statistic_value) in enumerate(
-                self.__CHARACTER_MAX_VAL.items()
-            ):
-                self.__statistic_HUDs[statistic_count].update(
-                    self.get_characters()[self.__selection_page].get_statistics(),
-                    statistic_name,
-                    max_statistic_value,
                 )
 
         self.get_ui_manager().update(time_delta)
