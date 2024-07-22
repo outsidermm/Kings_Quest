@@ -21,10 +21,17 @@ class StartMenu(BaseState):
         ui_manager: pygame_gui.UIManager,
         game_state_manager: GameStateManager,
     ) -> None:
-        super().__init__(screen, ui_manager, game_state_manager)
+        super().__init__(
+            "start_menu",
+            screen,
+            ui_manager,
+            "character_selection_menu",
+            game_state_manager,
+        )
         self.__screen_width = self.get_screen().get_rect().width
         self.__screen_height = self.get_screen().get_rect().height
 
+    def start(self) -> None:
         self.set_game_title(
             UITextBox(
                 "King's Quest",
@@ -70,41 +77,46 @@ class StartMenu(BaseState):
         )
         pygame.display.set_caption("King's Quest")
 
-    def handle_events(self, event: pygame.Event) -> None:
-        if event.type == pygame_gui.UI_BUTTON_PRESSED:
-            if event.ui_element == self.get_play_button():
-                self.set_play_button_pressed(True)
-            if event.ui_element == self.get_setting_button():
-                self.set_setting_button_pressed(True)
-            if event.ui_element == self.get_quit_button():
+    def handle_events(self) -> None:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
                 self.set_quit_button_pressed(True)
+            self.get_ui_manager().process_events(event)
+
+            if event.type == pygame_gui.UI_BUTTON_PRESSED:
+                if event.ui_element == self.get_play_button():
+                    self.set_play_button_pressed(True)
+                if event.ui_element == self.get_setting_button():
+                    self.set_setting_button_pressed(True)
+                if event.ui_element == self.get_quit_button():
+                    self.set_quit_button_pressed(True)
 
     def run(self) -> None:
         if self.get_play_button_pressed():
-            self.get_screen().fill((0, 0, 0))
-            # self.remove_UI()
-            self.get_game_state_manager().set_state("character_selection_menu")
+            self.set_time_to_transition(True)
         elif self.get_setting_button_pressed():
-            # self.get_game_state_manager().set_state("settings")
-            self.remove_UI()
+            self.set_time_to_transition(True)
         elif self.get_quit_button_pressed():
-            pygame.quit()
-            quit()
+            self.set_time_to_quit_app(True)
 
+    def render(self,time_delta :int) -> None:
+        self.get_ui_manager().update(time_delta)
+           
+        self.get_screen().blit(self.__GUIBackground, (0, 0))
+        self.get_ui_manager().draw_ui(self.get_screen())
+        pygame.display.update()
+        
     def reset_event_polling(self) -> None:
         self.set_play_button_pressed(False)
         self.set_setting_button_pressed(False)
         self.set_quit_button_pressed(False)
 
-    def remove_UI(self) -> None:
+    def end(self) -> None:
         self.get_game_title().kill()
         self.get_play_button().kill()
         self.get_setting_button().kill()
         self.get_quit_button().kill()
         self.get_screen().fill((0, 0, 0))
-
-    def render(self, time_delta) -> None:
-        self.get_screen().blit(self.__GUIBackground, (0, 0))
 
     def get_screen(self) -> pygame.Surface:
         return super().get_screen()
@@ -171,3 +183,15 @@ class StartMenu(BaseState):
 
     def set_GUIBackground(self, GUIBackground: pygame.Surface) -> None:
         self.__GUIBackground = GUIBackground
+
+    def set_time_to_quit_app(self, time_to_quit_app: bool) -> None:
+        super().set_time_to_quit_app(time_to_quit_app)
+
+    def get_time_to_quit_app(self) -> bool:
+        return super().get_time_to_quit_app()
+
+    def set_time_to_transition(self, time_to_transition: bool) -> None:
+        super().set_time_to_transition(time_to_transition)
+
+    def get_time_to_transition(self) -> bool:
+        return super().get_time_to_transition()
