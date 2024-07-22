@@ -1,6 +1,6 @@
 from .base_state import BaseState
 import pygame, pygame_gui
-from pygame_gui.elements import UIButton, UIImage, UITextBox, UIStatusBar, UIPanel
+from pygame_gui.elements import UIButton, UIImage, UITextBox, UIPanel
 from pygame_gui.core import ObjectID
 from state_manager import GameStateManager
 from characters.players.base_player import BasePlayer
@@ -11,21 +11,6 @@ from gui.statistic_hud import StatisticHUD
 
 
 # TODO Need to show highlights made
-class StatisticBar(UIStatusBar):
-    def __init__(
-        self,
-        text: str = None,
-        *args,
-        **kwargs,
-    ) -> None:
-        self.__bar_text = text
-        super().__init__(*args, **kwargs)
-
-    def status_text(self) -> str:
-        return self.__bar_text
-
-    def set_text(self, text: str) -> None:
-        self.__bar_text = text
 
 
 class CharacterSelectionMenu(BaseState):
@@ -91,15 +76,6 @@ class CharacterSelectionMenu(BaseState):
         self.__characater_count = len(characters)
         self.__characater_name_list = [character.get_name() for character in characters]
         self.__xp = XP()
-
-    def progress_bar(self, statistic: str) -> float:
-        return (
-            self.get_characters()[self.__selection_page].get_statistics()[statistic]
-            / self.__CHARACTER_MAX_VAL[statistic]
-            if statistic
-            in self.get_characters()[self.__selection_page].get_statistics().keys()
-            else 0
-        )
 
     def start(self) -> None:
         self.__character_picture_panel = UIPanel(
@@ -208,50 +184,18 @@ class CharacterSelectionMenu(BaseState):
             self.__upgrade_button.set_text("MAX LEVEL")
             self.__upgrade_button.change_object_id(ObjectID(class_id="@lock_button"))
 
-        init_text_x = 50
-        init_bar_x = 300
-        init_y = 108
-        gap_per_statistics = 50
-        self.__statistic_text: list[UITextBox] = [None] * len(self.__CHARACTER_MAX_VAL)
-        self.__statistic_bar: list[StatisticBar] = [None] * len(
-            self.__CHARACTER_MAX_VAL
-        )
+        self.__statistic_HUDs: list[StatisticHUD] = [None] * 10
 
-        for statistic_count, (statistic, value) in enumerate(
+        for statistic_count, (statistic_name, max_statistic_value) in enumerate(
             self.__CHARACTER_MAX_VAL.items()
         ):
-            self.__statistic_text[statistic_count] = UITextBox(
-                html_text=f'<img src="assets/icons_48/{statistic}.png"> '
-                f"{" ".join(word.capitalize() for word in statistic.split("_"))}",
-                relative_rect=pygame.Rect(
-                    (init_text_x, init_y + statistic_count * gap_per_statistics),
-                    (300, -1),
-                ),
-                manager=self.get_ui_manager(),
-                container=self.__character_info_panel,
-                object_id=ObjectID(object_id="#character_info"),
-            )
-
-            bar_location = pygame.Rect(
-                (init_bar_x, init_y + statistic_count * gap_per_statistics + 12.5),
-                (200, 30),
-            )
-            bar_location.right = -50
-            numerical_statistic = (
-                self.get_characters()[self.__selection_page].get_statistics()[statistic]
-                if statistic
-                in self.get_characters()[self.__selection_page].get_statistics().keys()
-                else 0
-            )
-
-            self.__statistic_bar[statistic_count] = StatisticBar(
-                relative_rect=bar_location,
-                manager=self.get_ui_manager(),
-                anchors=({"right": "right"}),
-                percent_method=(lambda stat=statistic: self.progress_bar(stat)),
-                container=self.__character_info_panel,
-                object_id=ObjectID(class_id="@statistics_bar"),
-                text=f"{numerical_statistic}/{self.__CHARACTER_MAX_VAL[statistic]}",
+            self.__statistic_HUDs[statistic_count] = StatisticHUD(
+                self.get_ui_manager(),
+                self.__character_info_panel,
+                self.get_characters()[self.__selection_page].get_statistics(),
+                statistic_name,
+                max_statistic_value,
+                statistic_count,
             )
 
         self.__ability_menu = UIPanel(
@@ -520,25 +464,6 @@ class CharacterSelectionMenu(BaseState):
                 ).convert_alpha()
             )
 
-            for statistic_count, (statistic, value) in enumerate(
-                self.__CHARACTER_MAX_VAL.items()
-            ):
-
-                numerical_statistic = (
-                    self.get_characters()[self.__selection_page].get_statistics()[
-                        statistic
-                    ]
-                    if statistic
-                    in self.get_characters()[self.__selection_page]
-                    .get_statistics()
-                    .keys()
-                    else 0
-                )
-                self.__statistic_bar[statistic_count].set_text(
-                    f"{numerical_statistic}/{self.__CHARACTER_MAX_VAL[statistic]}"
-                )
-                self.__statistic_bar[statistic_count].redraw()
-
             self.__upgrade_button.set_text(
                 f"Upgrade for {self.__UPGRADE_LVL_XP_COST[
                 self.get_characters()[self.__selection_page].get_character_level()
@@ -558,6 +483,15 @@ class CharacterSelectionMenu(BaseState):
             ):
                 self.__ability_HUDs[ability_count].update(
                     self.get_characters()[self.__selection_page], ability, ability_count
+                )
+
+            for statistic_count, (statistic_name, max_statistic_value) in enumerate(
+                self.__CHARACTER_MAX_VAL.items()
+            ):
+                self.__statistic_HUDs[statistic_count].update(
+                    self.get_characters()[self.__selection_page].get_statistics(),
+                    statistic_name,
+                    max_statistic_value,
                 )
 
         self.get_ui_manager().update(time_delta)
@@ -588,14 +522,13 @@ class CharacterSelectionMenu(BaseState):
         self.__character_name.kill()
         self.__view_ability_button.kill()
         self.__upgrade_button.kill()
-        [statistic.kill() for statistic in self.__statistic_text]
-        [statistic_bar.kill() for statistic_bar in self.__statistic_bar]
         self.__ability_menu_close.kill()
         self.__upgrade_confirm.kill()
         self.__upgrade_cancel.kill()
         self.__upgrade_dismiss.kill()
         self.__xp_text.kill()
         [ability_HUD.kill() for ability_HUD in self.__ability_HUDs]
+        [statistic_HUD.kill() for statistic_HUD in self.__statistic_HUDs]
         [upgrade_panel.kill() for upgrade_panel in self.__upgrade_character_panel]
         self.get_screen().fill((0, 0, 0))
 
