@@ -78,7 +78,7 @@ class Game:
         self.__xp = XP(10000)
         self.__quests = [
             Quest("Fireball", "Cast 10 Fireballs", 10, 10, 1000),
-            Quest("Kill", "Kill 5 DreadNoughts", 0, 5, 2000),
+            Quest("Kill DreadNoughts", "Kill 5 DreadNoughts", 0, 5, 2000),
         ]
         self.set_start_menu(
             StartMenu(

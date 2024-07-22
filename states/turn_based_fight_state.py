@@ -39,6 +39,7 @@ class TurnBasedFight(BaseState):
     __visual_dialogue_container: UIPanel = None
     __ANIMATION_ASSETS: dict[str, Animation] = {}
     __quests: list[Quest] = None
+    __count_down:UITextBox = None
 
     def __init__(
         self,
@@ -189,6 +190,13 @@ class TurnBasedFight(BaseState):
                 tool_tip_text=ability.get_description(),
             )
 
+        self.__count_down = UITextBox(
+            html_text="3",
+            relative_rect=pygame.Rect((0, -100), (self.get_screen().width, -1)),
+            anchors={"center": "center"},
+            manager=self.get_ui_manager(),
+            object_id=ObjectID(class_id="@title", object_id="#game_title"))
+
         visual_dialogue_rect = pygame.Rect((0, 0), (self.get_screen().width, 150))
         visual_dialogue_rect.bottom = 0
         self.__visual_dialogue_container = UIPanel(
@@ -207,6 +215,7 @@ class TurnBasedFight(BaseState):
 
         self.__player_animation = self.__ANIMATION_ASSETS["player/idle"].copy()
         self.__enemy_animation = self.__ANIMATION_ASSETS["enemy/idle"].copy()
+        self.__start_tick = pygame.time.get_ticks()
 
     def handle_events(self) -> None:
         for event in pygame.event.get():
@@ -242,10 +251,12 @@ class TurnBasedFight(BaseState):
         if self.__quit_button_pressed:
             self.set_time_to_quit_app(True)
             return
-
-        self.__combat_round_initalised = True
-        if not self.__combat_round_initalised:
-            pass  # Initialize the combat round - 3,2,1 GO
+        seconds = (pygame.time.get_ticks() - self.__start_tick) / 1000
+        if seconds > 3:
+            self.__combat_round_initalised = True
+            self.__count_down.kill()
+        else:
+            self.__count_down.set_text(str(3 - int(seconds)))
 
         if (
             self.__enemy.get_statistics()["health_points"] > 0
@@ -313,6 +324,10 @@ class TurnBasedFight(BaseState):
                                 False,
                                 locked_ability_decision,
                             )
+                            if locked_ability_decision is not None:
+                                for quest in self.__quests:
+                                    if quest.get_name() == "Fireball" and locked_ability_decision.get_name() == "Fireball":
+                                        quest.increment_progress(1)
                     # Attacking, perform animation, update the health bars
                     elif (
                         self.__is_player_attacking
@@ -392,14 +407,20 @@ class TurnBasedFight(BaseState):
                         self.__round_counter += 1
 
         if self.__enemy.get_statistics()["health_points"] <= 0:
-            # Enemy died
-            pass
+            for quest in self.__quests:
+                if quest.get_name() == "Kill DreadNoughts" and self.__enemy.get_name() == "DreadNought":
+                    quest.increment_progress(1)
+                outgoing_transition_dict = self.get_incoming_transition_data()
+                outgoing_transition_dict["winner"] = "player"
+                self.set_outgoing_transition_data(self.get_incoming_transition_data)
+                self.set_target_state_name("end_menu")
+                self.set_time_to_transition(True)
         elif self.__player.get_statistics()["health_points"] <= 0:
-            # Player died
-            pass
-        else:
-            # Draw
-            pass
+                outgoing_transition_dict = self.get_incoming_transition_data()
+                outgoing_transition_dict["winner"] = "enemy"
+                self.set_outgoing_transition_data(self.get_incoming_transition_data)
+                self.set_target_state_name("end_menu")
+                self.set_time_to_transition(True)
 
         self.__visual_dialogue.update()
 

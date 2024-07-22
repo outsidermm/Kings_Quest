@@ -45,6 +45,8 @@ class QuestMenu(BaseState):
         self.__xp = xp
 
     def start(self) -> None:
+        self.set_outgoing_transition_data(self.get_incoming_transition_data())
+        
         self.__GUI_background = pygame.transform.scale(
             pygame.image.load("assets/GUIBackground.png"),
             (self.get_screen().width, self.get_screen().height),
