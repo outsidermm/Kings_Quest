@@ -1,6 +1,6 @@
 class XP:
-    def __init__(self) -> None:
-        self.xp = 1000
+    def __init__(self, initial_xp: int) -> None:
+        self.xp = initial_xp
 
     def gain_xp(self, new_xp: int) -> None:
         self.xp += new_xp
