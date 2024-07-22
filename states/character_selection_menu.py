@@ -345,7 +345,7 @@ class CharacterSelectionMenu(BaseState):
 
     def run(self) -> None:
         if self.__quit_button_pressed:
-            self.get_game_state_manager().set_time_to_quit_app(True)
+            self.set_time_to_quit_app(True)
             return
 
         if self.__game_start:
