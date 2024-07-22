@@ -4,7 +4,6 @@ import pygame, pygame_gui
 from pygame_gui.elements import UIButton, UIImage, UITextBox, UIPanel
 from pygame_gui.core import ObjectID
 from characters.enemies.base_enemy import BaseEnemy
-from xp import XP
 
 
 class LevelSelectionMenu(BaseState):
@@ -60,7 +59,7 @@ class LevelSelectionMenu(BaseState):
 
     def start(self) -> None:
         self.set_outgoing_transition_data(self.get_incoming_transition_data())
-        
+
         self.__GUI_background = pygame.transform.scale(
             pygame.image.load("assets/GUIBackground.png"),
             (self.get_screen().width, self.get_screen().height),
@@ -254,7 +253,7 @@ class LevelSelectionMenu(BaseState):
 
         if self.__navigate_combat:
             combat_pair = self.get_incoming_transition_data()
-            combat_pair["enemy"] = self.__enemies[self.__show_enemy_info]
+            combat_pair["enemy"] = self.__enemies[self.__show_enemy_info].copy()
             self.set_outgoing_transition_data(combat_pair)
             self.set_target_state_name("turn_based_fight")
             self.set_time_to_transition(True)
@@ -332,6 +331,7 @@ class LevelSelectionMenu(BaseState):
         self.__combat_entry_panel.kill()
         self.__static_panel_wrapper.kill()
         [self.__statistic_text[statistic_count].kill() for statistic_count in range(10)]
+        self.__show_enemy_info = -1
         self.get_screen().fill((0, 0, 0))
 
     def get_screen(self) -> pygame.Surface:
