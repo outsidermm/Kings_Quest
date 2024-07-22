@@ -1,4 +1,4 @@
-from .base_state import BaseState
+from states.base_state import BaseState
 import pygame, pygame_gui
 from pygame_gui.elements import UIButton, UIImage, UITextBox, UIPanel
 from pygame_gui.core import ObjectID
@@ -17,7 +17,7 @@ class CharacterSelectionMenu(BaseState):
 
     __characters: list[BasePlayer] = None
     __selection_page = 0
-    __game_start: bool = False
+    __navigate_level_selection: bool = False
     __upgrade_character: bool = False
     __left_switch_character: bool = False
     __right_switch_character: bool = False
@@ -69,7 +69,7 @@ class CharacterSelectionMenu(BaseState):
             "character_selection_menu",
             screen,
             ui_manager,
-            "turn_based_fight",
+            "level_selection_menu",
             game_state_manager,
         )
         self.__characters = characters
@@ -329,7 +329,7 @@ class CharacterSelectionMenu(BaseState):
                 if event.ui_element == self.__upgrade_button:
                     self.__upgrade_character = True
                 if event.ui_element == self.__go_button:
-                    self.__game_start = True
+                    self.__navigate_level_selection = True
                 if event.ui_element == self.__view_ability_button:
                     self.__ability_menu_active = True
                 if event.ui_element == self.__ability_menu_close:
@@ -348,7 +348,7 @@ class CharacterSelectionMenu(BaseState):
             self.set_time_to_quit_app(True)
             return
 
-        if self.__game_start:
+        if self.__navigate_level_selection:
             self.set_outgoing_transition_data(
                 {"player": self.get_characters()[self.__selection_page]}
             )
@@ -471,7 +471,7 @@ class CharacterSelectionMenu(BaseState):
                     statistic_name,
                     max_statistic_value,
                 )
-            
+
             self.__character_name.set_text(
                 self.__characater_name_list[self.__selection_page]
             )
@@ -510,6 +510,7 @@ class CharacterSelectionMenu(BaseState):
         self.__dismiss_upgrade = False
         self.__update_GUI = False
         self.__quit_button_pressed = False
+        self.__navigate_level_selection = False
 
     def end(self) -> None:
         self.__character_info_panel.kill()
@@ -578,3 +579,9 @@ class CharacterSelectionMenu(BaseState):
 
     def get_time_to_transition(self) -> bool:
         return super().get_time_to_transition()
+
+    def set_target_state_name(self, target_state_name: str) -> None:
+        super().set_target_state_name(target_state_name)
+
+    def get_target_state_name(self) -> str:
+        return super().get_target_state_name()

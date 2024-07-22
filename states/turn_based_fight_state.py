@@ -1,10 +1,11 @@
 from .base_state import BaseState
-from characters.base_character import BaseCharacter
 import pygame, pygame_gui
 from pygame_gui.elements import UIButton, UIImage, UITextBox, UIPanel
 from pygame_gui.core import ObjectID
 from state_manager import GameStateManager
 from characters.base_character import BaseCharacter
+from characters.players.base_player import BasePlayer
+from characters.enemies.base_enemy import BaseEnemy
 from xp import XP
 from gui.combat_hud import CombatHUD
 from combat_controller import CombatController
@@ -17,8 +18,8 @@ from utilities import load_images
 
 class TurnBasedFight(BaseState):
 
-    __player: BaseCharacter = None
-    __enemy: BaseCharacter = None
+    __player: BasePlayer = None
+    __enemy: BaseEnemy = None
     __round_counter: int = 0
     __combat_round_initalised: bool = False
     __player_controller: CombatController = None
@@ -43,7 +44,6 @@ class TurnBasedFight(BaseState):
         screen: pygame.Surface,
         ui_manager: pygame_gui.UIManager,
         game_state_manager: GameStateManager,
-        enemy: BaseCharacter,
         xp: XP = None,
     ):
         super().__init__(
@@ -54,18 +54,7 @@ class TurnBasedFight(BaseState):
             game_state_manager,
         )
         self.__xp = XP()
-        self.__enemy = enemy
 
-        self.__ANIMATION_ASSETS["enemy/idle"] = Animation(
-            load_images(f"characters/{self.__enemy.get_name()}/idle"),
-            is_flipped=True,
-        )
-        self.__ANIMATION_ASSETS["enemy/attack"] = Animation(
-            load_images(f"characters/{self.__enemy.get_name()}/attack"),
-            image_duration=6,
-            loop=False,
-            is_flipped=True,
-        )
 
     def start(self) -> None:
         self.__player = self.get_incoming_transition_data()["player"]
@@ -78,6 +67,19 @@ class TurnBasedFight(BaseState):
             load_images(f"characters/{self.__player.get_name()}/attack"),
             image_duration=6,
             loop=False,
+        )
+
+        self.__enemy = self.get_incoming_transition_data()["enemy"]
+
+        self.__ANIMATION_ASSETS["enemy/idle"] = Animation(
+            load_images(f"characters/{self.__enemy.get_name()}/idle"),
+            is_flipped=True,
+        )
+        self.__ANIMATION_ASSETS["enemy/attack"] = Animation(
+            load_images(f"characters/{self.__enemy.get_name()}/attack"),
+            image_duration=6,
+            loop=False,
+            is_flipped=True,
         )
 
         self.__background_image = UIImage(
@@ -426,3 +428,9 @@ class TurnBasedFight(BaseState):
 
     def get_time_to_transition(self) -> bool:
         return super().get_time_to_transition()
+
+    def set_target_state_name(self, target_state_name: str) -> None:
+        super().set_target_state_name(target_state_name)
+
+    def get_target_state_name(self) -> str:
+        return super().get_target_state_name()
