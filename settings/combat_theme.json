@@ -210,11 +210,24 @@
   "#HUD-text": {
     "colours": {
       "dark_bg": "rgba(0, 0, 0, 0)",
+      "normal_border": "rgba(0, 0, 0, 0)",
       "normal_text": "#FFFFFF"
     },
     "font": {
       "name": "futura",
       "size": "15",
+      "bold": "1"
+    }
+  },
+  "#visual_dialogue_text": {
+    "colours": {
+      "dark_bg": "rgba(0, 0, 0, 0)",
+      "normal_border": "rgba(0, 0, 0, 0)",
+      "normal_text": "#FFFFFF"
+    },
+    "font": {
+      "name": "futura",
+      "size": "25",
       "bold": "1"
     }
   },
