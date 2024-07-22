@@ -29,16 +29,16 @@ class BasePlayer(abc.ABC, BaseCharacter):
     def unlock_ability(self) -> None:
         pass
 
-    def get_name(self) -> None:
+    def get_name(self) -> str:
         return super().get_name()
 
-    def get_sprite_location(self) -> None:
+    def get_sprite_location(self) -> str:
         return super().get_sprite_location()
 
-    def get_statistics(self) -> None:
+    def get_statistics(self) -> dict[str, int]:
         return super().get_statistics()
 
-    def get_abilities(self) -> None:
+    def get_abilities(self) -> list[Ability]:
         return super().get_abilities()
 
     def set_name(self, name: str) -> None:
