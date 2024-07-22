@@ -63,7 +63,7 @@ class CharacterSelectionMenu(BaseState):
         ui_manager: pygame_gui.UIManager,
         game_state_manager: GameStateManager,
         characters: list[BasePlayer],
-        xp: XP = None,
+        xp: XP,
     ):
         super().__init__(
             "character_selection_menu",
@@ -75,7 +75,7 @@ class CharacterSelectionMenu(BaseState):
         self.__characters = characters
         self.__characater_count = len(characters)
         self.__characater_name_list = [character.get_name() for character in characters]
-        self.__xp = XP()
+        self.__xp = xp
 
     def start(self) -> None:
         self.__character_picture_panel = UIPanel(

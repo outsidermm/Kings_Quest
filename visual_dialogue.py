@@ -15,7 +15,7 @@ class VisualDialogue:
         self.__container = container
         self.__dialogue = UITextBox(
             "",
-            pygame.Rect((0, 35), (self.__container.relative_rect.width*0.8, -1)),
+            pygame.Rect((0, 35), (self.__container.relative_rect.width * 0.8, -1)),
             self.__ui_manager,
             container=self.__container,
             anchors={"centerx": "centerx"},
@@ -25,23 +25,25 @@ class VisualDialogue:
 
     def set_dialogue(
         self,
-        player_name:str,enemy_name:str,
+        player_name: str,
+        enemy_name: str,
         health_points: int,
         mana_points: int,
         total_damage: int,
         is_stunned: bool,
         ability: Ability,
     ) -> None:
-        
+
         player_dialogue_output = ""
         enemy_dialogue_output = ""
         final_dialogue_output = ""
-        
-        player_dialogues = ["It's my turn to attack!",
-        "Brace yourself, here they come!"]
 
-        enemy_dialogues = ["Let's see what you've got!",
-        "Prepare to be crushed!"]
+        player_dialogues = [
+            "It's my turn to attack!",
+            "Brace yourself, here they come!",
+        ]
+
+        enemy_dialogues = ["Let's see what you've got!", "Prepare to be crushed!"]
         # Based on health points
         if health_points < 50:
             player_dialogues.append("I'm not done yet!")
@@ -80,27 +82,28 @@ class VisualDialogue:
             player_dialogues.append("I won't let you get away with that!")
             enemy_dialogues.append("You'll pay for that!")
             enemy_dialogues.append("That won't happen again!")
-        
-        player_dialogue_number, enemy_dialogue_number = random.choice([(1,1),(2,0),(0,2),(1,0),(0,1)])
+
+        player_dialogue_number, enemy_dialogue_number = random.choice(
+            [(1, 1), (2, 0), (0, 2), (1, 0), (0, 1)]
+        )
         for _ in range(player_dialogue_number):
             player_dialogue = random.choice(player_dialogues)
             player_dialogues.pop(player_dialogues.index(player_dialogue))
             player_dialogue_output += f"{player_name}: {player_dialogue}\n"
-        
+
         for _ in range(enemy_dialogue_number):
             enemy_dialogue = random.choice(enemy_dialogues)
             enemy_dialogues.pop(enemy_dialogues.index(enemy_dialogue))
             enemy_dialogue_output += f"{enemy_name}: {enemy_dialogue}\n"
-        
+
         if player_dialogue_output != "":
             final_dialogue_output += player_dialogue_output
         if enemy_dialogue_output != "":
             final_dialogue_output += enemy_dialogue_output
-            
+
         self.__dialogue.set_text(final_dialogue_output)
         self.__dialogue.show()
         self.__dialogue_life_time = self.__initial_dialogue_life_time
-
 
     def update(self) -> None:
         if self.__dialogue_life_time > 0:
