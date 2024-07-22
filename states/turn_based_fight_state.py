@@ -29,17 +29,17 @@ class TurnBasedFight(BaseState):
     __ability_selected: Ability = -1
     __ability_button_list: list[UIButton] = [None] * 4
     __is_player_attacking: bool = False
+    __is_enemy_attacking: bool = False
     __mouse_pressed: bool = False
     __enemy_hit_height: float = 0
     __player_animation: Animation = None
     __enemy_animation: Animation = None
-    __is_enemy_attacking: bool = False
     __quit_button_pressed: bool = False
     __visual_dialogue: VisualDialogue = None
     __visual_dialogue_container: UIPanel = None
     __ANIMATION_ASSETS: dict[str, Animation] = {}
     __quests: list[Quest] = None
-    __count_down:UITextBox = None
+    __count_down: UITextBox = None
 
     def __init__(
         self,
@@ -52,7 +52,7 @@ class TurnBasedFight(BaseState):
             "turn_based_fight",
             screen,
             ui_manager,
-            "level_selection_menu",
+            "end_menu",
             game_state_manager,
         )
         self.__quests = quests
@@ -63,25 +63,24 @@ class TurnBasedFight(BaseState):
         self.__ANIMATION_ASSETS["player/idle"] = Animation(
             load_images(f"characters/{self.__player.get_name()}/idle"),
             image_duration=10,
-        )
+        ).copy()
         self.__ANIMATION_ASSETS["player/attack"] = Animation(
             load_images(f"characters/{self.__player.get_name()}/attack"),
             image_duration=6,
             loop=False,
-        )
+        ).copy()
 
         self.__enemy = self.get_incoming_transition_data()["enemy"]
-
         self.__ANIMATION_ASSETS["enemy/idle"] = Animation(
             load_images(f"characters/{self.__enemy.get_name()}/idle"),
             is_flipped=True,
-        )
+        ).copy()
         self.__ANIMATION_ASSETS["enemy/attack"] = Animation(
             load_images(f"characters/{self.__enemy.get_name()}/attack"),
             image_duration=6,
             loop=False,
             is_flipped=True,
-        )
+        ).copy()
 
         self.__background_image = UIImage(
             relative_rect=pygame.Rect(
@@ -195,7 +194,8 @@ class TurnBasedFight(BaseState):
             relative_rect=pygame.Rect((0, -100), (self.get_screen().width, -1)),
             anchors={"center": "center"},
             manager=self.get_ui_manager(),
-            object_id=ObjectID(class_id="@title", object_id="#game_title"))
+            object_id=ObjectID(class_id="@title", object_id="#game_title"),
+        )
 
         visual_dialogue_rect = pygame.Rect((0, 0), (self.get_screen().width, 150))
         visual_dialogue_rect.bottom = 0
@@ -216,6 +216,10 @@ class TurnBasedFight(BaseState):
         self.__player_animation = self.__ANIMATION_ASSETS["player/idle"].copy()
         self.__enemy_animation = self.__ANIMATION_ASSETS["enemy/idle"].copy()
         self.__start_tick = pygame.time.get_ticks()
+        self.__round_counter = 0
+        self.__combat_round_initalised = False
+        self.__is_player_attacking = False
+        self.__is_enemy_attacking = False
 
     def handle_events(self) -> None:
         for event in pygame.event.get():
@@ -326,7 +330,11 @@ class TurnBasedFight(BaseState):
                             )
                             if locked_ability_decision is not None:
                                 for quest in self.__quests:
-                                    if quest.get_name() == "Fireball" and locked_ability_decision.get_name() == "Fireball":
+                                    if (
+                                        quest.get_name() == "Fireball"
+                                        and locked_ability_decision.get_name()
+                                        == "Fireball"
+                                    ):
                                         quest.increment_progress(1)
                     # Attacking, perform animation, update the health bars
                     elif (
@@ -408,19 +416,20 @@ class TurnBasedFight(BaseState):
 
         if self.__enemy.get_statistics()["health_points"] <= 0:
             for quest in self.__quests:
-                if quest.get_name() == "Kill DreadNoughts" and self.__enemy.get_name() == "DreadNought":
+                if (
+                    quest.get_name() == "Kill DreadNoughts"
+                    and self.__enemy.get_name() == "DreadNought"
+                ):
                     quest.increment_progress(1)
                 outgoing_transition_dict = self.get_incoming_transition_data()
                 outgoing_transition_dict["winner"] = "player"
-                self.set_outgoing_transition_data(self.get_incoming_transition_data)
-                self.set_target_state_name("end_menu")
+                self.set_outgoing_transition_data(outgoing_transition_dict)
                 self.set_time_to_transition(True)
         elif self.__player.get_statistics()["health_points"] <= 0:
-                outgoing_transition_dict = self.get_incoming_transition_data()
-                outgoing_transition_dict["winner"] = "enemy"
-                self.set_outgoing_transition_data(self.get_incoming_transition_data)
-                self.set_target_state_name("end_menu")
-                self.set_time_to_transition(True)
+            outgoing_transition_dict = self.get_incoming_transition_data()
+            outgoing_transition_dict["winner"] = "enemy"
+            self.set_outgoing_transition_data(outgoing_transition_dict)
+            self.set_time_to_transition(True)
 
         self.__visual_dialogue.update()
 
@@ -468,6 +477,7 @@ class TurnBasedFight(BaseState):
         self.__player_choice_container.kill()
         self.__tutorial_text.kill()
         self.__visual_dialogue_container.kill()
+        self.__background_image.kill()
         self.get_screen().fill((0, 0, 0))
 
     def tint_damage(self, surface: pygame.Surface, scale: float) -> None:

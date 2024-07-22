@@ -6,6 +6,7 @@ from states.turn_based_fight_state import TurnBasedFight
 from states.character_selection_menu import CharacterSelectionMenu
 from states.level_selection_menu import LevelSelectionMenu
 from states.quest_menu import QuestMenu
+from states.end_menu import EndMenu
 from characters.players.mage import Mage
 from characters.players.ranger import Ranger
 from characters.players.warrior import Warrior
@@ -115,6 +116,13 @@ class Game:
             self.get_ui_manager(),
             self.get_game_state_manager(),
             quests=self.__quests,
+        )
+
+        self.__end_menu = EndMenu(
+            self.get_screen(),
+            self.get_ui_manager(),
+            self.get_game_state_manager(),
+            xp=self.__xp,
         )
 
         self.get_game_state_manager().set_initial_state("start_menu")
