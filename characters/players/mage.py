@@ -36,7 +36,9 @@ class Mage(BasePlayer):
             self.__unlocked_abilities.append(
                 PLAYER_ABILITY_LIST[unlocked_ability_string]
             )
-
+        character_level_user_setting = json_utility.read_json(
+            "settings/user_settings.json"
+        )["character_level"]["Mage"]
         super().__init__(
             "Mage",
             copy.deepcopy(self.__statistics),
@@ -44,12 +46,7 @@ class Mage(BasePlayer):
             self.__abilities,
             self.__unlocked_abilities,
         )
-        for upgrade_number in range(
-            1,
-            json_utility.read_json("settings/user_settings.json")["character_level"][
-                "Mage"
-            ],
-        ):
+        for _ in range(1, character_level_user_setting):
             self.upgrade()
 
     def upgrade(self) -> None:
@@ -61,7 +58,12 @@ class Mage(BasePlayer):
             new_statistic["mana_points"] += 50
         elif self.get_character_level() == 2:
             self.set_character_level(3)
-            new_unlocked_abilities[0].upgrade()
+            index = next(
+                (i for i, ability in enumerate(new_unlocked_abilities) if ability.get_name() == "Fireball"),
+                None
+            )
+            if index is not None:
+                new_unlocked_abilities[index].upgrade()
         elif self.get_character_level() == 3:
             self.set_character_level(4)
             new_unlocked_abilities.append(PLAYER_ABILITY_LIST["Arcane Shield"])
