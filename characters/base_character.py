@@ -1,4 +1,5 @@
 from ability import Ability
+import copy
 
 
 class BaseCharacter:
@@ -19,6 +20,14 @@ class BaseCharacter:
         self.__statistics = statistics
         self.__sprite_location = sprite_location
         self.__abilities = abilities
+
+    def copy(self) -> "BaseCharacter":
+        return BaseCharacter(
+            self.__name,
+            copy.deepcopy(self.__statistics),
+            self.__sprite_location,
+            self.__abilities,
+        )
 
     def get_name(self) -> str:
         return self.__name

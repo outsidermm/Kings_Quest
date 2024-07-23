@@ -1,5 +1,6 @@
 from characters.players.base_player import BasePlayer
 from ability import PLAYER_ABILITY_LIST, Ability
+import copy
 
 
 class Berserker(BasePlayer):
@@ -15,20 +16,33 @@ class Berserker(BasePlayer):
         "physical_damage": 80,
     }
 
-    __unlocked_abilities: list[Ability] = [PLAYER_ABILITY_LIST["Reckless Charge"]]
+    __unlocked_abilities_string: list[str] = []
+    __unlocked_abilities: list[Ability] = []
     __abilities: list[Ability] = [
         PLAYER_ABILITY_LIST["Reckless Charge"],
         PLAYER_ABILITY_LIST["Bloodlust"],
         PLAYER_ABILITY_LIST["Berserk"],
     ]
 
-    def __init__(self, name: str, sprite_location: str) -> None:
+    def __init__(
+        self,
+        sprite_location: str,
+        character_level: int,
+        unlocked_abilities_string: list[str],
+    ) -> None:
+
+        for unlocked_ability_string in unlocked_abilities_string:
+            self.__unlocked_abilities.append(
+                PLAYER_ABILITY_LIST[unlocked_ability_string]
+            )
+        self.__unlocked_abilities_string = unlocked_abilities_string
         super().__init__(
-            name,
-            self.__statistics,
+            "Berseker",
+            copy.deepcopy(self.__statistics),
             sprite_location,
             self.__abilities,
             self.__unlocked_abilities,
+            character_level,
         )
 
     def upgrade(self) -> None:
@@ -51,6 +65,13 @@ class Berserker(BasePlayer):
         new_unlocked_abilities: list[Ability] = self.get_unlocked_abilities()
         new_unlocked_abilities.append(PLAYER_ABILITY_LIST["Berserk"])
         self.set_unlocked_abilities(new_unlocked_abilities)
+
+    def copy(self) -> "Berserker":
+        return Berserker(
+            self.get_sprite_location(),
+            self.get_character_level(),
+            self.__unlocked_abilities_string,
+        )
 
     def get_name(self) -> str:
         return super().get_name()

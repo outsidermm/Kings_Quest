@@ -1,5 +1,6 @@
 from characters.base_character import BaseCharacter
 from ability import Ability
+import copy
 
 
 class BaseEnemy(BaseCharacter):
@@ -12,6 +13,14 @@ class BaseEnemy(BaseCharacter):
         abilities: list[Ability],
     ) -> None:
         super().__init__(name, statistics, sprite_location, abilities)
+
+    def copy(self) -> "BaseEnemy":
+        return BaseEnemy(
+            self.get_name(),
+            copy.deepcopy(self.get_statistics()),
+            self.get_sprite_location(),
+            self.get_abilities(),
+        )
 
     def get_name(self) -> str:
         return super().get_name()

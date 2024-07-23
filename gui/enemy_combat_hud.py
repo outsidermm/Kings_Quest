@@ -6,7 +6,7 @@ from characters.base_character import BaseCharacter
 from gui.health_bar import HealthBar
 
 
-class CombatHUD:
+class EnemyCombatHUD:
     __ui_manager: pygame_gui.UIManager = None
     __player: BaseCharacter = None
     __container = None
@@ -32,7 +32,7 @@ class CombatHUD:
         ui_manager: pygame_gui.UIManager,
         player: BaseCharacter,
         container: UIPanel,
-        is_flipped: bool = False,
+        is_flipped: bool = True,
         HUD_init_text_y: int = 20,
         HUD_text_x: int = 75,
         HUD_step: int = 30,

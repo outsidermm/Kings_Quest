@@ -1,7 +1,8 @@
 import abc
 from ability import Ability
 from characters.base_character import BaseCharacter
-
+import copy
+import json_utility
 
 class BasePlayer(abc.ABC, BaseCharacter):
 
@@ -15,11 +16,21 @@ class BasePlayer(abc.ABC, BaseCharacter):
         sprite_location: str,
         abilities: list[Ability],
         unlocked_abilities: list[Ability],
-        character_level: int = 1,
+        character_level: int,
     ) -> None:
         super().__init__(name, statistics, sprite_location, abilities)
         self.__character_level = character_level
         self.__unlocked_abilities = unlocked_abilities
+
+    def copy(self) -> "BasePlayer":
+        return self.__class__(
+            self.get_name(),
+            copy.deepcopy(self.get_statistics()),  # Deep copy the statistics dictionary
+            self.get_sprite_location(),
+            self.get_abilities(),
+            self.get_unlocked_abilities(),
+            self.get_character_level(),
+        )
 
     @abc.abstractmethod
     def upgrade(self) -> None:
@@ -61,6 +72,9 @@ class BasePlayer(abc.ABC, BaseCharacter):
 
     def set_character_level(self, character_level: int) -> None:
         self.__character_level = character_level
+        user_data = json_utility.read_json("settings/user_settings.json")
+        user_data["character_level"][self.get_name()] = character_level
+        json_utility.write_json("settings/user_settings.json", user_data)
 
     def set_unlocked_abilities(self, unlocked_abilities: list[Ability]) -> None:
         self.__unlocked_abilities = unlocked_abilities
