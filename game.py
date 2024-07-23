@@ -156,6 +156,13 @@ class Game:
             self.get_ui_manager(),
             self.get_game_state_manager(),
             quests=self.__quests,
+            temp_quest=Quest(
+                "Normal Attack",
+                "use normal attack 10 times",
+                10,
+                1000,
+                is_temporary=True,
+            ),
         )
 
         self.__end_menu = EndMenu(

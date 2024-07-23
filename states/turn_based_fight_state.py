@@ -40,6 +40,8 @@ class TurnBasedFight(BaseState):
     __ANIMATION_ASSETS: dict[str, Animation] = {}
     __quests: list[Quest] = None
     __count_down: UITextBox = None
+    __temp_quest: Quest = None
+    __temp_quest_template: Quest = None
 
     def __init__(
         self,
@@ -47,6 +49,7 @@ class TurnBasedFight(BaseState):
         ui_manager: pygame_gui.UIManager,
         game_state_manager: GameStateManager,
         quests: list[Quest],
+        temp_quest: Quest,
     ):
         super().__init__(
             "turn_based_fight",
@@ -56,8 +59,10 @@ class TurnBasedFight(BaseState):
             game_state_manager,
         )
         self.__quests = quests
+        self.__temp_quest_template = temp_quest
 
     def start(self) -> None:
+        self.__temp_quest = self.__temp_quest_template.copy()
         self.__player = self.get_incoming_transition_data()["player"]
 
         self.__ANIMATION_ASSETS["player/idle"] = Animation(
@@ -79,6 +84,12 @@ class TurnBasedFight(BaseState):
             load_images(f"characters/enemies/{self.__enemy.get_name()}/attack"),
             image_duration=6,
             loop=False,
+            is_flipped=True,
+        ).copy()
+
+        self.__ANIMATION_ASSETS["quest_master/idle"] = Animation(
+            load_images("characters/npcs/quest_master/idle"),
+            image_duration=10,
             is_flipped=True,
         ).copy()
 
@@ -109,6 +120,21 @@ class TurnBasedFight(BaseState):
             ),
             manager=self.get_ui_manager(),
         )
+        self.__quest_master_sprite = UIImage(
+            relative_rect=pygame.Rect(
+                (self.get_screen().width * 0.7, 400),
+                (200, 200),
+            ),
+            image_surface=pygame.transform.flip(
+                pygame.image.load(
+                    "assets/characters/npcs/quest_master/idle/0.png"
+                ).convert_alpha(),
+                True,
+                False,
+            ),
+            manager=self.get_ui_manager(),
+        )
+
         self.__player_info_container = UIPanel(
             relative_rect=pygame.Rect((-5, 0), (325, 330)),
             manager=self.get_ui_manager(),
@@ -208,13 +234,15 @@ class TurnBasedFight(BaseState):
         self.__visual_dialogue = VisualDialogue(
             self.get_ui_manager(),
             self.__visual_dialogue_container,
+            self.__temp_quest,
         )
 
         self.__player_controller = CombatController(self.__player, self.__player_sprite)
         self.__enemy_controller = CombatController(self.__enemy, self.__enemy_sprite)
 
-        self.__player_animation = self.__ANIMATION_ASSETS["player/idle"].copy()
-        self.__enemy_animation = self.__ANIMATION_ASSETS["enemy/idle"].copy()
+        self.__player_animation = self.__ANIMATION_ASSETS["player/idle"]
+        self.__enemy_animation = self.__ANIMATION_ASSETS["enemy/idle"]
+        self.__quest_master_animation = self.__ANIMATION_ASSETS["quest_master/idle"]
         self.__start_tick = pygame.time.get_ticks()
         self.__round_counter = 0
         self.__combat_round_initalised = False
@@ -336,6 +364,8 @@ class TurnBasedFight(BaseState):
                                         == "Fireball"
                                     ):
                                         quest.increment_progress(1)
+                            else:
+                                self.__temp_quest.increment_progress(1)
                     # Attacking, perform animation, update the health bars
                     elif (
                         self.__is_player_attacking
@@ -421,13 +451,17 @@ class TurnBasedFight(BaseState):
                     and self.__enemy.get_name() == "DreadNought"
                 ):
                     quest.increment_progress(1)
-                outgoing_transition_dict = self.get_incoming_transition_data()
-                outgoing_transition_dict["winner"] = "player"
-                self.set_outgoing_transition_data(outgoing_transition_dict)
-                self.set_time_to_transition(True)
+            outgoing_transition_dict = self.get_incoming_transition_data()
+            outgoing_transition_dict["winner"] = "player"
+            if self.__temp_quest.is_done():
+                outgoing_transition_dict["temp_quest_completion"] = self.__temp_quest
+            self.set_outgoing_transition_data(outgoing_transition_dict)
+            self.set_time_to_transition(True)
         elif self.__player.get_statistics()["health_points"] <= 0:
             outgoing_transition_dict = self.get_incoming_transition_data()
             outgoing_transition_dict["winner"] = "enemy"
+            if self.__temp_quest.is_done():
+                outgoing_transition_dict["temp_quest_completion"] = self.__temp_quest
             self.set_outgoing_transition_data(outgoing_transition_dict)
             self.set_time_to_transition(True)
 
@@ -443,9 +477,11 @@ class TurnBasedFight(BaseState):
 
         self.__player_animation.update()
         self.__enemy_animation.update()
+        self.__quest_master_animation.update()
 
         self.__player_sprite.image = self.__player_animation.img()
         self.__enemy_sprite.image = self.__enemy_animation.img()
+        self.__quest_master_sprite.image = self.__quest_master_animation.img()
 
         for ability_index in range(len(self.__player.get_unlocked_abilities())):
             if self.__player_controller.is_ability_on_cooldown(
@@ -472,11 +508,13 @@ class TurnBasedFight(BaseState):
     def end(self) -> None:
         self.__player_sprite.kill()
         self.__enemy_sprite.kill()
+        self.__quest_master_sprite.kill()
         self.__player_info_container.kill()
         self.__enemy_info_container.kill()
         self.__player_choice_container.kill()
         self.__tutorial_text.kill()
         self.__visual_dialogue_container.kill()
+        self.__visual_dialogue.kill()
         self.__background_image.kill()
         self.get_screen().fill((0, 0, 0))
 

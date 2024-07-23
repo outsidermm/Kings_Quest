@@ -54,9 +54,6 @@ class Ability:
     def get_description(self) -> str:
         return self.__description
 
-    def get_modifer(self) -> list[Tuple[float, str]]:
-        return self.__modifer
-
     def get_cooldown(self) -> int:
         return self.__cooldown
 
@@ -80,9 +77,6 @@ class Ability:
 
     def set_description(self, description: str) -> None:
         self.__description = description
-
-    def set_modifer(self, modifer: list[Tuple[float, str]]) -> None:
-        self.__modifer = modifer
 
     def set_cooldown(self, cooldown: int) -> None:
         self.__cooldown = cooldown

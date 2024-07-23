@@ -1,4 +1,5 @@
 import json_utility
+import copy
 
 
 class Quest:
@@ -8,6 +9,7 @@ class Quest:
     __aim: int = 0
     __progress: int = 0
     __is_claimed: bool = False
+    __is_temporary: bool = False
 
     def __init__(
         self,
@@ -15,32 +17,46 @@ class Quest:
         description: str,
         aim: int,
         reward: int,
+        is_temporary: bool = False,
     ) -> None:
         self.__name = name
         self.__description = description
         self.__reward = reward
-        self.__progress = json_utility.read_json("settings/user_settings.json")[
-            "quest_progress"
-        ][self.__name]
+        if not is_temporary:
+            self.__progress = json_utility.read_json("settings/user_settings.json")[
+                "quest_progress"
+            ][self.__name]
+            self.__is_claimed = json_utility.read_json("settings/user_settings.json")[
+                "quest_claimed"
+            ][self.__name]
+        self.__is_temporary = is_temporary
         self.__aim = aim
-        self.__is_claimed = json_utility.read_json("settings/user_settings.json")[
-            "quest_claimed"
-        ][self.__name]
+
+    def copy(self) -> "Quest":
+        return Quest(
+            self.__name,
+            self.__description,
+            self.__aim,
+            self.__reward,
+            self.__is_temporary,
+        )
 
     def increment_progress(self, increment: int) -> None:
         self.__progress += increment
-        user_setting = json_utility.read_json("settings/user_settings.json")
-        user_setting["quest_progress"][self.__name] = self.__progress
-        json_utility.write_json("settings/user_settings.json", user_setting)
+        if not self.__is_temporary:
+            user_setting = json_utility.read_json("settings/user_settings.json")
+            user_setting["quest_progress"][self.__name] = self.__progress
+            json_utility.write_json("settings/user_settings.json", user_setting)
 
     def is_done(self) -> bool:
         return self.__progress >= self.__aim
 
     def claim(self) -> None:
         self.__is_claimed = True
-        user_setting = json_utility.read_json("settings/user_settings.json")
-        user_setting["quest_claimed"][self.__name] = self.__is_claimed
-        json_utility.write_json("settings/user_settings.json", user_setting)
+        if not self.__is_temporary:
+            user_setting = json_utility.read_json("settings/user_settings.json")
+            user_setting["quest_claimed"][self.__name] = self.__is_claimed
+            json_utility.write_json("settings/user_settings.json", user_setting)
 
     def is_claimed(self) -> bool:
         return self.__is_claimed
