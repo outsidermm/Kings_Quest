@@ -17,6 +17,7 @@ def write_json(file_path, data):
     with open(file_path, "w") as file:
         json.dump(data, file, indent=4)
 
+
 def write_default_if_not_exist(file_path, default_data):
     """Writes a default dictionary to a JSON file if it does not exist."""
     if not os.path.exists(file_path):

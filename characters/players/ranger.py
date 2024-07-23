@@ -40,8 +40,9 @@ class Ranger(BasePlayer):
             sprite_location,
             self.__abilities,
             self.__unlocked_abilities,
-            character_level,
         )
+        for upgrade_number in range(1, character_level):
+            self.upgrade()
 
     def upgrade(self) -> None:
         new_statistic: dict[str, int] = self.get_statistics()
@@ -88,3 +89,24 @@ class Ranger(BasePlayer):
 
     def get_unlocked_abilities(self) -> list[Ability]:
         return super().get_unlocked_abilities()
+
+    def set_name(self, name: str) -> None:
+        super().set_name(name)
+
+    def set_sprite_location(self, sprite_location: str) -> None:
+        super().set_sprite_location(sprite_location)
+
+    def set_statistics(self, statistics: dict) -> None:
+        super().set_statistics(statistics)
+
+    def set_character_level(self, character_level: int) -> None:
+        super().set_character_level(character_level)
+
+    def set_abilities(self, abilities: list[Ability]) -> None:
+        super().set_abilities(abilities)
+
+    def set_unlocked_abilities(self, unlocked_abilities: list[Ability]) -> None:
+        super().set_unlocked_abilities(unlocked_abilities)
+        self.__unlocked_abilities_string = list(
+            set([ability.get_name() for ability in unlocked_abilities])
+        )
