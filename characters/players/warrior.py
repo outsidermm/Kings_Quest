@@ -15,7 +15,8 @@ class Warrior(BasePlayer):
         "mana_points": 150,
         "physical_damage": 75,
     }
-    __unlocked_abilities: list[Ability] = [PLAYER_ABILITY_LIST["Power Slash"]]
+    __unlocked_abilities_string: list[str] = []
+    __unlocked_abilities: list[Ability] = []
 
     __abilities: list[Ability] = [
         PLAYER_ABILITY_LIST["Power Slash"],
@@ -23,13 +24,24 @@ class Warrior(BasePlayer):
         PLAYER_ABILITY_LIST["Shield War"],
     ]
 
-    def __init__(self, name: str, sprite_location: str) -> None:
+    def __init__(
+        self,
+        sprite_location: str,
+        character_level: int,
+        unlocked_abilities_string: list[str],
+    ) -> None:
+        for unlocked_ability_string in unlocked_abilities_string:
+            self.__unlocked_abilities.append(
+                PLAYER_ABILITY_LIST[unlocked_ability_string]
+            )
+        self.__unlocked_abilities_string = unlocked_abilities_string
         super().__init__(
-            name,
+            "Warrior",
             copy.deepcopy(self.__statistics),
             sprite_location,
             self.__abilities,
             self.__unlocked_abilities,
+            character_level,
         )
 
     def upgrade(self):
@@ -54,7 +66,11 @@ class Warrior(BasePlayer):
         self.set_unlocked_abilities(new_unlocked_abilities)
 
     def copy(self) -> "Warrior":
-        return Warrior(self.get_name(), self.get_sprite_location())
+        return Warrior(
+            self.get_sprite_location(),
+            self.get_character_level(),
+            self.__unlocked_abilities_string,
+        )
 
     def get_name(self) -> str:
         return super().get_name()

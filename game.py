@@ -12,10 +12,13 @@ from characters.players.ranger import Ranger
 from characters.players.warrior import Warrior
 from characters.players.berserker import Berserker
 from characters.enemies.dreadnought import DreadNought
+from characters.enemies.devourer import Devourer
+from characters.enemies.enigma import Enigma
 from characters.base_character import BaseCharacter
 from characters.enemies.base_enemy import BaseEnemy
 from xp import XP
 from quest import Quest
+import json_utility
 
 
 class Game:
@@ -58,28 +61,99 @@ class Game:
         self.get_ui_manager().get_theme().load_theme("settings/combat_theme.json")
         self.get_ui_manager().get_theme().load_theme("settings/health_bar.json")
 
+        default_user_data = {
+            "xp": 1000,
+            "quest_progress": {
+                "Fireball": 10,
+                "Kill DreadNoughts": 0,
+            },
+            "character_level": {
+                "Warrior": 1,
+                "Mage": 1,
+                "Berserker": 1,
+                "Ranger": 1,
+            },
+            "character_abilities": {
+                "Warrior": ["Power Slash"],
+                "Mage": ["Fireball"],
+                "Berserker": ["Reckless Charge"],
+                "Ranger": ["Arrow Barrage"],
+            },
+        }
+        json_utility.write_default_if_not_exist(
+            "settings/user_settings.json", default_data=default_user_data
+        )
+
         self.set_clock(pygame.time.Clock())
 
         self.set_game_state_manager(GameStateManager())
 
         self.set_characters(
             [
-                Warrior("Aric", "assets/characters/aric/idle/0.png"),
-                Mage("Lyra", "assets/characters/lyra/idle/0.png"),
-                Berserker("Berserker", "assets/characters/berserker/idle/0.png"),
-                Ranger("Ranger", "assets/characters/ranger/idle/0.png"),
+                Warrior(
+                    "assets/characters/players/warrior/idle/0.png",
+                    json_utility.read_json("settings/user_settings.json")[
+                        "character_level"
+                    ]["Warrior"],
+                    json_utility.read_json("settings/user_settings.json")[
+                        "character_abilities"
+                    ]["Warrior"],
+                ),
+                Mage(
+                    "assets/characters/players/mage/idle/0.png",
+                    json_utility.read_json("settings/user_settings.json")[
+                        "character_level"
+                    ]["Mage"],
+                    json_utility.read_json("settings/user_settings.json")[
+                        "character_abilities"
+                    ]["Mage"],
+                ),
+                Berserker(
+                    "assets/characters/players/berserker/idle/0.png",
+                    json_utility.read_json("settings/user_settings.json")[
+                        "character_level"
+                    ]["Berserker"],
+                    json_utility.read_json("settings/user_settings.json")[
+                        "character_abilities"
+                    ]["Berserker"],
+                ),
+                Ranger(
+                    "assets/characters/players/ranger/idle/0.png",
+                    json_utility.read_json("settings/user_settings.json")[
+                        "character_level"
+                    ]["Ranger"],
+                    json_utility.read_json("settings/user_settings.json")[
+                        "character_abilities"
+                    ]["Ranger"],
+                ),
             ]
         )
         self.__enemies = [
-            DreadNought("DreadNought", "assets/characters/dreadnought/idle/0000.png"),
-            DreadNought("DreadNought", "assets/characters/dreadnought/idle/0000.png"),
-            DreadNought("DreadNought", "assets/characters/dreadnought/idle/0000.png"),
+            DreadNought("assets/characters/enemies/dreadnought/idle/0000.png"),
+            Devourer("assets/characters/enemies/devourer/idle/0000.png"),
+            Enigma("assets/characters/enemies/enigma/idle/0000.png"),
         ]
 
-        self.__xp = XP(10000)
+        self.__xp = XP(json_utility.read_json("settings/user_settings.json")["xp"])
         self.__quests = [
-            Quest("Fireball", "Cast 10 Fireballs", 10, 10, 1000),
-            Quest("Kill DreadNoughts", "Kill 5 DreadNoughts", 0, 5, 2000),
+            Quest(
+                "Fireball",
+                "Cast 10 Fireballs",
+                json_utility.read_json("settings/user_settings.json")["quest_progress"][
+                    "Fireball"
+                ],
+                10,
+                1000,
+            ),
+            Quest(
+                "Kill DreadNoughts",
+                "Kill 5 DreadNoughts",
+                json_utility.read_json("settings/user_settings.json")["quest_progress"][
+                    "Kill DreadNoughts"
+                ],
+                5,
+                2000,
+            ),
         ]
         self.set_start_menu(
             StartMenu(

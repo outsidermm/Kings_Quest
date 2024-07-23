@@ -5,11 +5,11 @@ from pygame_gui.core import ObjectID
 from state_manager import GameStateManager
 from characters.players.base_player import BasePlayer
 from characters.enemies.base_enemy import BaseEnemy
-from gui.combat_hud import CombatHUD
+from gui.player_combat_hud import PlayerCombatHUD
+from gui.enemy_combat_hud import EnemyCombatHUD
 from combat_controller import CombatController
 import random
 from ability import Ability
-from gui.combat_hud import CombatHUD
 from animator import Animation
 from utilities import load_images
 from visual_dialogue import VisualDialogue
@@ -24,8 +24,8 @@ class TurnBasedFight(BaseState):
     __combat_round_initalised: bool = False
     __player_controller: CombatController = None
     __enemy_controller: CombatController = None
-    __player_HUD: CombatHUD = None
-    __enemy_HUD: CombatHUD = None
+    __player_HUD: PlayerCombatHUD = None
+    __enemy_HUD: EnemyCombatHUD = None
     __ability_selected: Ability = -1
     __ability_button_list: list[UIButton] = [None] * 4
     __is_player_attacking: bool = False
@@ -61,22 +61,22 @@ class TurnBasedFight(BaseState):
         self.__player = self.get_incoming_transition_data()["player"]
 
         self.__ANIMATION_ASSETS["player/idle"] = Animation(
-            load_images(f"characters/{self.__player.get_name()}/idle"),
+            load_images(f"characters/players/{self.__player.get_name()}/idle"),
             image_duration=10,
         ).copy()
         self.__ANIMATION_ASSETS["player/attack"] = Animation(
-            load_images(f"characters/{self.__player.get_name()}/attack"),
+            load_images(f"characters/players/{self.__player.get_name()}/attack"),
             image_duration=6,
             loop=False,
         ).copy()
 
         self.__enemy = self.get_incoming_transition_data()["enemy"]
         self.__ANIMATION_ASSETS["enemy/idle"] = Animation(
-            load_images(f"characters/{self.__enemy.get_name()}/idle"),
+            load_images(f"characters/enemies/{self.__enemy.get_name()}/idle"),
             is_flipped=True,
         ).copy()
         self.__ANIMATION_ASSETS["enemy/attack"] = Animation(
-            load_images(f"characters/{self.__enemy.get_name()}/attack"),
+            load_images(f"characters/enemies/{self.__enemy.get_name()}/attack"),
             image_duration=6,
             loop=False,
             is_flipped=True,
@@ -115,7 +115,7 @@ class TurnBasedFight(BaseState):
             object_id=ObjectID(object_id="#semi-transparent_panel"),
         )
 
-        self.__player_HUD = CombatHUD(
+        self.__player_HUD = PlayerCombatHUD(
             self.get_ui_manager(), self.__player, self.__player_info_container
         )
 
@@ -128,7 +128,7 @@ class TurnBasedFight(BaseState):
             object_id=ObjectID(object_id="#semi-transparent_panel"),
         )
 
-        self.__enemy_HUD = CombatHUD(
+        self.__enemy_HUD = EnemyCombatHUD(
             self.get_ui_manager(),
             self.__enemy,
             self.__enemy_info_container,

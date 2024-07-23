@@ -16,7 +16,7 @@ class BasePlayer(abc.ABC, BaseCharacter):
         sprite_location: str,
         abilities: list[Ability],
         unlocked_abilities: list[Ability],
-        character_level: int = 1,
+        character_level: int,
     ) -> None:
         super().__init__(name, statistics, sprite_location, abilities)
         self.__character_level = character_level

@@ -15,20 +15,32 @@ class Ranger(BasePlayer):
         "mana_points": 200,
         "physical_damage": 70,
     }
-    __unlocked_abilities: list[Ability] = [PLAYER_ABILITY_LIST["Arrow Barrage"]]
+    __unlocked_abilities_string: list[str] = []
+    __unlocked_abilities: list[Ability] = []
     __abilities: list[Ability] = [
         PLAYER_ABILITY_LIST["Arrow Barrage"],
         PLAYER_ABILITY_LIST["Natural Grace"],
         PLAYER_ABILITY_LIST["Fatal Shadow"],
     ]
 
-    def __init__(self, name: str, sprite_location: str) -> None:
+    def __init__(
+        self,
+        sprite_location: str,
+        character_level: int,
+        unlocked_abilities_string: list[str],
+    ) -> None:
+        for unlocked_ability_string in unlocked_abilities_string:
+            self.__unlocked_abilities.append(
+                PLAYER_ABILITY_LIST[unlocked_ability_string]
+            )
+        self.__unlocked_abilities_string = unlocked_abilities_string
         super().__init__(
-            name,
+            "Ranger",
             copy.deepcopy(self.__statistics),
             sprite_location,
             self.__abilities,
             self.__unlocked_abilities,
+            character_level,
         )
 
     def upgrade(self) -> None:
@@ -53,7 +65,11 @@ class Ranger(BasePlayer):
         self.set_unlocked_abilities(new_unlocked_abilities)
 
     def copy(self) -> "Ranger":
-        return Ranger(self.get_name(), self.get_sprite_location())
+        return Ranger(
+            self.get_sprite_location(),
+            self.get_character_level(),
+            self.__unlocked_abilities_string,
+        )
 
     def get_name(self) -> str:
         return super().get_name()

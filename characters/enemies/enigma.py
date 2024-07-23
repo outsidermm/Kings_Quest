@@ -3,19 +3,19 @@ from ability import Ability, ENEMY_ABILITY_LIST
 import copy
 
 
-class DreadNought(BaseEnemy):
+class Enigma(BaseEnemy):
 
     __statistics: dict[str, int] = {
-        "health_points": 1800,
-        "physical_defense": 200,
-        "magical_defense": 150,
+        "health_points": 1700,
+        "physical_defense": 100,
+        "magical_defense": 200,
         "spell_power": 150,
         "physical_power": 120,
         "health_regeneration": 15,
         "mana_regeneration": 15,
         "mana_points": 250,
-        "physical_damage": 40,
-        "magical_damage": 60,
+        "physical_damage": 100,
+        "magical_damage": 0,
     }
 
     __abilities: list[Ability] = [
@@ -26,14 +26,14 @@ class DreadNought(BaseEnemy):
 
     def __init__(self, sprite_location: str) -> None:
         super().__init__(
-            "DreadNought",
+            "Enigma",
             copy.deepcopy(self.__statistics),
             sprite_location,
             self.__abilities,
         )
 
-    def copy(self) -> "DreadNought":
-        return DreadNought(self.get_sprite_location())
+    def copy(self) -> "Enigma":
+        return Enigma(self.get_sprite_location())
 
     def get_name(self) -> str:
         return super().get_name()
