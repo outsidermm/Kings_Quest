@@ -4,6 +4,7 @@ from characters.base_character import BaseCharacter
 import copy
 import json_utility
 
+
 class BasePlayer(abc.ABC, BaseCharacter):
 
     __unlocked_abilities: list[Ability] = []
@@ -16,11 +17,11 @@ class BasePlayer(abc.ABC, BaseCharacter):
         sprite_location: str,
         abilities: list[Ability],
         unlocked_abilities: list[Ability],
-        character_level: int,
+        character_level: int = 1,
     ) -> None:
         super().__init__(name, statistics, sprite_location, abilities)
-        self.__character_level = character_level
-        self.__unlocked_abilities = unlocked_abilities
+        self.set_character_level(character_level)
+        self.set_unlocked_abilities(unlocked_abilities)
 
     def copy(self) -> "BasePlayer":
         return self.__class__(
@@ -77,4 +78,9 @@ class BasePlayer(abc.ABC, BaseCharacter):
         json_utility.write_json("settings/user_settings.json", user_data)
 
     def set_unlocked_abilities(self, unlocked_abilities: list[Ability]) -> None:
-        self.__unlocked_abilities = unlocked_abilities
+        self.__unlocked_abilities = list(set(unlocked_abilities))
+        user_data = json_utility.read_json("settings/user_settings.json")
+        user_data["character_abilities"][self.get_name()] = list(
+            set([ability.get_name() for ability in unlocked_abilities])
+        )
+        json_utility.write_json("settings/user_settings.json", user_data)

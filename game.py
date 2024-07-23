@@ -62,10 +62,14 @@ class Game:
         self.get_ui_manager().get_theme().load_theme("settings/health_bar.json")
 
         default_user_data = {
-            "xp": 1000,
+            "xp": 5000,
             "quest_progress": {
-                "Fireball": 10,
+                "Fireball": 0,
                 "Kill DreadNoughts": 0,
+            },
+            "quest_claimed": {
+                "Fireball": False,
+                "Kill DreadNoughts": False,
             },
             "character_level": {
                 "Warrior": 1,
@@ -90,42 +94,10 @@ class Game:
 
         self.set_characters(
             [
-                Warrior(
-                    "assets/characters/players/warrior/idle/0.png",
-                    json_utility.read_json("settings/user_settings.json")[
-                        "character_level"
-                    ]["Warrior"],
-                    json_utility.read_json("settings/user_settings.json")[
-                        "character_abilities"
-                    ]["Warrior"],
-                ),
-                Mage(
-                    "assets/characters/players/mage/idle/0.png",
-                    json_utility.read_json("settings/user_settings.json")[
-                        "character_level"
-                    ]["Mage"],
-                    json_utility.read_json("settings/user_settings.json")[
-                        "character_abilities"
-                    ]["Mage"],
-                ),
-                Berserker(
-                    "assets/characters/players/berserker/idle/0.png",
-                    json_utility.read_json("settings/user_settings.json")[
-                        "character_level"
-                    ]["Berserker"],
-                    json_utility.read_json("settings/user_settings.json")[
-                        "character_abilities"
-                    ]["Berserker"],
-                ),
-                Ranger(
-                    "assets/characters/players/ranger/idle/0.png",
-                    json_utility.read_json("settings/user_settings.json")[
-                        "character_level"
-                    ]["Ranger"],
-                    json_utility.read_json("settings/user_settings.json")[
-                        "character_abilities"
-                    ]["Ranger"],
-                ),
+                Warrior("assets/characters/players/warrior/idle/0.png"),
+                Mage("assets/characters/players/mage/idle/0.png"),
+                Berserker("assets/characters/players/berserker/idle/0.png"),
+                Ranger("assets/characters/players/ranger/idle/0.png"),
             ]
         )
         self.__enemies = [
@@ -139,18 +111,12 @@ class Game:
             Quest(
                 "Fireball",
                 "Cast 10 Fireballs",
-                json_utility.read_json("settings/user_settings.json")["quest_progress"][
-                    "Fireball"
-                ],
                 10,
                 1000,
             ),
             Quest(
                 "Kill DreadNoughts",
                 "Kill 5 DreadNoughts",
-                json_utility.read_json("settings/user_settings.json")["quest_progress"][
-                    "Kill DreadNoughts"
-                ],
                 5,
                 2000,
             ),

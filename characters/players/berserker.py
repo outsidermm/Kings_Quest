@@ -1,6 +1,7 @@
 from characters.players.base_player import BasePlayer
 from ability import PLAYER_ABILITY_LIST, Ability
 import copy
+import json_utility
 
 
 class Berserker(BasePlayer):
@@ -13,7 +14,7 @@ class Berserker(BasePlayer):
         "physical_power": 120,
         "health_regeneration": 10,
         "mana_points": 100,
-        "physical_damage": 80,
+        "physical_damage": 1000,
     }
 
     __unlocked_abilities_string: list[str] = []
@@ -27,23 +28,29 @@ class Berserker(BasePlayer):
     def __init__(
         self,
         sprite_location: str,
-        character_level: int,
-        unlocked_abilities_string: list[str],
     ) -> None:
-
-        for unlocked_ability_string in unlocked_abilities_string:
+        self.__unlocked_abilities_string = json_utility.read_json(
+            "settings/user_settings.json"
+        )["character_abilities"]["Berserker"]
+        for unlocked_ability_string in self.__unlocked_abilities_string:
             self.__unlocked_abilities.append(
                 PLAYER_ABILITY_LIST[unlocked_ability_string]
             )
-        self.__unlocked_abilities_string = unlocked_abilities_string
+
         super().__init__(
-            "Berseker",
+            "Berserker",
             copy.deepcopy(self.__statistics),
             sprite_location,
             self.__abilities,
             self.__unlocked_abilities,
-            character_level,
         )
+        for upgrade_number in range(
+            1,
+            json_utility.read_json("settings/user_settings.json")["character_level"][
+                "Berserker"
+            ],
+        ):
+            self.upgrade()
 
     def upgrade(self) -> None:
         new_statistic: dict[str, int] = self.get_statistics()
@@ -69,8 +76,6 @@ class Berserker(BasePlayer):
     def copy(self) -> "Berserker":
         return Berserker(
             self.get_sprite_location(),
-            self.get_character_level(),
-            self.__unlocked_abilities_string,
         )
 
     def get_name(self) -> str:
@@ -108,3 +113,6 @@ class Berserker(BasePlayer):
 
     def set_unlocked_abilities(self, unlocked_abilities: list[Ability]) -> None:
         super().set_unlocked_abilities(unlocked_abilities)
+        self.__unlocked_abilities_string = list(
+            set([ability.get_name() for ability in unlocked_abilities])
+        )
