@@ -1,6 +1,7 @@
 from characters.players.base_player import BasePlayer
 from ability import PLAYER_ABILITY_LIST, Ability
 import copy
+import json_utility
 
 
 class Berserker(BasePlayer):
@@ -13,7 +14,7 @@ class Berserker(BasePlayer):
         "physical_power": 120,
         "health_regeneration": 10,
         "mana_points": 100,
-        "physical_damage": 80,
+        "physical_damage": 1000,
     }
 
     __unlocked_abilities_string: list[str] = []
@@ -27,14 +28,15 @@ class Berserker(BasePlayer):
     def __init__(
         self,
         sprite_location: str,
-        character_level: int,
-        unlocked_abilities_string: list[str],
     ) -> None:
-        for unlocked_ability_string in unlocked_abilities_string:
+        self.__unlocked_abilities_string = json_utility.read_json(
+            "settings/user_settings.json"
+        )["character_abilities"]["Berserker"]
+        for unlocked_ability_string in self.__unlocked_abilities_string:
             self.__unlocked_abilities.append(
                 PLAYER_ABILITY_LIST[unlocked_ability_string]
             )
-        self.__unlocked_abilities_string = unlocked_abilities_string
+
         super().__init__(
             "Berserker",
             copy.deepcopy(self.__statistics),
@@ -42,7 +44,12 @@ class Berserker(BasePlayer):
             self.__abilities,
             self.__unlocked_abilities,
         )
-        for upgrade_number in range(1, character_level):
+        for upgrade_number in range(
+            1,
+            json_utility.read_json("settings/user_settings.json")["character_level"][
+                "Berserker"
+            ],
+        ):
             self.upgrade()
 
     def upgrade(self) -> None:
@@ -69,8 +76,6 @@ class Berserker(BasePlayer):
     def copy(self) -> "Berserker":
         return Berserker(
             self.get_sprite_location(),
-            self.get_character_level(),
-            self.__unlocked_abilities_string,
         )
 
     def get_name(self) -> str:

@@ -1,3 +1,6 @@
+import json_utility
+
+
 class Quest:
     __name: str = ""
     __description: str = ""
@@ -10,26 +13,34 @@ class Quest:
         self,
         name: str,
         description: str,
-        inital_progress: int,
         aim: int,
         reward: int,
-        is_claimed: bool = False,
     ) -> None:
         self.__name = name
         self.__description = description
         self.__reward = reward
-        self.__progress = inital_progress
+        self.__progress = json_utility.read_json("settings/user_settings.json")[
+            "quest_progress"
+        ][self.__name]
         self.__aim = aim
-        self.__is_claimed = is_claimed
+        self.__is_claimed = json_utility.read_json("settings/user_settings.json")[
+            "quest_claimed"
+        ][self.__name]
 
     def increment_progress(self, increment: int) -> None:
         self.__progress += increment
+        user_setting = json_utility.read_json("settings/user_settings.json")
+        user_setting["quest_progress"][self.__name] = self.__progress
+        json_utility.write_json("settings/user_settings.json", user_setting)
 
     def is_done(self) -> bool:
         return self.__progress >= self.__aim
 
     def claim(self) -> None:
         self.__is_claimed = True
+        user_setting = json_utility.read_json("settings/user_settings.json")
+        user_setting["quest_claimed"][self.__name] = self.__is_claimed
+        json_utility.write_json("settings/user_settings.json", user_setting)
 
     def is_claimed(self) -> bool:
         return self.__is_claimed
