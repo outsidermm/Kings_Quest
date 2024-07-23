@@ -53,14 +53,25 @@ class CombatController:
         return self.__is_stunned
 
     def stunned_round(self) -> None:
-        for buff_name, (
-            buff_value,
-            buff_duration,
-        ) in self.__buff_dict.copy().items():
-            if buff_duration > 1:
-                self.__buff_dict[buff_name][1] -= 1
+        # Collect abilities to remove in a separate list
+        abilities_to_remove = []
+
+        for player_ability in self.__ability_histories:
+            if player_ability.get_duration() > 0:
+                player_ability.set_duration(player_ability.get_duration() - 1)
             else:
-                del self.__buff_dict[buff_name]
+                # Remove buff effect if duration of the ability has passed
+                for modifier, value in player_ability.get_statistics().items():
+                    if modifier in self.__POSITIVE_PLAYER_STATISTIC_MODIFERS and modifier in self.__player_statistic.keys():
+                        self.__player_statistic[modifier] -= value
+                        self.__player_statistic[modifier] = max(
+                            0, self.__player_statistic[modifier]
+                        )
+                abilities_to_remove.append(player_ability)
+
+        # Remove abilities from the history after the iteration
+        for ability_to_remove in abilities_to_remove:
+            self.__ability_histories.remove(ability_to_remove)
         self.__is_stunned = False
 
     def attack(
@@ -68,15 +79,19 @@ class CombatController:
     ) -> Tuple[int, int, dict[str, Tuple[int, int]]]:
         debuff_dict: dict[str, Tuple[int, int]] = {}
 
+        # Collect abilities to remove in a separate list
+        cooldown_abilities_to_remove = []
+
         # Decrease cooldown of abilities
-        for (
-            cooldown_ability_name,
-            cooldown_count,
-        ) in self.__cooldown_abilities.copy().items():
+        for cooldown_ability_name, cooldown_count in self.__cooldown_abilities.items():
             if cooldown_count > 1:
                 self.__cooldown_abilities[cooldown_ability_name] -= 1
             else:
-                del self.__cooldown_abilities[cooldown_ability_name]
+                cooldown_abilities_to_remove.append(cooldown_ability_name)
+
+        # Remove abilities from the cooldown dictionary after the iteration
+        for cooldown_ability_name in cooldown_abilities_to_remove:
+            del self.__cooldown_abilities[cooldown_ability_name]
 
         critical_rate = hit_height / self.__player_sprite.rect.height * 100
         if ability is not None:
@@ -100,18 +115,25 @@ class CombatController:
                     else:
                         self.__player_statistic[modifer] = value
 
+        # Collect abilities to remove in a separate list
+        abilities_to_remove = []
+
         for player_ability in self.__ability_histories:
             if player_ability.get_duration() > 0:
                 player_ability.set_duration(player_ability.get_duration() - 1)
             else:
                 # Remove buff effect if duration of the ability has passed
-                for modifer, value in player_ability.get_statistics().items():
-                    if modifer in self.__POSITIVE_PLAYER_STATISTIC_MODIFERS:
-                        self.__player_statistic[modifer] -= value
-                        self.__player_statistic[modifer] = max(
-                            0, self.__player_statistic[modifer]
+                for modifier, value in player_ability.get_statistics().items():
+                    if modifier in self.__POSITIVE_PLAYER_STATISTIC_MODIFERS and modifier in self.__player_statistic.keys():
+                        self.__player_statistic[modifier] -= value
+                        self.__player_statistic[modifier] = max(
+                            0, self.__player_statistic[modifier]
                         )
-                self.__ability_histories.remove(player_ability)
+                abilities_to_remove.append(player_ability)
+
+        # Remove abilities from the history after the iteration
+        for ability_to_remove in abilities_to_remove:
+            self.__ability_histories.remove(ability_to_remove)
 
         critical_dmg_addition = random.randint(0, int(critical_rate))
         physical_dmg = magical_dmg = 0
@@ -157,11 +179,11 @@ class CombatController:
             else:
                 self.__debuff_dict[debuff_name] = (debuff_value, debuff_duration)
 
-        # Decrease debuff modifer duration
-        for debuff_name, (
-            debuff_value,
-            debuff_duration,
-        ) in self.__debuff_dict.copy().items():
+        # Collect debuffs to remove in a separate list
+        debuffs_to_remove = []
+
+        # Decrease debuff modifier duration
+        for debuff_name, (debuff_value, debuff_duration) in self.__debuff_dict.items():
             if debuff_duration > 1:
                 if (
                     debuff_name in self.__DEBUFF_STATISTIC_MAPPER.keys()
@@ -197,7 +219,11 @@ class CombatController:
                     self.__player_statistic[
                         self.__DEBUFF_STATISTIC_MAPPER[debuff_name]
                     ] += int(debuff_value)
-                del self.__debuff_dict[debuff_name]
+                debuffs_to_remove.append(debuff_name)
+
+        # Remove debuffs from the dictionary after the iteration
+        for debuff_name in debuffs_to_remove:
+            del self.__debuff_dict[debuff_name]
 
         physical_dmg *= 1 - self.__player_statistic["physical_defense"] / 400
         magical_damage *= 1 - self.__player_statistic["magical_defense"] / 400
@@ -205,7 +231,7 @@ class CombatController:
         magical_damage = max(0, magical_damage)
         total_dmg = physical_dmg + magical_damage
         if "absorption" in self.__player_statistic.keys():
-            total_dmg = max(0, total_dmg - self.__player_statistic["absorption"][0])
+            total_dmg = max(0, total_dmg - self.__player_statistic["absorption"])
         self.__player_statistic["health_points"] = max(
             0, self.__player_statistic["health_points"] - int(total_dmg)
         )
