@@ -41,6 +41,7 @@ class EndMenu(BaseState):
         )
 
         xp_won = random.randint(100, 300)
+        xp_quest = random.randint(100, 300)
         self.__game_heading = UITextBox(
             "You Won!",
             pygame.Rect((0, -self.get_screen().height * 0.3), (1000, 200)),
@@ -56,14 +57,37 @@ class EndMenu(BaseState):
             anchors=({"centerx": "centerx"}),
             object_id=ObjectID(class_id="#enemy_statistic"),
         )
-        if self.get_incoming_transition_data()["winner"] == "enemy":
+        if (
+            self.get_incoming_transition_data()["winner"] == "enemy"
+            and "temp_quest_completion"
+            not in self.get_incoming_transition_data().keys()
+        ):
             self.__game_heading.set_text("You Lost!")
-            self.__game_description.set_text("Better luck next time!")
+            if "temp_quest_completion" in self.get_incoming_transition_data().keys():
+                self.__game_description.set_text(
+                    f"Better luck next time!\nHowever, you did complete the quest.\nYou earned {xp_quest} XP!"
+                )
+                self.__xp.gain_xp(xp_quest)
+            else:
+                self.__game_description.set_text(
+                    f"Better luck next time!\nYou also failed the quest master's quest!"
+                )
         else:
             self.__xp.gain_xp(xp_won)
+            if "temp_quest_completion" in self.get_incoming_transition_data().keys():
+                self.__game_description.set_text(
+                    f"You have gained {xp_won} XP for beating the boss!\nAlso, you did complete the quest.\nYou earned an addition {xp_quest} XP!"
+                )
+                self.__xp.gain_xp(xp_quest)
+            else:
+                self.__game_description.set_text(
+                    f"Better luck next time!\nUnforunately, you did fail the quest master's quest!"
+                )
 
         outgoing_dict_without_winner_key = self.get_incoming_transition_data()
         del outgoing_dict_without_winner_key["winner"]
+        if "temp_quest_completion" in outgoing_dict_without_winner_key.keys():
+            del outgoing_dict_without_winner_key["temp_quest_completion"]
         self.set_outgoing_transition_data(outgoing_dict_without_winner_key)
 
         self.__navigate_start_menu_button = UIButton(

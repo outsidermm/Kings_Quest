@@ -231,6 +231,18 @@
       "bold": "1"
     }
   },
+  "#quest_display_text": {
+    "colours": {
+      "dark_bg": "rgba(0, 0, 0, 0)",
+      "normal_border": "rgba(0, 0, 0, 0)",
+      "normal_text": "#FFFFFF"
+    },
+    "font": {
+      "name": "futura",
+      "size": "25",
+      "bold": "1"
+    }
+  },
   "#icon": {
     "colours": {
       "dark_bg": "Black",

@@ -3,25 +3,42 @@ from pygame_gui.elements import UITextBox, UIPanel
 from ability import Ability
 import random
 from pygame_gui.core import ObjectID
+from quest import Quest
 
 
 class VisualDialogue:
 
     __dialogue_life_time: int = 0
     __initial_dialogue_life_time: int = 20
+    __temp_quest: Quest = None
 
-    def __init__(self, ui_manager: pygame_gui.UIManager, container: UIPanel) -> None:
+    def __init__(
+        self, ui_manager: pygame_gui.UIManager, container: UIPanel, temp_quest: Quest
+    ) -> None:
         self.__ui_manager = ui_manager
         self.__container = container
+        self.__temp_quest = temp_quest
         self.__dialogue = UITextBox(
             "",
-            pygame.Rect((0, 35), (self.__container.relative_rect.width * 0.8, -1)),
+            pygame.Rect((25, 10), (self.__container.relative_rect.width * 0.45, -1)),
             self.__ui_manager,
             container=self.__container,
-            anchors={"centerx": "centerx"},
             object_id=ObjectID(object_id="#visual_dialogue_text"),
         )
         self.__dialogue.hide()
+
+        quest_display_rect = pygame.Rect(
+            (0, 10), (self.__container.relative_rect.width * 0.5, -1)
+        )
+        quest_display_rect.right = -25
+        self.__quest_display = UITextBox(
+            f"Quest master: Hello! hello! will you {self.__temp_quest.get_description()} for money of unknown sums? :/\nProgress: {self.__temp_quest.get_progress()}/{self.__temp_quest.get_aim()}",
+            quest_display_rect,
+            self.__ui_manager,
+            anchors={"right": "right"},
+            container=self.__container,
+            object_id=ObjectID(object_id="#quest_display_text"),
+        )
 
     def set_dialogue(
         self,
@@ -106,8 +123,15 @@ class VisualDialogue:
         self.__dialogue_life_time = self.__initial_dialogue_life_time
 
     def update(self) -> None:
+        self.__quest_display.set_text(
+            f"Quest master: Hello! hello! will you {self.__temp_quest.get_description()} for money of unknown sums? :/\nProgress: {self.__temp_quest.get_progress()}/{self.__temp_quest.get_aim()}",
+        )
         if self.__dialogue_life_time > 0:
             self.__dialogue_life_time -= 1
 
     def is_done(self) -> bool:
         return self.__dialogue_life_time <= 0
+
+    def kill(self) -> None:
+        self.__dialogue.kill()
+        self.__quest_display.kill()
