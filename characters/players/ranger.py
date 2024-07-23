@@ -58,8 +58,12 @@ class Ranger(BasePlayer):
         elif self.get_character_level() == 2:
             self.set_character_level(3)
             index = next(
-                (i for i, ability in enumerate(new_unlocked_abilities) if ability.get_name() == "Arrow Barrage"),
-                None
+                (
+                    i
+                    for i, ability in enumerate(new_unlocked_abilities)
+                    if ability.get_name() == "Arrow Barrage"
+                ),
+                None,
             )
             if index is not None:
                 new_unlocked_abilities[index].upgrade()

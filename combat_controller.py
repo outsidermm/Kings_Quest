@@ -62,7 +62,10 @@ class CombatController:
             else:
                 # Remove buff effect if duration of the ability has passed
                 for modifier, value in player_ability.get_statistics().items():
-                    if modifier in self.__POSITIVE_PLAYER_STATISTIC_MODIFERS and modifier in self.__player_statistic.keys():
+                    if (
+                        modifier in self.__POSITIVE_PLAYER_STATISTIC_MODIFERS
+                        and modifier in self.__player_statistic.keys()
+                    ):
                         self.__player_statistic[modifier] -= value
                         self.__player_statistic[modifier] = max(
                             0, self.__player_statistic[modifier]
@@ -124,7 +127,10 @@ class CombatController:
             else:
                 # Remove buff effect if duration of the ability has passed
                 for modifier, value in player_ability.get_statistics().items():
-                    if modifier in self.__POSITIVE_PLAYER_STATISTIC_MODIFERS and modifier in self.__player_statistic.keys():
+                    if (
+                        modifier in self.__POSITIVE_PLAYER_STATISTIC_MODIFERS
+                        and modifier in self.__player_statistic.keys()
+                    ):
                         self.__player_statistic[modifier] -= value
                         self.__player_statistic[modifier] = max(
                             0, self.__player_statistic[modifier]
