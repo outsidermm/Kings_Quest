@@ -17,14 +17,6 @@ def write_json(file_path, data):
     with open(file_path, "w") as file:
         json.dump(data, file, indent=4)
 
-
-def modify_json(file_path, key, value):
-    """Modifies a dictionary in a JSON file by updating the given key with the new value."""
-    data = read_json(file_path)
-    data[key] = value
-    write_json(file_path, data)
-
-
 def write_default_if_not_exist(file_path, default_data):
     """Writes a default dictionary to a JSON file if it does not exist."""
     if not os.path.exists(file_path):
