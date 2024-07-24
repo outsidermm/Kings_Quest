@@ -70,7 +70,10 @@ class QuestMenu(BaseState):
         # Create and set the main static panel wrapper
         self.set_static_panel_wrapper(
             UIPanel(
-                pygame.Rect((0, 0), (self.get_screen().get_width(), self.get_screen().get_height())),
+                pygame.Rect(
+                    (0, 0),
+                    (self.get_screen().get_width(), self.get_screen().get_height()),
+                ),
                 manager=self.get_ui_manager(),
                 object_id=ObjectID(object_id="#transparent_panel"),
             )
@@ -106,7 +109,7 @@ class QuestMenu(BaseState):
         quest_button_gap = (
             self.get_screen().get_width() - quest_button_width * len(self.get_quests())
         ) / (len(self.get_quests()) + 1)
-        
+
         # Create and set quest buttons for each quest
         for quest_button_count, quest in enumerate(self.get_quests()):
             self.get_quest_buttons()[quest_button_count] = UIButton(
@@ -133,7 +136,11 @@ class QuestMenu(BaseState):
         self.set_quest_overview(
             UIPanel(
                 pygame.Rect(
-                    (0, 0), (self.get_screen().get_width() * 0.4, self.get_screen().get_height() * 0.7)
+                    (0, 0),
+                    (
+                        self.get_screen().get_width() * 0.4,
+                        self.get_screen().get_height() * 0.7,
+                    ),
                 ),
                 manager=self.get_ui_manager(),
                 starting_height=2,
@@ -190,7 +197,7 @@ class QuestMenu(BaseState):
                 object_id=ObjectID(class_id="@level_selection_button"),
             )
         )
-        
+
     def handle_events(self) -> None:
         """
         Handles events such as button presses and quitting the game.
@@ -227,7 +234,9 @@ class QuestMenu(BaseState):
 
         # Claim the quest reward
         if self.get_claim_quest():
-            self.get_xp().gain_xp(self.get_quests()[self.get_show_quest_info()].get_reward())
+            self.get_xp().gain_xp(
+                self.get_quests()[self.get_show_quest_info()].get_reward()
+            )
             self.get_quest_buttons()[self.get_show_quest_info()].set_text("CLAIMED")
             self.get_quests()[self.get_show_quest_info()].claim()
             self.get_quest_buttons()[self.get_show_quest_info()].disable()
@@ -241,7 +250,9 @@ class QuestMenu(BaseState):
         """
         # Show quest details if a quest is selected
         if self.get_show_quest_info() != -1:
-            self.get_quest_name().set_text(self.get_quests()[self.get_show_quest_info()].get_name())
+            self.get_quest_name().set_text(
+                self.get_quests()[self.get_show_quest_info()].get_name()
+            )
             self.get_quest_description().set_text(
                 f"{self.get_quests()[self.get_show_quest_info()].get_description()}\n Current Progress: {self.get_quests()[self.get_show_quest_info()].get_progress()}/{self.get_quests()[self.get_show_quest_info()].get_aim()}\nReward: {self.get_quests()[self.get_show_quest_info()].get_reward()} XP",
             )
@@ -314,7 +325,9 @@ class QuestMenu(BaseState):
     def get_navigate_lvl_selection_button(self) -> UIButton:
         return self.__navigate_lvl_selection_button
 
-    def set_navigate_lvl_selection_button(self, navigate_lvl_selection_button: UIButton) -> None:
+    def set_navigate_lvl_selection_button(
+        self, navigate_lvl_selection_button: UIButton
+    ) -> None:
         self.__navigate_lvl_selection_button = navigate_lvl_selection_button
 
     def get_navigate_lvl_selection(self) -> bool:

@@ -379,10 +379,15 @@ class TurnBasedFight(BaseState):
                 else:
                     # Check if any of the ability buttons (index 1 to 3) are pressed
                     for ability_button_index in [1, 2, 3]:
-                        if event.ui_element == self.get_ability_button_list()[ability_button_index]:
+                        if (
+                            event.ui_element
+                            == self.get_ability_button_list()[ability_button_index]
+                        ):
                             # Set the selected ability based on the button pressed
                             self.set_ability_selected(
-                                self.get_player().get_unlocked_abilities()[ability_button_index - 1]
+                                self.get_player().get_unlocked_abilities()[
+                                    ability_button_index - 1
+                                ]
                             )
 
             # Handle mouse press events
@@ -395,14 +400,14 @@ class TurnBasedFight(BaseState):
                 if self.get_enemy_sprite().rect.collidepoint(mouse_pos):
                     # Calculate the enemy hit height based on the mouse position
                     self.set_enemy_hit_height(
-                        self.get_enemy_sprite().rect.height - (mouse_pos[1] - self.get_enemy_sprite().rect.y)
+                        self.get_enemy_sprite().rect.height
+                        - (mouse_pos[1] - self.get_enemy_sprite().rect.y)
                     )
                 else:
                     # If the mouse click is not on the enemy sprite, set the enemy hit height to 0
                     self.set_enemy_hit_height(0)
 
     def run(self) -> None:
-
         """
         Runs the main logic of the turn-based fight, handling player and enemy actions,
         animations, and HUD updates.
@@ -619,7 +624,7 @@ class TurnBasedFight(BaseState):
         """
         # Update visual dialogue
         self.get_visual_dialogue().update()
-        
+
         # Update player and enemy HUDs
         self.get_player_HUD().update()
         self.get_enemy_HUD().update()
@@ -658,14 +663,14 @@ class TurnBasedFight(BaseState):
         self.get_screen().blit(
             pygame.Surface((self.get_screen().width, self.get_screen().height)), (0, 0)
         )
-        
+
         # Draw the UI elements on the screen
         self.get_ui_manager().draw_ui(self.get_screen())
 
         # If the enemy is attacking, apply a tint effect to the screen
         if self.get_is_enemy_attacking() and not self.get_enemy_animation().is_done():
             self.tint_damage(self.get_screen(), 0.2)
-        
+
         # Update the display with the rendered frame
         pygame.display.update()
 

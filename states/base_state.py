@@ -113,9 +113,9 @@ class BaseState(abc.ABC):
 
     def set_state_name(self, state_name: str) -> None:
         self.__state_name = state_name
-    
+
     def get_state_name(self) -> str:
         return self.__state_name
-    
+
     def set_time_to_transition(self, time_to_transition: bool) -> None:
         self.__time_to_transition = time_to_transition

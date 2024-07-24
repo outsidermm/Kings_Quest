@@ -9,6 +9,7 @@ from typing import Any
 from gui.ability_hud import AbilityHUD
 from gui.statistic_hud import StatisticHUD
 
+
 class CharacterSelectionMenu(BaseState):
 
     __characters: list[BasePlayer] = None
