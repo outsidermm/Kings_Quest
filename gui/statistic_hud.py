@@ -4,6 +4,7 @@ from pygame_gui.elements import UITextBox, UIPanel
 from pygame_gui.core import ObjectID
 from gui.statistic_bar import StatisticBar
 
+
 class StatisticHUD:
     """
     HUD component to display character statistics using text and bars.
@@ -23,9 +24,9 @@ class StatisticHUD:
         stat_name: str,
         max_stat_value: int,
         stat_count: int,
-        init_text_x : int= 50,
-        init_bar_x : int= 300,
-        init_y : int= 108,
+        init_text_x: int = 50,
+        init_bar_x: int = 300,
+        init_y: int = 108,
         gap_per_stats: int = 50,
     ) -> None:
         """

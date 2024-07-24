@@ -1,5 +1,6 @@
 from pygame_gui.elements import UIStatusBar
 
+
 class StatisticBar(UIStatusBar):
     """
     Custom UIStatusBar class to represent a statistic bar with text.
