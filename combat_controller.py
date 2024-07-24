@@ -5,6 +5,35 @@ import random
 from utilities.general_utility import min_max_bound
 from pygame_gui.elements import UIImage
 
+# Mapping debuff effects to player statistics
+DEBUFF_STAT_MAPPER = {
+    "physical_defense_reduction": "physical_defense",
+    "physical_damage_reduction": "physical_damage",
+    "bleed": "health_points",
+}
+
+# List of positive player statistic modifiers
+POSITIVE_PLAYER_STAT_MODIFIERS = [
+    "health_regeneration",
+    "mana_regeneration",
+    "absorption",
+    "physical_damage",
+    "magical_damage",
+    "physical_defense",
+    "magical_defense",
+    "mana_points",
+    "physical_power",
+    "spell_power",
+]
+
+# List of negative player statistic modifiers
+NEGATIVE_PLAYER_STAT_MODIFIERS = [
+    "stun",
+    "physical_defense_reduction",
+    "physical_damage_reduction",
+    "bleed",
+]
+
 
 class CombatController:
     """
@@ -12,34 +41,6 @@ class CombatController:
     including handling abilities, buffs, debuffs, and damage calculations.
     """
 
-    # Mapping debuff effects to player statistics
-    __DEBUFF_STAT_MAPPER = {
-        "physical_defense_reduction": "physical_defense",
-        "physical_damage_reduction": "physical_damage",
-        "bleed": "health_points",
-    }
-
-    # List of positive player statistic modifiers
-    __POSITIVE_PLAYER_STAT_MODIFIERS = [
-        "health_regeneration",
-        "mana_regeneration",
-        "absorption",
-        "physical_damage",
-        "magical_damage",
-        "physical_defense",
-        "magical_defense",
-        "mana_points",
-        "physical_power",
-        "spell_power",
-    ]
-
-    # List of negative player statistic modifiers
-    __NEGATIVE_PLAYER_STAT_MODIFIERS = [
-        "stun",
-        "physical_defense_reduction",
-        "physical_damage_reduction",
-        "bleed",
-    ]
     __player_stat: Dict[str, int] = {}
     __player_stat_cap: Dict[str, int] = {}
     __debuff_dict: Dict[str, Tuple[int, int]] = {}
@@ -117,7 +118,7 @@ class CombatController:
                 # Remove buff effect if duration of the ability has passed
                 for modifier, value in player_ability.get_stats().items():
                     if (
-                        modifier in self.__POSITIVE_PLAYER_STAT_MODIFIERS
+                        modifier in POSITIVE_PLAYER_STAT_MODIFIERS
                         and modifier in self.get_player_stat().keys()
                     ):
                         self.get_player_stat()[modifier] -= value
@@ -159,9 +160,9 @@ class CombatController:
             for modifier, value in ability.get_stats().items():
                 if modifier == "critical":
                     critical_rate += value
-                elif modifier in self.__NEGATIVE_PLAYER_STAT_MODIFIERS:
+                elif modifier in NEGATIVE_PLAYER_STAT_MODIFIERS:
                     debuff_dict[modifier] = (value, ability.get_duration())
-                elif modifier in self.__POSITIVE_PLAYER_STAT_MODIFIERS:
+                elif modifier in POSITIVE_PLAYER_STAT_MODIFIERS:
                     if modifier in self.get_player_stat().keys():
                         self.get_player_stat()[modifier] += value
                     else:
@@ -214,38 +215,33 @@ class CombatController:
         :param debuff_dict: Dictionary of debuffs to be applied.
         """
         # Apply debuffs to the player
-        for debuff_name, (debuff_value, debuff_duration) in debuff_dict.items():
+        for debuff_name, (debuff_val, debuff_duration) in debuff_dict.items():
             if debuff_name == "stun":
                 self.set_is_stunned(True)
             else:
-                self.get_debuff_dict()[debuff_name] = (debuff_value, debuff_duration)
+                self.get_debuff_dict()[debuff_name] = (debuff_val, debuff_duration)
 
         debuffs_to_remove = []
 
         # Handle existing debuffs and their durations
         for debuff_name, (
-            debuff_value,
+            debuff_val,
             debuff_duration,
         ) in self.get_debuff_dict().items():
             if debuff_duration > 1:
                 if (
-                    debuff_name in self.__DEBUFF_STAT_MAPPER.keys()
-                    and self.__DEBUFF_STAT_MAPPER[debuff_name]
-                    in self.get_player_stat().keys()
+                    debuff_name in DEBUFF_STAT_MAPPER.keys()
+                    and DEBUFF_STAT_MAPPER[debuff_name] in self.get_player_stat().keys()
                 ):
-                    self.get_player_stat()[
-                        self.__DEBUFF_STAT_MAPPER[debuff_name]
-                    ] -= int(debuff_value)
-                    self.get_player_stat()[self.__DEBUFF_STAT_MAPPER[debuff_name]] = (
-                        max(
-                            0,
-                            self.get_player_stat()[
-                                self.__DEBUFF_STAT_MAPPER[debuff_name]
-                            ],
-                        )
+                    self.get_player_stat()[DEBUFF_STAT_MAPPER[debuff_name]] -= int(
+                        debuff_val
+                    )
+                    self.get_player_stat()[DEBUFF_STAT_MAPPER[debuff_name]] = max(
+                        0,
+                        self.get_player_stat()[DEBUFF_STAT_MAPPER[debuff_name]],
                     )
                 self.get_debuff_dict()[debuff_name] = (
-                    debuff_value,
+                    debuff_val,
                     debuff_duration - 1,
                 )
             else:
@@ -255,12 +251,11 @@ class CombatController:
                         "physical_defense_reduction",
                         "physical_damage_reduction",
                     ]
-                    and self.__DEBUFF_STAT_MAPPER[debuff_name]
-                    in self.get_player_stat().keys()
+                    and DEBUFF_STAT_MAPPER[debuff_name] in self.get_player_stat().keys()
                 ):
-                    self.get_player_stat()[
-                        self.__DEBUFF_STAT_MAPPER[debuff_name]
-                    ] += int(debuff_value)
+                    self.get_player_stat()[DEBUFF_STAT_MAPPER[debuff_name]] += int(
+                        debuff_val
+                    )
                 debuffs_to_remove.append(debuff_name)
 
         # Remove debuffs from the dictionary after the iteration

@@ -21,6 +21,7 @@ SECOND_COLUMN_STAT_NAMES: list[str] = [
     "magical_damage",
 ]
 
+
 class LevelSelectionMenu(BaseState):
     """
     LevelSelectionMenu class to handle the selection of levels and navigation to other states.

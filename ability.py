@@ -186,7 +186,7 @@ class Ability:
 PLAYER_ABILITY_LIST: dict[str, Ability] = {
     "Power Slash": Ability(
         "Power Slash",
-        "Deals 45 physical damage to the enemy. Duration: 1 turn, Cooldown: 2 turns",
+        "Increases physical damage by 45 to the enemy. Duration: 1 turn, Cooldown: 2 turns",
         {"physical_damage": 45, "cooldown": 2},
         [("mana_points", 20)],
         1,  # Duration
@@ -211,7 +211,7 @@ PLAYER_ABILITY_LIST: dict[str, Ability] = {
     ),
     "Fireball": Ability(
         "Fireball",
-        "Deals 120 magical damage to the enemy. Duration: 1 turn, Cooldown: 3 turns",
+        "Deals 120 more magical damage to the enemy. Duration: 1 turn, Cooldown: 3 turns",
         {"magical_damage": 120, "cooldown": 3},
         [("mana_points", 20)],
         1,  # Duration
@@ -277,7 +277,7 @@ PLAYER_ABILITY_LIST: dict[str, Ability] = {
     ),
     "Reckless Charge": Ability(
         "Reckless Charge",
-        "Charges at the enemy, dealing 20 physical damage and stunning them for 1 turn. Cooldown: 2 turns",
+        "Charges at the enemy, dealing 20 more physical damage and stunning them for 1 turn. Cooldown: 2 turns",
         {"stun": 1, "physical_damage": 20, "cooldown": 2},
         [("mana_points", 20)],
         1,  # Duration

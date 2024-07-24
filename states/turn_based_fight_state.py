@@ -56,6 +56,8 @@ class TurnBasedFight(BaseState):
     __player_choice_container: UIPanel = None
     __tutorial_text: UITextBox = None
     __start_tick: int = 0
+    __is_stunned: bool = False
+    __quest_master_animation: Animation = None
 
     def __init__(
         self,
