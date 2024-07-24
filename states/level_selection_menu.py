@@ -6,6 +6,20 @@ from pygame_gui.core import ObjectID
 from characters.enemies.base_enemy import BaseEnemy
 from utilities.general_utility import convert_snake_to_title
 
+FIRST_COLUMN_STAT_NAMES: list[str] = [
+    "health_points",
+    "physical_defense",
+    "magical_defense",
+    "spell_power",
+    "physical_power",
+]
+SECOND_COLUMN_STAT_NAMES: list[str] = [
+    "health_regeneration",
+    "mana_regeneration",
+    "mana_points",
+    "physical_damage",
+    "magical_damage",
+]
 
 class LevelSelectionMenu(BaseState):
     """
@@ -26,21 +40,10 @@ class LevelSelectionMenu(BaseState):
     __combat_entry_panel: UIPanel = None
     __static_panel_wrapper: UIPanel = None
     __stat_text: list[UITextBox] = [None] * 10
-
-    __FIRST_COLUMN_STAT_NAMES: list[str] = [
-        "health_points",
-        "physical_defense",
-        "magical_defense",
-        "spell_power",
-        "physical_power",
-    ]
-    __SECOND_COLUMN_STAT_NAMES: list[str] = [
-        "health_regeneration",
-        "mana_regeneration",
-        "mana_points",
-        "physical_damage",
-        "magical_damage",
-    ]
+    __enemy_name: UITextBox = None
+    __enemy_icon: UIImage = None
+    __dismiss_popup_button: UIButton = None
+    __enemy_buttons: list[UIButton] = []
 
     def __init__(
         self,
@@ -216,7 +219,7 @@ class LevelSelectionMenu(BaseState):
         first_col_x = -200
         second_col_x = 200
 
-        for stat_count, stat_name in enumerate(self.__FIRST_COLUMN_STAT_NAMES):
+        for stat_count, stat_name in enumerate(FIRST_COLUMN_STAT_NAMES):
             numerical_stat = (
                 self.get_enemies()[0].get_stats()[stat_name]
                 if stat_name in self.get_enemies()[0].get_stats().keys()
@@ -235,7 +238,7 @@ class LevelSelectionMenu(BaseState):
                 object_id=ObjectID(object_id="#enemy_statistic"),
             )
 
-        for stat_count, stat_name in enumerate(self.__SECOND_COLUMN_STAT_NAMES):
+        for stat_count, stat_name in enumerate(SECOND_COLUMN_STAT_NAMES):
             numerical_stat = (
                 self.get_enemies()[0].get_stats()[stat_name]
                 if stat_name in self.get_enemies()[0].get_stats().keys()
@@ -312,7 +315,7 @@ class LevelSelectionMenu(BaseState):
             self.get_enemy_name().set_text(
                 self.get_enemies()[self.get_show_enemy_info()].get_name()
             )
-            for stat_count, stat_name in enumerate(self.__FIRST_COLUMN_STAT_NAMES):
+            for stat_count, stat_name in enumerate(FIRST_COLUMN_STAT_NAMES):
                 numerical_stat = (
                     self.get_enemies()[self.get_show_enemy_info()].get_stats()[
                         stat_name
@@ -326,7 +329,7 @@ class LevelSelectionMenu(BaseState):
                     f"{convert_snake_to_title(stat_name)}: {numerical_stat}"
                 )
 
-            for stat_count, stat_name in enumerate(self.__SECOND_COLUMN_STAT_NAMES):
+            for stat_count, stat_name in enumerate(SECOND_COLUMN_STAT_NAMES):
                 numerical_stat = (
                     self.get_enemies()[self.get_show_enemy_info()].get_stats()[
                         stat_name
