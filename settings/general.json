@@ -40,7 +40,7 @@
 		"misc": {
 			"text_vert_alignment": "center",
 			"border_width": "0",
-			"shadow_wdith": "0"
+			"shadow_width": "0"
 		}
 	},
 	"panel": {

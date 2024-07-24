@@ -242,17 +242,5 @@
       "size": "25",
       "bold": "1"
     }
-  },
-  "#icon": {
-    "colours": {
-      "dark_bg": "Black",
-      "normal_border": "Black"
-    },
-    "misc": {
-      "border_width": "0",
-      "shadow_width": "0",
-      "shape": "rounded_rectangle",
-      "shape_corner_radius": "32"
-    }
   }
 }

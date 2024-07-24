@@ -5,7 +5,7 @@ import copy
 
 class Enigma(BaseEnemy):
 
-    __statistics: dict[str, int] = {
+    __stats: dict[str, int] = {
         "health_points": 1700,
         "physical_defense": 100,
         "magical_defense": 200,
@@ -27,7 +27,7 @@ class Enigma(BaseEnemy):
     def __init__(self, sprite_location: str) -> None:
         super().__init__(
             "Enigma",
-            copy.deepcopy(self.__statistics),
+            copy.deepcopy(self.__stats),
             sprite_location,
             self.__abilities,
         )
@@ -41,8 +41,8 @@ class Enigma(BaseEnemy):
     def get_sprite_location(self) -> str:
         return super().get_sprite_location()
 
-    def get_statistics(self) -> dict:
-        return super().get_statistics()
+    def get_stats(self) -> dict:
+        return super().get_stats()
 
     def get_abilities(self) -> list[Ability]:
         return super().get_abilities()
@@ -53,8 +53,8 @@ class Enigma(BaseEnemy):
     def set_sprite_location(self, sprite_location: str) -> None:
         super().set_sprite_location(sprite_location)
 
-    def set_statistics(self, statistics: dict) -> None:
-        super().set_statistics(statistics)
+    def set_stats(self, stats: dict) -> None:
+        super().set_stats(stats)
 
     def set_abilities(self, abilities: list[Ability]) -> None:
         super().set_abilities(abilities)

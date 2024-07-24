@@ -1,106 +1,192 @@
-from typing import Tuple
+from typing import Tuple, Dict, List
 
 
 class Ability:
+    """
+    Ability class representing a character's ability with various attributes and methods
+    to manage and upgrade the ability.
+    """
+
     __name: str = None
     __description: str = None
-    __ability_statistics: dict = None
-    __cost: list[Tuple[str, float]] = None
+    __stats: Dict[str, float] = None
+    __cost: List[Tuple[str, float]] = None
     __duration: int = 0
-    __active: bool = False
-    __upgrades: list[Tuple[str, ...]] = None
-    __cooldown: int = 0
+    __upgrades: List[Tuple[str, float]] = None
     __icon_URL: str = None
 
     def __init__(
         self,
         name: str,
         description: str,
-        ability_statistics: dict,
-        cost: list[Tuple[str, float]],
+        ability_stats: Dict[str, float],
+        cost: List[Tuple[str, float]],
         duration: int,
         icon_URL: str,
-        upgrades: list[Tuple[str, ...]] = None,
+        upgrades: List[Tuple[str, float]] = None,
     ) -> None:
-        self.__name = name
-        self.__description = description
-        self.__cost = cost
-        self.__ability_statistics = ability_statistics
-        self.__upgrades = upgrades
-        self.__icon_URL = icon_URL
-        self.__duration = duration
+        """
+        Initializes the Ability class.
+
+        :param name: Name of the ability.
+        :param description: Description of the ability.
+        :param ability_stats: stats of the ability.
+        :param cost: Cost to use the ability.
+        :param duration: Duration of the ability's effect.
+        :param icon_URL: URL to the ability's icon.
+        :param upgrades: List of possible upgrades for the ability.
+        """
+        self.set_name(name)
+        self.set_description(description)
+        self.set_cost(cost)
+        self.set_stats(ability_stats)
+        self.set_upgrades(upgrades if upgrades is not None else [])
+        self.set_icon_URL(icon_URL)
+        self.set_duration(duration)
 
     def copy(self) -> "Ability":
+        """
+        Creates a copy of the ability instance.
+
+        :return: A new instance of Ability with the same attributes.
+        """
         return Ability(
-            self.__name,
-            self.__description,
-            self.__ability_statistics,
-            self.__cost,
-            self.__duration,
-            self.__icon_URL,
-            self.__upgrades,
+            self.get_name(),
+            self.get_description(),
+            self.get_stats(),
+            self.get_cost(),
+            self.get_duration(),
+            self.get_icon_URL(),
+            self.get_upgrades(),
         )
 
     def upgrade(self) -> None:
-        for upgrade in self.__upgrades:
-            if upgrade[0] in self.__ability_statistics.keys():
-                self.__ability_statistics[upgrade[0]] += upgrade[1]
+        """
+        Upgrades the ability based on its upgrade list.
+        """
+        for upgrade in self.get_upgrades():
+            if upgrade[0] in self.get_stats().keys():
+                self.get_stats()[upgrade[0]] += upgrade[1]
             else:
-                self.__ability_statistics[upgrade[0]] = upgrade[1]
+                self.get_stats()[upgrade[0]] = upgrade[1]
 
     def get_name(self) -> str:
+        """
+        Gets the name of the ability.
+
+        :return: The name of the ability.
+        """
         return self.__name
 
-    def get_description(self) -> str:
-        return self.__description
-
-    def get_cooldown(self) -> int:
-        return self.__cooldown
-
-    def get_cost(self) -> list[Tuple[str, float]]:
-        return self.__cost
-
-    def get_duration(self) -> int:
-        return self.__duration
-
-    def get_active(self) -> bool:
-        return self.__active
-
-    def get_icon_URL(self) -> str:
-        return self.__icon_URL
-
-    def set_active(self, active: bool) -> None:
-        self.__active = active
-
     def set_name(self, name: str) -> None:
+        """
+        Sets the name of the ability.
+
+        :param name: The new name of the ability.
+        """
         self.__name = name
 
+    def get_description(self) -> str:
+        """
+        Gets the description of the ability.
+
+        :return: The description of the ability.
+        """
+        return self.__description
+
     def set_description(self, description: str) -> None:
+        """
+        Sets the description of the ability.
+
+        :param description: The new description of the ability.
+        """
         self.__description = description
 
-    def set_cooldown(self, cooldown: int) -> None:
-        self.__cooldown = cooldown
+    def get_stats(self) -> Dict[str, float]:
+        """
+        Gets the stats of the ability.
 
-    def set_cost(self, cost: list[Tuple[str, float]]) -> None:
+        :return: The stats of the ability.
+        """
+        return self.__stats
+
+    def set_stats(self, stats: Dict[str, float]) -> None:
+        """
+        Sets the stats of the ability.
+
+        :param stats: The new stats of the ability.
+        """
+        self.__stats = stats
+
+    def get_cost(self) -> List[Tuple[str, float]]:
+        """
+        Gets the cost of the ability.
+
+        :return: The cost of the ability.
+        """
+        return self.__cost
+
+    def set_cost(self, cost: List[Tuple[str, float]]) -> None:
+        """
+        Sets the cost of the ability.
+
+        :param cost: The new cost of the ability.
+        """
         self.__cost = cost
 
+    def get_duration(self) -> int:
+        """
+        Gets the duration of the ability.
+
+        :return: The duration of the ability.
+        """
+        return self.__duration
+
     def set_duration(self, duration: int) -> None:
+        """
+        Sets the duration of the ability.
+
+        :param duration: The new duration of the ability.
+        """
         self.__duration = duration
 
-    def set_active(self, active: bool) -> None:
-        self.__active = active
+    def get_upgrades(self) -> List[Tuple[str, float]]:
+        """
+        Gets the upgrades of the ability.
 
-    def get_statistics(self) -> dict:
-        return self.__ability_statistics
+        :return: The upgrades of the ability.
+        """
+        return self.__upgrades
 
-    def set_statistics(self, statistics: dict) -> None:
-        self.__ability_statistics = statistics
+    def set_upgrades(self, upgrades: List[Tuple[str, float]]) -> None:
+        """
+        Sets the upgrades of the ability.
+
+        :param upgrades: The new upgrades of the ability.
+        """
+        self.__upgrades = upgrades
+
+    def get_icon_URL(self) -> str:
+        """
+        Gets the icon URL of the ability.
+
+        :return: The icon URL of the ability.
+        """
+        return self.__icon_URL
+
+    def set_icon_URL(self, icon_URL: str) -> None:
+        """
+        Sets the icon URL of the ability.
+
+        :param icon_URL: The new icon URL of the ability.
+        """
+        self.__icon_URL = icon_URL
 
 
 PLAYER_ABILITY_LIST: dict[str, Ability] = {
     "Power Slash": Ability(
         "Power Slash",
-        "Deals 45 physical damage to the enemy. Duration: 1 turn, Cooldown: 2 turns",
+        "Increases physical damage by 45 to the enemy. Duration: 1 turn, Cooldown: 2 turns",
         {"physical_damage": 45, "cooldown": 2},
         [("mana_points", 20)],
         1,  # Duration
@@ -125,7 +211,7 @@ PLAYER_ABILITY_LIST: dict[str, Ability] = {
     ),
     "Fireball": Ability(
         "Fireball",
-        "Deals 120 magical damage to the enemy. Duration: 1 turn, Cooldown: 3 turns",
+        "Deals 120 more magical damage to the enemy. Duration: 1 turn, Cooldown: 3 turns",
         {"magical_damage": 120, "cooldown": 3},
         [("mana_points", 20)],
         1,  # Duration
@@ -191,7 +277,7 @@ PLAYER_ABILITY_LIST: dict[str, Ability] = {
     ),
     "Reckless Charge": Ability(
         "Reckless Charge",
-        "Charges at the enemy, dealing 20 physical damage and stunning them for 1 turn. Cooldown: 2 turns",
+        "Charges at the enemy, dealing 20 more physical damage and stunning them for 1 turn. Cooldown: 2 turns",
         {"stun": 1, "physical_damage": 20, "cooldown": 2},
         [("mana_points", 20)],
         1,  # Duration
