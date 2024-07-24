@@ -3,6 +3,7 @@ import pygame_gui
 from pygame_gui.elements import UITextBox, UIPanel
 from pygame_gui.core import ObjectID
 from gui.statistic_bar import StatisticBar
+from utilities.general_utility import convert_snake_to_title
 
 
 class StatisticHUD:
@@ -50,7 +51,7 @@ class StatisticHUD:
         self.set_stat_text(
             UITextBox(
                 html_text=f'<img src="assets/icons_48/{stat_name}.png"> '
-                f"{' '.join(word.capitalize() for word in stat_name.split('_'))}",
+                f"{convert_snake_to_title(stat_name)}",
                 relative_rect=pygame.Rect(
                     (init_text_x, init_y + stat_count * gap_per_stats),
                     (300, -1),

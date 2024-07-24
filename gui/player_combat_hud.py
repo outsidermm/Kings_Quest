@@ -4,6 +4,7 @@ from pygame_gui.core import ObjectID
 import pygame_gui
 from characters.base_character import BaseCharacter
 from gui.health_bar import HealthBar
+from utilities.general_utility import convert_snake_to_title
 
 # List of character stats to be displayed in the HUD
 CHARACTER_STAT = [
@@ -18,6 +19,7 @@ CHARACTER_STAT = [
     "physical_damage",
     "magical_damage",
 ]
+
 
 class PlayerCombatHUD:
     """
@@ -89,7 +91,7 @@ class PlayerCombatHUD:
                 )
                 self.get_HUD_text()[stat_name] = UITextBox(
                     html_text=f'<img src="assets/icons_18/{stat_name}.png"> '
-                    f"{' '.join(word.capitalize() for word in stat_name.split('_'))}: {self.get_player().get_stats()[stat_name]}",
+                    f"{convert_snake_to_title(stat_name)}: {self.get_player().get_stats()[stat_name]}",
                     relative_rect=stat_rect,
                     manager=self.get_ui_manager(),
                     object_id=ObjectID(object_id="#HUD-text"),
@@ -102,16 +104,18 @@ class PlayerCombatHUD:
         """
         # Update the health bar with current health points
         self.get_health_bar().update(self.get_player().get_stats()["health_points"])
-        
+
         # Update each stat text in the HUD
         for stat_name in CHARACTER_STAT:
             if stat_name not in self.get_player().get_stats().keys():
                 self.get_player().get_stats()[stat_name] = 0
 
-            if stat_name != "health_points":  # Health points are managed by the health bar
+            if (
+                stat_name != "health_points"
+            ):  # Health points are managed by the health bar
                 self.get_HUD_text()[stat_name].set_text(
                     html_text=f'<img src="assets/icons_18/{stat_name}.png"> '
-                    f"{' '.join(word.capitalize() for word in stat_name.split('_'))}: {self.get_player().get_stats()[stat_name]}"
+                    f"{convert_snake_to_title(stat_name)}: {self.get_player().get_stats()[stat_name]}"
                 )
 
     def get_ui_manager(self) -> pygame_gui.UIManager:

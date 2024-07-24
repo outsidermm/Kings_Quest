@@ -89,7 +89,7 @@ class EndMenu(BaseState):
         if self.get_incoming_transition_data()["winner"] == "enemy":
             # If the enemy won, update the heading to "You Lost!"
             self.get_game_heading().set_text("You Lost!")
-            
+
             # Check if the quest was completed
             if "temp_quest_completion" in self.get_incoming_transition_data().keys():
                 # If the quest was completed, update the description and add quest XP
@@ -105,7 +105,7 @@ class EndMenu(BaseState):
         else:
             # If the player won, add the XP won to the player's total XP
             self.get_xp().gain_xp(xp_won)
-            
+
             # Check if the quest was completed
             if "temp_quest_completion" in self.get_incoming_transition_data().keys():
                 # If the quest was completed, update the description and add quest XP
@@ -136,8 +136,7 @@ class EndMenu(BaseState):
                 object_id=ObjectID(class_id="@level_selection_button"),
             )
         )
-        
-        
+
     def handle_events(self) -> None:
         """
         Handles events such as button presses and quitting the game.
@@ -157,14 +156,14 @@ class EndMenu(BaseState):
         if self.get_navigate_start_menu():
             # Retrieve the current outgoing transition data
             outgoing_dict_without_character_keys = self.get_outgoing_transition_data()
-            
+
             # Remove the "player" and "enemy" keys from the transition data
             del outgoing_dict_without_character_keys["player"]
             del outgoing_dict_without_character_keys["enemy"]
-            
+
             # Set the updated transition data without the "player" and "enemy" keys
             self.set_outgoing_transition_data(outgoing_dict_without_character_keys)
-            
+
             # Indicate that it's time to transition to the next state
             self.set_time_to_transition(True)
             return

@@ -4,6 +4,7 @@ import pygame, pygame_gui
 from pygame_gui.elements import UIButton, UIImage, UITextBox, UIPanel
 from pygame_gui.core import ObjectID
 from characters.enemies.base_enemy import BaseEnemy
+from utilities.general_utility import convert_snake_to_title
 
 
 class LevelSelectionMenu(BaseState):
@@ -223,7 +224,7 @@ class LevelSelectionMenu(BaseState):
             )
             self.get_stat_text()[stat_count] = UITextBox(
                 html_text=f'<img src="assets/icons_18/{stat_name}.png"> '
-                f"{' '.join(word.capitalize() for word in stat_name.split('_'))}: {numerical_stat}",
+                f"{convert_snake_to_title(stat_name)}: {numerical_stat}",
                 relative_rect=pygame.Rect(
                     (first_col_x, init_y + stat_count * gap_per_stats),
                     (300, -1),
@@ -242,7 +243,7 @@ class LevelSelectionMenu(BaseState):
             )
             self.get_stat_text()[stat_count + 5] = UITextBox(
                 html_text=f'<img src="assets/icons_18/{stat_name}.png"> '
-                f"{' '.join(word.capitalize() for word in stat_name.split('_'))}: {numerical_stat}",
+                f"{convert_snake_to_title(stat_name)}: {numerical_stat}",
                 relative_rect=pygame.Rect(
                     (second_col_x, init_y + stat_count * gap_per_stats),
                     (300, -1),
@@ -322,7 +323,7 @@ class LevelSelectionMenu(BaseState):
                 )
                 self.get_stat_text()[stat_count].set_text(
                     f'<img src="assets/icons_18/{stat_name}.png"> '
-                    f"{' '.join(word.capitalize() for word in stat_name.split('_'))}: {numerical_stat}"
+                    f"{convert_snake_to_title(stat_name)}: {numerical_stat}"
                 )
 
             for stat_count, stat_name in enumerate(self.__SECOND_COLUMN_STAT_NAMES):
@@ -336,7 +337,7 @@ class LevelSelectionMenu(BaseState):
                 )
                 self.get_stat_text()[stat_count + 5].set_text(
                     f'<img src="assets/icons_18/{stat_name}.png"> '
-                    f"{' '.join(word.capitalize() for word in stat_name.split('_'))}: {numerical_stat}"
+                    f"{convert_snake_to_title(stat_name)}: {numerical_stat}"
                 )
 
             self.get_combat_entry_panel().show()

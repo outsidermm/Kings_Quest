@@ -212,8 +212,6 @@ class CharacterSelectionMenu(BaseState):
                 ObjectID(class_id="@lock_button")
             )
 
-        self.set_stat_HUDs([None] * 10)
-
         for stat_count, (stat_name, max_stat_value) in enumerate(
             self.__CHARACTER_MAX_VAL.items()
         ):
@@ -412,7 +410,7 @@ class CharacterSelectionMenu(BaseState):
             self.set_selection_page(
                 (self.get_selection_page() + 1) % self.get_characater_count()
             )
-            self.set_update_gui(True)
+            self.set_update_GUI(True)
 
         if self.get_ability_menu_active():
             # Show the ability menu if it is active.
@@ -564,7 +562,7 @@ class CharacterSelectionMenu(BaseState):
             self.get_character_name().set_text(
                 self.get_characater_name_list()[self.get_selection_page()]
             )
-            
+
             # Update the character picture in the HUD
             self.get_character_picture().set_image(
                 pygame.image.load(
@@ -581,7 +579,7 @@ class CharacterSelectionMenu(BaseState):
             self.get_upgrade_button().change_object_id(
                 ObjectID(class_id="@unlock_button")
             )
-            
+
             # If character level is max, set the button text to "MAX LEVEL"
             if (
                 self.get_characters()[self.get_selection_page()].get_character_level()

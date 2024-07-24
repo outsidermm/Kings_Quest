@@ -21,6 +21,16 @@ class BaseState(abc.ABC):
         time_to_transition (bool): Flag to indicate if it's time to transition to another state.
     """
 
+    __target_state_name: str = ""
+    __state_name: str = ""
+    __screen: pygame.Surface = None
+    __game_state_manager: GameStateManager = None
+    __ui_manager: pygame_gui.UIManager = None
+    __outgoing_transition_data: dict = {}
+    __incoming_transition_data: dict = {}
+    __time_to_quit_app: bool = False
+    __time_to_transition: bool = False
+
     def __init__(
         self,
         state_name: str,

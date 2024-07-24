@@ -47,7 +47,7 @@ class CombatController:
     __cooldown_abilities: Dict[str, int] = {}
     __player_sprite: UIImage = None
     __is_stunned: bool = False
-    
+
     def __init__(self, player: BaseCharacter, player_sprite: UIImage) -> None:
         """
         Initializes the CombatController class.

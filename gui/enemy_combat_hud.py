@@ -4,6 +4,7 @@ from pygame_gui.elements import UITextBox, UIPanel
 from pygame_gui.core import ObjectID
 from characters.base_character import BaseCharacter
 from gui.health_bar import HealthBar
+from utilities.general_utility import convert_snake_to_title
 
 CHARACTER_STAT = [
     "health_points",
@@ -87,7 +88,7 @@ class EnemyCombatHUD:
                 stat_rect.right = -HUD_text_x
                 self.get_HUD_text()[stat_name] = UITextBox(
                     html_text=f'<img src="assets/icons_18/{stat_name}.png"> '
-                    f"{' '.join(word.capitalize() for word in stat_name.split('_'))}: {self.get_player().get_stats()[stat_name]}",
+                    f"{convert_snake_to_title(stat_name)}: {self.get_player().get_stats()[stat_name]}",
                     relative_rect=stat_rect,
                     manager=self.get_ui_manager(),
                     anchors=({"right": "right"}),
@@ -110,7 +111,7 @@ class EnemyCombatHUD:
             if stat_name != "health_points":
                 self.get_HUD_text()[stat_name].set_text(
                     html_text=f'<img src="assets/icons_18/{stat_name}.png"> '
-                    f"{' '.join(word.capitalize() for word in stat_name.split('_'))}: {self.get_player().get_stats()[stat_name]}"
+                    f"{convert_snake_to_title(stat_name)}: {self.get_player().get_stats()[stat_name]}"
                 )
 
     def get_ui_manager(self) -> pygame_gui.UIManager:
