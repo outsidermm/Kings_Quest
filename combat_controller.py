@@ -12,12 +12,14 @@ class CombatController:
     including handling abilities, buffs, debuffs, and damage calculations.
     """
 
+    # Mapping debuff effects to player statistics
     __DEBUFF_STAT_MAPPER = {
         "physical_defense_reduction": "physical_defense",
         "physical_damage_reduction": "physical_damage",
         "bleed": "health_points",
     }
 
+    # List of positive player statistic modifiers
     __POSITIVE_PLAYER_STAT_MODIFIERS = [
         "health_regeneration",
         "mana_regeneration",
@@ -31,6 +33,7 @@ class CombatController:
         "spell_power",
     ]
 
+    # List of negative player statistic modifiers
     __NEGATIVE_PLAYER_STAT_MODIFIERS = [
         "stun",
         "physical_defense_reduction",
@@ -45,6 +48,7 @@ class CombatController:
         :param player: The player character.
         :param player_sprite: The player sprite.
         """
+        # Initialize player statistics and sprite
         self.set_player_stat(player.get_stats())
         self.set_player_stat_cap(player.get_stats())
         self.set_player_sprite(player_sprite)
@@ -67,8 +71,8 @@ class CombatController:
         Handles the actions to be taken when the player is stunned, including
         decrementing ability durations and removing expired abilities.
         """
-        self.handle_ability_durations()
-        self.set_is_stunned(False)
+        self.handle_ability_durations()  # Handle ability durations
+        self.set_is_stunned(False)  # Reset stun status
 
     def handle_ability_cooldowns(self) -> None:
         """
@@ -77,6 +81,7 @@ class CombatController:
         """
         cooldown_abilities_to_remove = []
 
+        # Iterate through cooldown abilities
         for (
             cooldown_ability_name,
             cooldown_count,
@@ -86,6 +91,7 @@ class CombatController:
             else:
                 cooldown_abilities_to_remove.append(cooldown_ability_name)
 
+        # Remove abilities that are no longer on cooldown
         for cooldown_ability_name in cooldown_abilities_to_remove:
             del self.get_cooldown_abilities()[cooldown_ability_name]
 
@@ -96,10 +102,12 @@ class CombatController:
         """
         abilities_to_remove = []
 
+        # Iterate through ability histories
         for player_ability in self.get_ability_histories():
             if player_ability.get_duration() > 0:
                 player_ability.set_duration(player_ability.get_duration() - 1)
             else:
+                # Remove buff effect if duration of the ability has passed
                 for modifier, value in player_ability.get_stats().items():
                     if (
                         modifier in self.__POSITIVE_PLAYER_STAT_MODIFIERS
@@ -111,6 +119,7 @@ class CombatController:
                         )
                 abilities_to_remove.append(player_ability)
 
+        # Remove expired abilities from history
         for ability_to_remove in abilities_to_remove:
             self.get_ability_histories().remove(ability_to_remove)
 
@@ -125,8 +134,9 @@ class CombatController:
         :return: A tuple containing the physical damage, magical damage, and any debuffs applied.
         """
         debuff_dict: Dict[str, Tuple[int, int]] = {}
-        self.handle_ability_cooldowns()
+        self.handle_ability_cooldowns()  # Handle ability cooldowns
 
+        # Calculate critical rate
         critical_rate = hit_height / self.get_player_sprite().rect.height * 100
         if ability is not None:
             self.get_ability_histories().append(ability.copy())
@@ -134,9 +144,11 @@ class CombatController:
                 "cooldown"
             ]
 
+            # Deduct ability cost from player stats
             for cost in ability.get_cost():
                 self.get_player_stat()[cost[0]] -= cost[1]
 
+            # Apply ability modifiers to player stats
             for modifier, value in ability.get_stats().items():
                 if modifier == "critical":
                     critical_rate += value
@@ -148,8 +160,9 @@ class CombatController:
                     else:
                         self.get_player_stat()[modifier] = value
 
-        self.handle_ability_durations()
+        self.handle_ability_durations()  # Handle ability durations
 
+        # Calculate physical and magical damage with critical rate
         critical_dmg_addition = random.randint(0, int(critical_rate))
         physical_dmg = magical_dmg = 0
         if (
@@ -193,6 +206,7 @@ class CombatController:
         :param magical_damage: The magical damage to be applied.
         :param debuff_dict: Dictionary of debuffs to be applied.
         """
+        # Apply debuffs to the player
         for debuff_name, (debuff_value, debuff_duration) in debuff_dict.items():
             if debuff_name == "stun":
                 self.set_is_stunned(True)
@@ -201,6 +215,7 @@ class CombatController:
 
         debuffs_to_remove = []
 
+        # Handle existing debuffs and their durations
         for debuff_name, (
             debuff_value,
             debuff_duration,
@@ -265,6 +280,7 @@ class CombatController:
         """
         Regenerates health and mana points for the player based on their regeneration rates.
         """
+        # Regenerate health points
         if "health_regeneration" in self.get_player_stat().keys():
             self.get_player_stat()["health_points"] = min_max_bound(
                 0,
@@ -272,6 +288,7 @@ class CombatController:
                 self.get_player_stat()["health_points"]
                 + self.get_player_stat()["health_regeneration"],
             )
+        # Regenerate mana points
         if "mana_regeneration" in self.get_player_stat().keys():
             self.get_player_stat()["mana_points"] = min_max_bound(
                 0,

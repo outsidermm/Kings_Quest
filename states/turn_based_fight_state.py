@@ -1,5 +1,6 @@
 from .base_state import BaseState
-import pygame, pygame_gui
+import pygame
+import pygame_gui
 from pygame_gui.elements import UIButton, UIImage, UITextBox, UIPanel
 from pygame_gui.core import ObjectID
 from state_manager import GameStateManager
@@ -14,43 +15,65 @@ from utilities.animation_utility import Animation
 from utilities.img_utility import load_images
 from visual_dialogue import VisualDialogue
 from quest import Quest
+from typing import List, Dict
 
 
 class TurnBasedFight(BaseState):
+    """
+    TurnBasedFight class handles the turn-based fight mechanics in the game,
+    including player and enemy actions, animations, and HUD updates.
+    """
 
     __player: BasePlayer = None
     __enemy: BaseEnemy = None
     __round_counter: int = 0
-    __combat_round_initalised: bool = False
+    __combat_round_initialized: bool = False
     __player_controller: CombatController = None
     __enemy_controller: CombatController = None
     __player_HUD: PlayerCombatHUD = None
     __enemy_HUD: EnemyCombatHUD = None
     __ability_selected: Ability = -1
-    __ability_button_list: list[UIButton] = [None] * 4
+    __ability_button_list: List[UIButton] = [None] * 4
     __is_player_attacking: bool = False
     __is_enemy_attacking: bool = False
     __mouse_pressed: bool = False
     __enemy_hit_height: float = 0
     __player_animation: Animation = None
     __enemy_animation: Animation = None
-    __quit_button_pressed: bool = False
     __visual_dialogue: VisualDialogue = None
     __visual_dialogue_container: UIPanel = None
-    __ANIMATION_ASSETS: dict[str, Animation] = {}
-    __quests: list[Quest] = None
+    __quests: List[Quest] = None
     __count_down: UITextBox = None
     __temp_quest: Quest = None
     __temp_quest_template: Quest = None
+    __animation_assets: Dict[str, Animation] = {}
+    __background_image: UIImage = None
+    __player_sprite: UIImage = None
+    __enemy_sprite: UIImage = None
+    __quest_master_sprite: UIImage = None
+    __player_info_container: UIPanel = None
+    __enemy_info_container: UIPanel = None
+    __player_choice_container: UIPanel = None
+    __tutorial_text: UITextBox = None
+    __start_tick: int = 0
 
     def __init__(
         self,
         screen: pygame.Surface,
         ui_manager: pygame_gui.UIManager,
         game_state_manager: GameStateManager,
-        quests: list[Quest],
+        quests: List[Quest],
         temp_quest: Quest,
     ):
+        """
+        Initializes the TurnBasedFight class.
+
+        :param screen: The game screen.
+        :param ui_manager: The UI manager for pygame_gui.
+        :param game_state_manager: The game state manager.
+        :param quests: List of quests.
+        :param temp_quest: Temporary quest.
+        """
         super().__init__(
             "turn_based_fight",
             screen,
@@ -58,146 +81,212 @@ class TurnBasedFight(BaseState):
             "end_menu",
             game_state_manager,
         )
-        self.__quests = quests
-        self.__temp_quest_template = temp_quest
+        self.set_quests(quests)
+        self.set_temp_quest_template(temp_quest)
 
     def start(self) -> None:
-        self.__temp_quest = self.__temp_quest_template.copy()
-        self.__player = self.get_incoming_transition_data()["player"]
+        """
+        Starts the turn-based fight, setting up players, enemies, HUDs, and animations.
+        """
+        # Copy the temporary quest template to initialize the temp quest
+        self.set_temp_quest(self.get_temp_quest_template().copy())
+        # Set the player and enemy using the incoming transition data
+        self.set_player(self.get_incoming_transition_data()["player"])
+        self.set_enemy(self.get_incoming_transition_data()["enemy"])
 
-        self.__ANIMATION_ASSETS["player/idle"] = Animation(
-            load_images(f"characters/players/{self.__player.get_name()}/idle"),
-            image_duration=10,
-        ).copy()
-        self.__ANIMATION_ASSETS["player/attack"] = Animation(
-            load_images(f"characters/players/{self.__player.get_name()}/attack"),
-            image_duration=6,
-            loop=False,
-        ).copy()
-
-        self.__enemy = self.get_incoming_transition_data()["enemy"]
-        self.__ANIMATION_ASSETS["enemy/idle"] = Animation(
-            load_images(f"characters/enemies/{self.__enemy.get_name()}/idle"),
-            is_flipped=True,
-        ).copy()
-        self.__ANIMATION_ASSETS["enemy/attack"] = Animation(
-            load_images(f"characters/enemies/{self.__enemy.get_name()}/attack"),
-            image_duration=6,
-            loop=False,
-            is_flipped=True,
-        ).copy()
-
-        self.__ANIMATION_ASSETS["quest_master/idle"] = Animation(
-            load_images("characters/npcs/quest_master/idle"),
-            image_duration=10,
-            is_flipped=True,
-        ).copy()
-
-        self.__background_image = UIImage(
-            relative_rect=pygame.Rect(
-                (0, 0), (self.get_screen().get_width(), self.get_screen().get_height())
-            ),
-            image_surface=pygame.image.load("assets/fight/1.png"),
-            manager=self.get_ui_manager(),
-        )
-        self.__player_sprite = UIImage(
-            relative_rect=pygame.Rect(
-                (self.get_screen().width * 0.3, 300),
-                (200, 200),
-            ),
-            image_surface=pygame.image.load(self.__player.get_sprite_location()),
-            manager=self.get_ui_manager(),
-        )
-        self.__enemy_sprite = UIImage(
-            relative_rect=pygame.Rect(
-                (self.get_screen().width * 0.5, 350),
-                (200, 200),
-            ),
-            image_surface=pygame.transform.flip(
-                pygame.image.load(self.__enemy.get_sprite_location()).convert_alpha(),
-                True,
-                False,
-            ),
-            manager=self.get_ui_manager(),
-        )
-        self.__quest_master_sprite = UIImage(
-            relative_rect=pygame.Rect(
-                (self.get_screen().width * 0.7, 400),
-                (200, 200),
-            ),
-            image_surface=pygame.transform.flip(
-                pygame.image.load(
-                    "assets/characters/npcs/quest_master/idle/0.png"
-                ).convert_alpha(),
-                True,
-                False,
-            ),
-            manager=self.get_ui_manager(),
+        # Load animations for the player, enemy, and quest master
+        self.set_animation_assets(
+            {
+                "player/idle": Animation(
+                    load_images(
+                        f"characters/players/{self.get_player().get_name()}/idle"
+                    ),
+                    image_duration=10,
+                ).copy(),
+                "player/attack": Animation(
+                    load_images(
+                        f"characters/players/{self.get_player().get_name()}/attack"
+                    ),
+                    image_duration=6,
+                    loop=False,
+                ).copy(),
+                "enemy/idle": Animation(
+                    load_images(
+                        f"characters/enemies/{self.get_enemy().get_name()}/idle"
+                    ),
+                    is_flipped=True,
+                ).copy(),
+                "enemy/attack": Animation(
+                    load_images(
+                        f"characters/enemies/{self.get_enemy().get_name()}/attack"
+                    ),
+                    image_duration=6,
+                    loop=False,
+                    is_flipped=True,
+                ).copy(),
+                "quest_master/idle": Animation(
+                    load_images("characters/npcs/quest_master/idle"),
+                    image_duration=10,
+                    is_flipped=True,
+                ).copy(),
+            }
         )
 
-        self.__player_info_container = UIPanel(
-            relative_rect=pygame.Rect((-5, 0), (325, 330)),
-            manager=self.get_ui_manager(),
-            object_id=ObjectID(object_id="#semi-transparent_panel"),
+        # Set the background image for the fight scene
+        self.set_background_image(
+            UIImage(
+                relative_rect=pygame.Rect(
+                    (0, 0),
+                    (self.get_screen().get_width(), self.get_screen().get_height()),
+                ),
+                image_surface=pygame.image.load("assets/fight/1.png"),
+                manager=self.get_ui_manager(),
+            )
         )
 
-        self.__player_HUD = PlayerCombatHUD(
-            self.get_ui_manager(), self.__player, self.__player_info_container
+        # Set the player sprite
+        self.set_player_sprite(
+            UIImage(
+                relative_rect=pygame.Rect(
+                    (self.get_screen().width * 0.3, 300),
+                    (200, 200),
+                ),
+                image_surface=pygame.image.load(
+                    self.get_player().get_sprite_location()
+                ),
+                manager=self.get_ui_manager(),
+            )
         )
 
+        # Set the enemy sprite, flipped horizontally
+        self.set_enemy_sprite(
+            UIImage(
+                relative_rect=pygame.Rect(
+                    (self.get_screen().width * 0.5, 350),
+                    (200, 200),
+                ),
+                image_surface=pygame.transform.flip(
+                    pygame.image.load(
+                        self.get_enemy().get_sprite_location()
+                    ).convert_alpha(),
+                    True,
+                    False,
+                ),
+                manager=self.get_ui_manager(),
+            )
+        )
+
+        # Set the quest master sprite, flipped horizontally
+        self.set_quest_master_sprite(
+            UIImage(
+                relative_rect=pygame.Rect(
+                    (self.get_screen().width * 0.7, 400),
+                    (200, 200),
+                ),
+                image_surface=pygame.transform.flip(
+                    pygame.image.load(
+                        "assets/characters/npcs/quest_master/idle/0.png"
+                    ).convert_alpha(),
+                    True,
+                    False,
+                ),
+                manager=self.get_ui_manager(),
+            )
+        )
+
+        # Create the player info container panel
+        self.set_player_info_container(
+            UIPanel(
+                relative_rect=pygame.Rect((-5, 0), (325, 330)),
+                manager=self.get_ui_manager(),
+                object_id=ObjectID(object_id="#semi-transparent_panel"),
+            )
+        )
+
+        # Set up the player's HUD
+        self.set_player_HUD(
+            PlayerCombatHUD(
+                self.get_ui_manager(),
+                self.get_player(),
+                self.get_player_info_container(),
+            )
+        )
+
+        # Create the enemy info container panel with right anchor
         enemy_info_rect = pygame.Rect((0, 0), (325, 330))
         enemy_info_rect.right = 5
-        self.__enemy_info_container = UIPanel(
-            relative_rect=enemy_info_rect,
-            anchors={"right": "right"},
-            manager=self.get_ui_manager(),
-            object_id=ObjectID(object_id="#semi-transparent_panel"),
+        self.set_enemy_info_container(
+            UIPanel(
+                relative_rect=enemy_info_rect,
+                anchors={"right": "right"},
+                manager=self.get_ui_manager(),
+                object_id=ObjectID(object_id="#semi-transparent_panel"),
+            )
         )
 
-        self.__enemy_HUD = EnemyCombatHUD(
-            self.get_ui_manager(),
-            self.__enemy,
-            self.__enemy_info_container,
-            is_flipped=True,
+        # Set up the enemy's HUD, with the image flipped horizontally
+        self.set_enemy_HUD(
+            EnemyCombatHUD(
+                self.get_ui_manager(),
+                self.get_enemy(),
+                self.get_enemy_info_container(),
+                is_flipped=True,
+            )
         )
 
+        # Calculate the width of the player choice container and create it
         player_choice_container_width = self.get_screen().width - 650
-        self.__player_choice_container = UIPanel(
-            relative_rect=pygame.Rect((0, 0), (self.get_screen().width - 650, 200)),
-            anchors={"centerx": "centerx"},
-            manager=self.get_ui_manager(),
-            object_id=ObjectID(object_id="#transparent_panel"),
+        self.set_player_choice_container(
+            UIPanel(
+                relative_rect=pygame.Rect((0, 0), (self.get_screen().width - 650, 200)),
+                anchors={"centerx": "centerx"},
+                manager=self.get_ui_manager(),
+                object_id=ObjectID(object_id="#transparent_panel"),
+            )
         )
 
-        self.__tutorial_text = UITextBox(
-            html_text="Press the allocated button to use an action (ability / normal attack)",
-            relative_rect=pygame.Rect((0, 200), (self.get_screen().width * 0.5, -1)),
-            anchors=({"centerx": "centerx"}),
-            manager=self.get_ui_manager(),
-            object_id=ObjectID(object_id="#tutorial_text"),
+        # Set up the tutorial text
+        self.set_tutorial_text(
+            UITextBox(
+                html_text="Press the allocated button to use an action (ability / normal attack)",
+                relative_rect=pygame.Rect(
+                    (0, 200), (self.get_screen().width * 0.5, -1)
+                ),
+                anchors=({"centerx": "centerx"}),
+                manager=self.get_ui_manager(),
+                object_id=ObjectID(object_id="#tutorial_text"),
+            )
         )
 
-        unlocked_abilities_number = len(self.__player.get_unlocked_abilities())
+        # Calculate the gaps between ability buttons and create the normal attack button
+        unlocked_abilities_number = len(self.get_player().get_unlocked_abilities())
         ability_x_gap = (
             player_choice_container_width - (unlocked_abilities_number + 1) * 130
         ) / (unlocked_abilities_number + 2)
         init_ability_button_y = 25
 
-        normal_attack_tool_tip = f"Deal {self.__player.get_stats()['physical_damage'] if "physical_damage" in self.__player.get_stats().keys() else 0} physical damage and {self.__player.get_stats()['magical_damage'] if "magical_damage" in self.__player.get_stats().keys() else 0} magical damage to the enemy"
-        self.__ability_button_list[0] = UIButton(
+        normal_attack_tool_tip = (
+            f"Deal {self.get_player().get_stats()['physical_damage'] if 'physical_damage' in self.get_player().get_stats().keys() else 0} "
+            f"physical damage and {self.get_player().get_stats()['magical_damage'] if 'magical_damage' in self.get_player().get_stats().keys() else 0} "
+            f"magical damage to the enemy"
+        )
+        self.get_ability_button_list()[0] = UIButton(
             text="Normal Attack",
             relative_rect=pygame.Rect(
                 (ability_x_gap, init_ability_button_y),
                 (130, 100),
             ),
             manager=self.get_ui_manager(),
-            container=self.__player_choice_container,
+            container=self.get_player_choice_container(),
             object_id=ObjectID(class_id="@Normal Attack", object_id="#choice_text0"),
             tool_tip_text=normal_attack_tool_tip,
         )
-        for ability_count, ability in enumerate(self.__player.get_unlocked_abilities()):
 
-            self.__ability_button_list[ability_count + 1] = UIButton(
+        # Create buttons for each unlocked ability
+        for ability_count, ability in enumerate(
+            self.get_player().get_unlocked_abilities()
+        ):
+            self.get_ability_button_list()[ability_count + 1] = UIButton(
                 text=ability.get_name(),
                 relative_rect=pygame.Rect(
                     (
@@ -207,7 +296,7 @@ class TurnBasedFight(BaseState):
                     (130, 100),
                 ),
                 manager=self.get_ui_manager(),
-                container=self.__player_choice_container,
+                container=self.get_player_choice_container(),
                 object_id=ObjectID(
                     class_id=f"@{ability.get_name()}",
                     object_id=f"#choice_text{ability_count + 1}",
@@ -215,149 +304,192 @@ class TurnBasedFight(BaseState):
                 tool_tip_text=ability.get_description(),
             )
 
-        self.__count_down = UITextBox(
-            html_text="3",
-            relative_rect=pygame.Rect((0, -100), (self.get_screen().width, -1)),
-            anchors={"center": "center"},
-            manager=self.get_ui_manager(),
-            object_id=ObjectID(class_id="@title", object_id="#game_title"),
+        # Set up the countdown text box
+        self.set_count_down(
+            UITextBox(
+                html_text="3",
+                relative_rect=pygame.Rect((0, -100), (self.get_screen().width, -1)),
+                anchors={"center": "center"},
+                manager=self.get_ui_manager(),
+                object_id=ObjectID(class_id="@title", object_id="#game_title"),
+            )
         )
 
+        # Create the visual dialogue container panel
         visual_dialogue_rect = pygame.Rect((0, 0), (self.get_screen().width, 150))
         visual_dialogue_rect.bottom = 0
-        self.__visual_dialogue_container = UIPanel(
-            relative_rect=visual_dialogue_rect,
-            manager=self.get_ui_manager(),
-            anchors={"bottom": "bottom"},
-            object_id=ObjectID(object_id="#visual_dialogue_box"),
-        )
-        self.__visual_dialogue = VisualDialogue(
-            self.get_ui_manager(),
-            self.__visual_dialogue_container,
-            self.__temp_quest,
+        self.set_visual_dialogue_container(
+            UIPanel(
+                relative_rect=visual_dialogue_rect,
+                manager=self.get_ui_manager(),
+                anchors={"bottom": "bottom"},
+                object_id=ObjectID(object_id="#visual_dialogue_box"),
+            )
         )
 
-        self.__player_controller = CombatController(self.__player, self.__player_sprite)
-        self.__enemy_controller = CombatController(self.__enemy, self.__enemy_sprite)
+        # Set up the visual dialogue
+        self.set_visual_dialogue(
+            VisualDialogue(
+                self.get_ui_manager(),
+                self.get_visual_dialogue_container(),
+                self.get_temp_quest(),
+            )
+        )
 
-        self.__player_animation = self.__ANIMATION_ASSETS["player/idle"]
-        self.__enemy_animation = self.__ANIMATION_ASSETS["enemy/idle"]
-        self.__quest_master_animation = self.__ANIMATION_ASSETS["quest_master/idle"]
-        self.__start_tick = pygame.time.get_ticks()
-        self.__round_counter = 0
-        self.__combat_round_initalised = False
-        self.__is_player_attacking = False
-        self.__is_enemy_attacking = False
+        # Initialize the player and enemy combat controllers
+        self.set_player_controller(
+            CombatController(self.get_player(), self.get_player_sprite())
+        )
+        self.set_enemy_controller(
+            CombatController(self.get_enemy(), self.get_enemy_sprite())
+        )
+
+        # Set initial animations for player, enemy, and quest master
+        self.set_player_animation(self.get_animation_assets()["player/idle"])
+        self.set_enemy_animation(self.get_animation_assets()["enemy/idle"])
+        self.set_quest_master_animation(
+            self.get_animation_assets()["quest_master/idle"]
+        )
+
+        # Set the start tick, round counter, and flags for combat initialization and attacks
+        self.set_start_tick(pygame.time.get_ticks())
+        self.set_round_counter(0)
+        self.set_combat_round_initialized(False)
+        self.set_is_player_attacking(False)
+        self.set_is_enemy_attacking(False)
 
     def handle_events(self) -> None:
+        """
+        Handles the events occurring during the fight, including button presses and mouse events.
+        """
+        # Loop through all the events in the pygame event queue
         for event in pygame.event.get():
+            # If the quit event is triggered, set the flag to quit the app
             if event.type == pygame.QUIT:
-                self.__quit_button_pressed = True
+                self.set_time_to_quit_app(True)
+
+            # Process the event with the UI manager
             self.get_ui_manager().process_events(event)
+
+            # Handle button press events
             if event.type == pygame_gui.UI_BUTTON_PRESSED:
-                if event.ui_element == self.__ability_button_list[0]:
-                    self.__ability_selected = None
+                if event.ui_element == self.get_ability_button_list()[0]:
+                    # If the normal attack button is pressed, set ability_selected to None
+                    self.set_ability_selected(None)
                 else:
+                    # Check if any of the ability buttons (index 1 to 3) are pressed
                     for ability_button_index in [1, 2, 3]:
-                        if (
-                            event.ui_element
-                            == self.__ability_button_list[ability_button_index]
-                        ):
-                            self.__ability_selected = (
-                                self.__player.get_unlocked_abilities()[
-                                    ability_button_index - 1
-                                ]
+                        if event.ui_element == self.get_ability_button_list()[ability_button_index]:
+                            # Set the selected ability based on the button pressed
+                            self.set_ability_selected(
+                                self.get_player().get_unlocked_abilities()[ability_button_index - 1]
                             )
 
+            # Handle mouse press events
             if pygame.mouse.get_pressed()[0]:
-                self.__mouse_pressed = True
+                # Set the mouse_pressed flag to True
+                self.set_mouse_pressed(True)
+                # Get the current mouse position
                 mouse_pos = pygame.mouse.get_pos()
-                if self.__enemy_sprite.rect.collidepoint(mouse_pos):
-                    self.__enemy_hit_height = self.__enemy_sprite.rect.height - (
-                        mouse_pos[1] - self.__enemy_sprite.rect.y
+                # Check if the mouse click is on the enemy sprite
+                if self.get_enemy_sprite().rect.collidepoint(mouse_pos):
+                    # Calculate the enemy hit height based on the mouse position
+                    self.set_enemy_hit_height(
+                        self.get_enemy_sprite().rect.height - (mouse_pos[1] - self.get_enemy_sprite().rect.y)
                     )
                 else:
-                    self.__enemy_hit_height = 0
+                    # If the mouse click is not on the enemy sprite, set the enemy hit height to 0
+                    self.set_enemy_hit_height(0)
 
     def run(self) -> None:
-        if self.__quit_button_pressed:
-            self.set_time_to_quit_app(True)
-            return
-        seconds = (pygame.time.get_ticks() - self.__start_tick) / 1000
-        if seconds > 3:
-            self.__combat_round_initalised = True
-            self.__count_down.kill()
-        else:
-            self.__count_down.set_text(str(3 - int(seconds)))
 
+        """
+        Runs the main logic of the turn-based fight, handling player and enemy actions,
+        animations, and HUD updates.
+        """
+        # Check if the game is set to quit
+        if self.get_time_to_quit_app():
+            return
+
+        # Calculate the elapsed time since the start of the round
+        seconds = (pygame.time.get_ticks() - self.get_start_tick()) / 1000
+
+        # Initialize the combat round after a countdown of 3 seconds
+        if seconds > 3:
+            self.set_combat_round_initialized(True)
+            self.get_count_down().kill()
+        else:
+            self.get_count_down().set_text(str(3 - int(seconds)))
+
+        # Check if both player and enemy are still alive and if the combat round is initialized
         if (
-            self.__enemy.get_stats()["health_points"] > 0
-            and self.__player.get_stats()["health_points"] > 0
-            and self.__combat_round_initalised
+            self.get_enemy().get_stats()["health_points"] > 0
+            and self.get_player().get_stats()["health_points"] > 0
+            and self.get_combat_round_initialized()
         ):
-            if self.__round_counter % 2 == 0:
-                if self.__player_controller.get_is_stunned():
-                    self.__tutorial_text.set_text("You are stunned and cannot act!")
-                    self.__player_controller.stunned_round()
+            # Determine if it's the player's turn (even round number) or the enemy's turn (odd round number)
+            if self.get_round_counter() % 2 == 0:
+                # Player's turn
+                if self.get_player_controller().get_is_stunned():
+                    # If the player is stunned, skip their turn
+                    self.get_tutorial_text().set_text("You are stunned and cannot act!")
+                    self.get_player_controller().stunned_round()
                     pygame.time.wait(250)
-                    self.__visual_dialogue.set_dialogue(
-                        self.__player.get_name(),
-                        self.__enemy.get_name(),
-                        self.__player.get_stats()["health_points"],
-                        self.__player.get_stats()["mana_points"],
+                    self.get_visual_dialogue().set_dialogue(
+                        self.get_player().get_name(),
+                        self.get_enemy().get_name(),
+                        self.get_player().get_stats()["health_points"],
+                        self.get_player().get_stats()["mana_points"],
                         0,
                         True,
                         None,
                     )
-                    self.__round_counter += 1
+                    self.set_round_counter(self.get_round_counter() + 1)
                 else:
-                    # When the user has not picked the ability to use and is not stunned
-                    if self.__ability_selected == -1:
-                        self.__tutorial_text.set_text(
+                    # If the player is not stunned
+                    if self.get_ability_selected() == -1:
+                        # If no ability is selected, prompt the player to select one
+                        self.get_tutorial_text().set_text(
                             "Press the allocated button to use an action (ability / normal attack)"
                         )
-                    # When the user is aiming for the enemies
-                    elif not self.__is_player_attacking:
-                        locked_ability_decision = (
-                            self.__ability_selected
-                        )  # lock in to the ability selected
-                        self.__tutorial_text.set_text(
+                    elif not self.get_is_player_attacking():
+                        # If the player has selected an ability but hasn't attacked yet
+                        locked_ability_decision = self.get_ability_selected()
+                        self.get_tutorial_text().set_text(
                             "Use your mouse to try and hit the enemy's key body parts! You only have one chance!"
                         )
-
-                        # If the user has clicked, then attack with the given values
                         if (
-                            self.__mouse_pressed
-                            or self.__player_controller.get_is_stunned()
+                            self.get_mouse_pressed()
+                            or self.get_player_controller().get_is_stunned()
                         ):
-                            self.__is_player_attacking = True
-                            # Regenerate before turn action occurs
-                            self.__player_controller.regenerate()
-                            self.__enemy_controller.regenerate()
-                            # Compute damage and debuffs, apply buffs
-                            physical_damage, magical_damage, debuff_dict = (
-                                self.__player_controller.attack(
-                                    self.__enemy_hit_height, locked_ability_decision
-                                )
+                            # If the player clicks to attack or is stunned
+                            self.set_is_player_attacking(True)
+                            self.get_player_controller().regenerate()
+                            self.get_enemy_controller().regenerate()
+                            (
+                                physical_damage,
+                                magical_damage,
+                                debuff_dict,
+                            ) = self.get_player_controller().attack(
+                                self.get_enemy_hit_height(), locked_ability_decision
                             )
-                            # Apply the damage and debuffs to the enemy
-                            self.__enemy_controller.face_damage(
+                            self.get_enemy_controller().face_damage(
                                 physical_damage, magical_damage, debuff_dict
                             )
-                            self.__player_animation = self.__ANIMATION_ASSETS[
-                                "player/attack"
-                            ].copy()
-                            self.__visual_dialogue.set_dialogue(
-                                self.__player.get_name(),
-                                self.__enemy.get_name(),
-                                self.__player.get_stats()["health_points"],
-                                self.__player.get_stats()["mana_points"],
+                            self.set_player_animation(
+                                self.get_animation_assets()["player/attack"].copy()
+                            )
+                            self.get_visual_dialogue().set_dialogue(
+                                self.get_player().get_name(),
+                                self.get_enemy().get_name(),
+                                self.get_player().get_stats()["health_points"],
+                                self.get_player().get_stats()["mana_points"],
                                 (physical_damage + magical_damage),
                                 False,
                                 locked_ability_decision,
                             )
                             if locked_ability_decision is not None:
-                                for quest in self.__quests:
+                                for quest in self.get_quests():
                                     if (
                                         quest.get_name() == "Fireball"
                                         and locked_ability_decision.get_name()
@@ -365,160 +497,201 @@ class TurnBasedFight(BaseState):
                                     ):
                                         quest.increment_progress(1)
                             else:
-                                self.__temp_quest.increment_progress(1)
-                    # Attacking, perform animation, update the health bars
+                                self.get_temp_quest().increment_progress(1)
                     elif (
-                        self.__is_player_attacking
-                        and self.__player_animation.is_done()
-                        and self.__visual_dialogue.is_done()
+                        self.get_is_player_attacking()
+                        and self.get_player_animation().is_done()
+                        and self.get_visual_dialogue().is_done()
                     ):
-                        self.__player_animation = self.__ANIMATION_ASSETS[
-                            "player/idle"
-                        ].copy()
-                        self.__ability_selected = -1  # Reset turn action flags
-                        self.__is_player_attacking = False
+                        # Reset player state after attack animation is done
+                        self.set_player_animation(
+                            self.get_animation_assets()["player/idle"].copy()
+                        )
+                        self.set_ability_selected(-1)
+                        self.set_is_player_attacking(False)
                         pygame.time.wait(250)
-                        self.__round_counter += 1
-
+                        self.set_round_counter(self.get_round_counter() + 1)
             else:
-                if self.__enemy_controller.get_is_stunned():
-                    self.__tutorial_text.set_text(
+                # Enemy's turn
+                if self.get_enemy_controller().get_is_stunned():
+                    # If the enemy is stunned, skip their turn
+                    self.get_tutorial_text().set_text(
                         "You stunned the boss, you can hit again, good job!"
                     )
-                    self.__enemy_controller.stunned_round()
-                    self.__round_counter += 1
-                    self.__visual_dialogue.set_dialogue(
-                        self.__enemy.get_name(),
-                        self.__player.get_name(),
-                        self.__enemy.get_stats()["health_points"],
-                        self.__enemy.get_stats()["mana_points"],
+                    self.get_enemy_controller().stunned_round()
+                    self.set_round_counter(self.get_round_counter() + 1)
+                    self.get_visual_dialogue().set_dialogue(
+                        self.get_enemy().get_name(),
+                        self.get_player().get_name(),
+                        self.get_enemy().get_stats()["health_points"],
+                        self.get_enemy().get_stats()["mana_points"],
                         0,
                         True,
                         None,
                     )
                 else:
-                    if not self.__is_enemy_attacking:
+                    if not self.get_is_enemy_attacking():
+                        # Select a random ability for the enemy to use
                         random_ability_choice = random.randint(
                             0,
-                            len(self.__enemy.get_abilities())
-                            - len(self.__enemy_controller.get_cooldown_abilities()),
+                            len(self.get_enemy().get_abilities())
+                            - len(self.get_enemy_controller().get_cooldown_abilities()),
                         )
-
                         random_ability_choice = (
                             None
                             if random_ability_choice == 0
-                            else self.__enemy.get_abilities()[random_ability_choice - 1]
+                            else self.get_enemy().get_abilities()[
+                                random_ability_choice - 1
+                            ]
                         )
-                        self.__player_controller.regenerate()
-                        self.__enemy_controller.regenerate()
-                        # Compute damage and debuffs, apply buffs
+                        self.get_player_controller().regenerate()
+                        self.get_enemy_controller().regenerate()
                         physical_damage, magical_damage, debuff_dict = (
-                            self.__enemy_controller.attack(0, random_ability_choice)
+                            self.get_enemy_controller().attack(0, random_ability_choice)
                         )
-                        # Apply the damage and debuffs to the player
-                        self.__player_controller.face_damage(
+                        self.get_player_controller().face_damage(
                             physical_damage, magical_damage, debuff_dict
                         )
-                        self.__enemy_animation = self.__ANIMATION_ASSETS[
-                            "enemy/attack"
-                        ].copy()
-                        self.__is_enemy_attacking = True
-                        self.__visual_dialogue.set_dialogue(
-                            self.__enemy.get_name(),
-                            self.__player.get_name(),
-                            self.__enemy.get_stats()["health_points"],
-                            self.__enemy.get_stats()["mana_points"],
+                        self.set_enemy_animation(
+                            self.get_animation_assets()["enemy/attack"].copy()
+                        )
+                        self.set_is_enemy_attacking(True)
+                        self.get_visual_dialogue().set_dialogue(
+                            self.get_enemy().get_name(),
+                            self.get_player().get_name(),
+                            self.get_enemy().get_stats()["health_points"],
+                            self.get_enemy().get_stats()["mana_points"],
                             (physical_damage + magical_damage),
                             False,
                             random_ability_choice,
                         )
-
                     elif (
-                        self.__is_enemy_attacking
-                        and self.__enemy_animation.is_done()
-                        and self.__visual_dialogue.is_done()
+                        self.get_is_enemy_attacking()
+                        and self.get_enemy_animation().is_done()
+                        and self.get_visual_dialogue().is_done()
                     ):
-                        self.__enemy_animation = self.__ANIMATION_ASSETS[
-                            "enemy/idle"
-                        ].copy()
-                        self.__is_enemy_attacking = False
-                        self.__round_counter += 1
+                        # Reset enemy state after attack animation is done
+                        self.set_enemy_animation(
+                            self.get_animation_assets()["enemy/idle"].copy()
+                        )
+                        self.set_is_enemy_attacking(False)
+                        self.set_round_counter(self.get_round_counter() + 1)
 
-        if self.__enemy.get_stats()["health_points"] <= 0:
-            for quest in self.__quests:
+        # Check for victory or defeat
+        if self.get_enemy().get_stats()["health_points"] <= 0:
+            # Player wins
+            for quest in self.get_quests():
                 if (
                     quest.get_name() == "Kill DreadNoughts"
-                    and self.__enemy.get_name() == "DreadNought"
+                    and self.get_enemy().get_name() == "DreadNought"
                 ):
                     quest.increment_progress(1)
             outgoing_transition_dict = self.get_incoming_transition_data()
             outgoing_transition_dict["winner"] = "player"
-            if self.__temp_quest.is_done():
-                outgoing_transition_dict["temp_quest_completion"] = self.__temp_quest
+            if self.get_temp_quest().is_done():
+                outgoing_transition_dict["temp_quest_completion"] = (
+                    self.get_temp_quest()
+                )
             self.set_outgoing_transition_data(outgoing_transition_dict)
             self.set_time_to_transition(True)
-        elif self.__player.get_stats()["health_points"] <= 0:
+        elif self.get_player().get_stats()["health_points"] <= 0:
+            # Enemy wins
             outgoing_transition_dict = self.get_incoming_transition_data()
             outgoing_transition_dict["winner"] = "enemy"
-            if self.__temp_quest.is_done():
-                outgoing_transition_dict["temp_quest_completion"] = self.__temp_quest
+            if self.get_temp_quest().is_done():
+                outgoing_transition_dict["temp_quest_completion"] = (
+                    self.get_temp_quest()
+                )
             self.set_outgoing_transition_data(outgoing_transition_dict)
             self.set_time_to_transition(True)
 
-        self.__visual_dialogue.update()
-
     def reset_event_polling(self) -> None:
-        self.__mouse_pressed = False
-        self.__quit_button_pressed = False
+        """
+        Resets the event polling flags for the next round.
+        """
+        self.set_mouse_pressed(False)
 
-    def render(self, time_delta: int):
-        self.__player_HUD.update()
-        self.__enemy_HUD.update()
+    def render(self, time_delta: int) -> None:
+        """
+        Renders the fight scene, updating animations and HUDs.
 
-        self.__player_animation.update()
-        self.__enemy_animation.update()
-        self.__quest_master_animation.update()
+        :param time_delta: Time elapsed since the last frame.
+        """
+        # Update visual dialogue
+        self.get_visual_dialogue().update()
+        
+        # Update player and enemy HUDs
+        self.get_player_HUD().update()
+        self.get_enemy_HUD().update()
 
-        self.__player_sprite.image = self.__player_animation.img()
-        self.__enemy_sprite.image = self.__enemy_animation.img()
-        self.__quest_master_sprite.image = self.__quest_master_animation.img()
+        # Update animations for player, enemy, and quest master
+        self.get_player_animation().update()
+        self.get_enemy_animation().update()
+        self.get_quest_master_animation().update()
 
-        for ability_index in range(len(self.__player.get_unlocked_abilities())):
-            if self.__player_controller.is_ability_on_cooldown(
-                self.__player.get_unlocked_abilities()[ability_index]
-            ):
-                self.__ability_button_list[ability_index + 1].set_text(
-                    f"Cooldown: {self.__player_controller.get_cooldown_abilities()[self.__player.get_unlocked_abilities()[ability_index].get_name()]}"
+        # Set the current frame image for player, enemy, and quest master sprites
+        self.get_player_sprite().image = self.get_player_animation().img()
+        self.get_enemy_sprite().image = self.get_enemy_animation().img()
+        self.get_quest_master_sprite().image = self.get_quest_master_animation().img()
+
+        # Update ability button states based on their cooldowns
+        for ability_index, ability in enumerate(
+            self.get_player().get_unlocked_abilities(), 1
+        ):
+            if self.get_player_controller().is_ability_on_cooldown(ability):
+                # If the ability is on cooldown, update the button text and disable it
+                self.get_ability_button_list()[ability_index].set_text(
+                    f"Cooldown: {self.get_player_controller().get_cooldown_abilities()[ability.get_name()]}"
                 )
-                self.__ability_button_list[ability_index + 1].disable()
+                self.get_ability_button_list()[ability_index].disable()
             else:
-                self.__ability_button_list[ability_index + 1].enable()
-                self.__ability_button_list[ability_index + 1].set_text(
-                    self.__player.get_unlocked_abilities()[ability_index].get_name()
+                # If the ability is not on cooldown, enable the button and set its text to the ability name
+                self.get_ability_button_list()[ability_index].enable()
+                self.get_ability_button_list()[ability_index].set_text(
+                    ability.get_name()
                 )
+
+        # Update the UI manager
         self.get_ui_manager().update(time_delta)
+
+        # Clear the screen by blitting a new surface
         self.get_screen().blit(
             pygame.Surface((self.get_screen().width, self.get_screen().height)), (0, 0)
         )
+        
+        # Draw the UI elements on the screen
         self.get_ui_manager().draw_ui(self.get_screen())
-        if self.__is_enemy_attacking and not self.__enemy_animation.is_done():
+
+        # If the enemy is attacking, apply a tint effect to the screen
+        if self.get_is_enemy_attacking() and not self.get_enemy_animation().is_done():
             self.tint_damage(self.get_screen(), 0.2)
+        
+        # Update the display with the rendered frame
         pygame.display.update()
 
     def end(self) -> None:
-        self.__player_sprite.kill()
-        self.__enemy_sprite.kill()
-        self.__quest_master_sprite.kill()
-        self.__player_info_container.kill()
-        self.__enemy_info_container.kill()
-        self.__player_choice_container.kill()
-        self.__tutorial_text.kill()
-        self.__visual_dialogue_container.kill()
-        self.__visual_dialogue.kill()
-        self.__background_image.kill()
+        """
+        Ends the turn-based fight, cleaning up UI elements and resetting the screen.
+        """
+        self.get_player_sprite().kill()
+        self.get_enemy_sprite().kill()
+        self.get_quest_master_sprite().kill()
+        self.get_player_info_container().kill()
+        self.get_enemy_info_container().kill()
+        self.get_player_choice_container().kill()
+        self.get_tutorial_text().kill()
+        self.get_visual_dialogue_container().kill()
+        self.get_visual_dialogue().kill()
+        self.get_background_image().kill()
         self.get_screen().fill((0, 0, 0))
 
     def tint_damage(self, surface: pygame.Surface, scale: float) -> None:
+        """
+        Tints the screen to indicate damage taken.
+
+        :param surface: The surface to tint.
+        :param scale: The scale of the tint.
+        """
         GB = min(255, max(0, round(255 * (1 - scale))))
         surface.fill((255, GB, GB), special_flags=pygame.BLEND_MULT)
 
@@ -557,3 +730,250 @@ class TurnBasedFight(BaseState):
 
     def get_target_state_name(self) -> str:
         return super().get_target_state_name()
+
+    # Getter and setter for __player
+    def get_player(self) -> BasePlayer:
+        return self.__player
+
+    def set_player(self, player: BasePlayer) -> None:
+        self.__player = player
+
+    # Getter and setter for __enemy
+    def get_enemy(self) -> BaseEnemy:
+        return self.__enemy
+
+    def set_enemy(self, enemy: BaseEnemy) -> None:
+        self.__enemy = enemy
+
+    # Getter and setter for __round_counter
+    def get_round_counter(self) -> int:
+        return self.__round_counter
+
+    def set_round_counter(self, round_counter: int) -> None:
+        self.__round_counter = round_counter
+
+    # Getter and setter for __combat_round_initialized
+    def get_combat_round_initialized(self) -> bool:
+        return self.__combat_round_initialized
+
+    def set_combat_round_initialized(self, combat_round_initialized: bool) -> None:
+        self.__combat_round_initialized = combat_round_initialized
+
+    # Getter and setter for __player_controller
+    def get_player_controller(self) -> CombatController:
+        return self.__player_controller
+
+    def set_player_controller(self, player_controller: CombatController) -> None:
+        self.__player_controller = player_controller
+
+    # Getter and setter for __enemy_controller
+    def get_enemy_controller(self) -> CombatController:
+        return self.__enemy_controller
+
+    def set_enemy_controller(self, enemy_controller: CombatController) -> None:
+        self.__enemy_controller = enemy_controller
+
+    # Getter and setter for __player_HUD
+    def get_player_HUD(self) -> PlayerCombatHUD:
+        return self.__player_HUD
+
+    def set_player_HUD(self, player_HUD: PlayerCombatHUD) -> None:
+        self.__player_HUD = player_HUD
+
+    # Getter and setter for __enemy_HUD
+    def get_enemy_HUD(self) -> EnemyCombatHUD:
+        return self.__enemy_HUD
+
+    def set_enemy_HUD(self, enemy_HUD: EnemyCombatHUD) -> None:
+        self.__enemy_HUD = enemy_HUD
+
+    # Getter and setter for __ability_selected
+    def get_ability_selected(self) -> Ability:
+        return self.__ability_selected
+
+    def set_ability_selected(self, ability_selected: Ability) -> None:
+        self.__ability_selected = ability_selected
+
+    # Getter and setter for __ability_button_list
+    def get_ability_button_list(self) -> List[UIButton]:
+        return self.__ability_button_list
+
+    def set_ability_button_list(self, ability_button_list: List[UIButton]) -> None:
+        self.__ability_button_list = ability_button_list
+
+    # Getter and setter for __is_player_attacking
+    def get_is_player_attacking(self) -> bool:
+        return self.__is_player_attacking
+
+    def set_is_player_attacking(self, is_player_attacking: bool) -> None:
+        self.__is_player_attacking = is_player_attacking
+
+    # Getter and setter for __is_enemy_attacking
+    def get_is_enemy_attacking(self) -> bool:
+        return self.__is_enemy_attacking
+
+    def set_is_enemy_attacking(self, is_enemy_attacking: bool) -> None:
+        self.__is_enemy_attacking = is_enemy_attacking
+
+    # Getter and setter for __mouse_pressed
+    def get_mouse_pressed(self) -> bool:
+        return self.__mouse_pressed
+
+    def set_mouse_pressed(self, mouse_pressed: bool) -> None:
+        self.__mouse_pressed = mouse_pressed
+
+    # Getter and setter for __enemy_hit_height
+    def get_enemy_hit_height(self) -> float:
+        return self.__enemy_hit_height
+
+    def set_enemy_hit_height(self, enemy_hit_height: float) -> None:
+        self.__enemy_hit_height = enemy_hit_height
+
+    # Getter and setter for __player_animation
+    def get_player_animation(self) -> Animation:
+        return self.__player_animation
+
+    def set_player_animation(self, player_animation: Animation) -> None:
+        self.__player_animation = player_animation
+
+    # Getter and setter for __enemy_animation
+    def get_enemy_animation(self) -> Animation:
+        return self.__enemy_animation
+
+    def set_enemy_animation(self, enemy_animation: Animation) -> None:
+        self.__enemy_animation = enemy_animation
+
+    # Getter and setter for __visual_dialogue
+    def get_visual_dialogue(self) -> VisualDialogue:
+        return self.__visual_dialogue
+
+    def set_visual_dialogue(self, visual_dialogue: VisualDialogue) -> None:
+        self.__visual_dialogue = visual_dialogue
+
+    # Getter and setter for __visual_dialogue_container
+    def get_visual_dialogue_container(self) -> UIPanel:
+        return self.__visual_dialogue_container
+
+    def set_visual_dialogue_container(self, visual_dialogue_container: UIPanel) -> None:
+        self.__visual_dialogue_container = visual_dialogue_container
+
+    # Getter and setter for __quests
+    def get_quests(self) -> List[Quest]:
+        return self.__quests
+
+    def set_quests(self, quests: List[Quest]) -> None:
+        self.__quests = quests
+
+    # Getter and setter for __count_down
+    def get_count_down(self) -> UITextBox:
+        return self.__count_down
+
+    def set_count_down(self, count_down: UITextBox) -> None:
+        self.__count_down = count_down
+
+    # Getter and setter for __temp_quest
+    def get_temp_quest(self) -> Quest:
+        return self.__temp_quest
+
+    def set_temp_quest(self, temp_quest: Quest) -> None:
+        self.__temp_quest = temp_quest
+
+    # Getter and setter for __temp_quest_template
+    def get_temp_quest_template(self) -> Quest:
+        return self.__temp_quest_template
+
+    def set_temp_quest_template(self, temp_quest_template: Quest) -> None:
+        self.__temp_quest_template = temp_quest_template
+
+    # Getter and setter for __animation_assets
+    def get_animation_assets(self) -> Dict[str, Animation]:
+        return self.__animation_assets
+
+    def set_animation_assets(self, animation_assets: Dict[str, Animation]) -> None:
+        self.__animation_assets = animation_assets
+
+    # Getter and setter for __background_image
+    def get_background_image(self) -> UIImage:
+        return self.__background_image
+
+    def set_background_image(self, background_image: UIImage) -> None:
+        self.__background_image = background_image
+
+    # Getter and setter for __player_sprite
+    def get_player_sprite(self) -> UIImage:
+        return self.__player_sprite
+
+    def set_player_sprite(self, player_sprite: UIImage) -> None:
+        self.__player_sprite = player_sprite
+
+    # Getter and setter for __enemy_sprite
+    def get_enemy_sprite(self) -> UIImage:
+        return self.__enemy_sprite
+
+    def set_enemy_sprite(self, enemy_sprite: UIImage) -> None:
+        self.__enemy_sprite = enemy_sprite
+
+    # Getter and setter for __quest_master_sprite
+    def get_quest_master_sprite(self) -> UIImage:
+        return self.__quest_master_sprite
+
+    def set_quest_master_sprite(self, quest_master_sprite: UIImage) -> None:
+        self.__quest_master_sprite = quest_master_sprite
+
+    # Getter and setter for __player_info_container
+    def get_player_info_container(self) -> UIPanel:
+        return self.__player_info_container
+
+    def set_player_info_container(self, player_info_container: UIPanel) -> None:
+        self.__player_info_container = player_info_container
+
+    # Getter and setter for __enemy_info_container
+    def get_enemy_info_container(self) -> UIPanel:
+        return self.__enemy_info_container
+
+    def set_enemy_info_container(self, enemy_info_container: UIPanel) -> None:
+        self.__enemy_info_container = enemy_info_container
+
+    # Getter and setter for __player_choice_container
+    def get_player_choice_container(self) -> UIPanel:
+        return self.__player_choice_container
+
+    def set_player_choice_container(self, player_choice_container: UIPanel) -> None:
+        self.__player_choice_container = player_choice_container
+
+    # Getter and setter for __tutorial_text
+    def get_tutorial_text(self) -> UITextBox:
+        return self.__tutorial_text
+
+    def set_tutorial_text(self, tutorial_text: UITextBox) -> None:
+        self.__tutorial_text = tutorial_text
+
+    # Getter and setter for __start_tick
+    def get_start_tick(self) -> int:
+        return self.__start_tick
+
+    def set_start_tick(self, start_tick: int) -> None:
+        self.__start_tick = start_tick
+
+    # Getter and setter for __is_stunned
+    def get_is_stunned(self) -> bool:
+        return self.__is_stunned
+
+    def set_is_stunned(self, is_stunned: bool) -> None:
+        self.__is_stunned = is_stunned
+
+    def get_quest_master_animation(self) -> Animation:
+        """
+        Gets the quest master's animation.
+
+        :return: The quest master's animation.
+        """
+        return self.__quest_master_animation
+
+    def set_quest_master_animation(self, quest_master_animation: Animation) -> None:
+        """
+        Sets the quest master's animation.
+
+        :param quest_master_animation: The new quest master's animation.
+        """
+        self.__quest_master_animation = quest_master_animation

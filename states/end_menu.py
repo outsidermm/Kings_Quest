@@ -9,7 +9,7 @@ import random
 
 class EndMenu(BaseState):
     __quit_button_pressed: bool = False
-    __GUI_background: pygame.Surface = None
+    __background_image: pygame.Surface = None
     __navigate_start_menu_button: UIButton = None
     __navigate_start_menu: bool = False
     __xp: XP = None
@@ -35,8 +35,8 @@ class EndMenu(BaseState):
     def start(self) -> None:
         self.set_outgoing_transition_data(self.get_incoming_transition_data())
 
-        self.__GUI_background = pygame.transform.scale(
-            pygame.image.load("assets/GUIBackground.png"),
+        self.__background_image = pygame.transform.scale(
+            pygame.image.load("assets/background_image.png"),
             (self.get_screen().width, self.get_screen().height),
         )
 
@@ -57,9 +57,7 @@ class EndMenu(BaseState):
             anchors=({"centerx": "centerx"}),
             object_id=ObjectID(class_id="#enemy_statistic"),
         )
-        if (
-            self.get_incoming_transition_data()["winner"] == "enemy"
-        ):
+        if self.get_incoming_transition_data()["winner"] == "enemy":
             self.__game_heading.set_text("You Lost!")
             if "temp_quest_completion" in self.get_incoming_transition_data().keys():
                 self.__game_description.set_text(
@@ -121,7 +119,7 @@ class EndMenu(BaseState):
     def render(self, time_delta: int) -> None:
 
         self.get_ui_manager().update(time_delta)
-        self.get_screen().blit(self.__GUI_background, (0, 0))
+        self.get_screen().blit(self.__background_image, (0, 0))
 
         self.get_ui_manager().draw_ui(self.get_screen())
         pygame.display.update()

@@ -12,7 +12,7 @@ class LevelSelectionMenu(BaseState):
     __quit_button_pressed: bool = False
     __show_enemy_info: int = -1
     __enemy_buttons: list[UIButton] = None
-    __GUI_background: pygame.Surface = None
+    __background_image: pygame.Surface = None
     __navigate_character_selection_button: UIButton = None
     __navigate_character_selection: bool = False
     __navigate_combat_button: UIButton = None
@@ -60,8 +60,8 @@ class LevelSelectionMenu(BaseState):
     def start(self) -> None:
         self.set_outgoing_transition_data(self.get_incoming_transition_data())
 
-        self.__GUI_background = pygame.transform.scale(
-            pygame.image.load("assets/GUIBackground.png"),
+        self.__background_image = pygame.transform.scale(
+            pygame.image.load("assets/background_image.png"),
             (self.get_screen().width, self.get_screen().height),
         )
 
@@ -296,7 +296,7 @@ class LevelSelectionMenu(BaseState):
             self.__static_panel_wrapper.show()
 
         self.get_ui_manager().update(time_delta)
-        self.get_screen().blit(self.__GUI_background, (0, 0))
+        self.get_screen().blit(self.__background_image, (0, 0))
 
         self.get_ui_manager().draw_ui(self.get_screen())
         pygame.display.update()

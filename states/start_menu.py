@@ -3,6 +3,9 @@ from state_manager import GameStateManager
 import pygame, pygame_gui
 from pygame_gui.elements import UIButton, UITextBox
 from pygame_gui.core import ObjectID
+from utilities.json_utility import write_default_if_not_exist
+import os
+import sys
 
 
 class StartMenu(BaseState):
@@ -11,9 +14,8 @@ class StartMenu(BaseState):
     __quit_button = None
     __play_button_pressed = False
     __setting_button_pressed = False
-    __quit_button_pressed = False
     __game_title = None
-    __GUIBackground = None
+    __background_image = None
 
     def __init__(
         self,
@@ -54,7 +56,7 @@ class StartMenu(BaseState):
         self.set_setting_button(
             UIButton(
                 relative_rect=pygame.Rect((0, self.__screen_height * 0.15), (500, 70)),
-                text="SETTINGS",
+                text="RESET GAME",
                 manager=self.get_ui_manager(),
                 anchors=({"center": "center"}),
             )
@@ -69,9 +71,9 @@ class StartMenu(BaseState):
             )
         )
 
-        self.set_GUIBackground(
+        self.set_background_image(
             pygame.transform.scale(
-                pygame.image.load("assets/GUIBackground.png"),
+                pygame.image.load("assets/background_image.png"),
                 (self.__screen_width, self.__screen_height),
             )
         )
@@ -80,7 +82,7 @@ class StartMenu(BaseState):
     def handle_events(self) -> None:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                self.set_quit_button_pressed(True)
+                self.set_time_to_quit_app(True)
             self.get_ui_manager().process_events(event)
 
             if event.type == pygame_gui.UI_BUTTON_PRESSED:
@@ -89,27 +91,52 @@ class StartMenu(BaseState):
                 if event.ui_element == self.get_setting_button():
                     self.set_setting_button_pressed(True)
                 if event.ui_element == self.get_quit_button():
-                    self.set_quit_button_pressed(True)
+                    self.set_time_to_quit_app(True)
 
     def run(self) -> None:
         if self.get_play_button_pressed():
             self.set_time_to_transition(True)
         elif self.get_setting_button_pressed():
-            self.set_time_to_transition(True)
-        elif self.get_quit_button_pressed():
-            self.set_time_to_quit_app(True)
+            os.remove("settings/user_settings.json")
+            # Default user data
+            default_user_data = {
+                "xp": 5000,
+                "quest_progress": {
+                    "Fireball": 0,
+                    "Kill DreadNoughts": 0,
+                },
+                "quest_claimed": {
+                    "Fireball": False,
+                    "Kill DreadNoughts": False,
+                },
+                "character_level": {
+                    "Warrior": 1,
+                    "Mage": 1,
+                    "Berserker": 1,
+                    "Ranger": 1,
+                },
+                "character_abilities": {
+                    "Warrior": ["Power Slash"],
+                    "Mage": ["Fireball"],
+                    "Berserker": ["Reckless Charge"],
+                    "Ranger": ["Arrow Barrage"],
+                },
+            }
+            write_default_if_not_exist(
+                "settings/user_settings.json", default_data=default_user_data
+            )
+            os.execl(sys.executable, sys.executable, *sys.argv)
 
     def render(self, time_delta: int) -> None:
         self.get_ui_manager().update(time_delta)
 
-        self.get_screen().blit(self.__GUIBackground, (0, 0))
+        self.get_screen().blit(self.__background_image, (0, 0))
         self.get_ui_manager().draw_ui(self.get_screen())
         pygame.display.update()
 
     def reset_event_polling(self) -> None:
         self.set_play_button_pressed(False)
         self.set_setting_button_pressed(False)
-        self.set_quit_button_pressed(False)
 
     def end(self) -> None:
         self.get_game_title().kill()
@@ -142,17 +169,11 @@ class StartMenu(BaseState):
     def get_setting_button_pressed(self) -> bool:
         return self.__setting_button_pressed
 
-    def get_quit_button_pressed(self) -> bool:
-        return self.__quit_button_pressed
-
     def set_play_button_pressed(self, play_button_pressed: bool) -> None:
         self.__play_button_pressed = play_button_pressed
 
     def set_setting_button_pressed(self, setting_button_pressed: bool) -> None:
         self.__setting_button_pressed = setting_button_pressed
-
-    def set_quit_button_pressed(self, quit_button_pressed: bool) -> None:
-        self.__quit_button_pressed = quit_button_pressed
 
     def get_play_button(self) -> UIButton:
         return self.__play_button
@@ -178,11 +199,11 @@ class StartMenu(BaseState):
     def set_game_title(self, game_title: UITextBox) -> None:
         self.__game_title = game_title
 
-    def get_GUIBackground(self) -> pygame.Surface:
-        return self.__GUIBackground
+    def get_background_image(self) -> pygame.Surface:
+        return self.__background_image
 
-    def set_GUIBackground(self, GUIBackground: pygame.Surface) -> None:
-        self.__GUIBackground = GUIBackground
+    def set_background_image(self, background_image: pygame.Surface) -> None:
+        self.__background_image = background_image
 
     def set_time_to_quit_app(self, time_to_quit_app: bool) -> None:
         super().set_time_to_quit_app(time_to_quit_app)
