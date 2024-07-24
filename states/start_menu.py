@@ -30,14 +30,12 @@ class StartMenu(BaseState):
             "character_selection_menu",
             game_state_manager,
         )
-        self.__screen_width = self.get_screen().get_rect().width
-        self.__screen_height = self.get_screen().get_rect().height
 
     def start(self) -> None:
         self.set_game_title(
             UITextBox(
                 "King's Quest",
-                pygame.Rect((0, -self.__screen_height * 0.3), (1000, 200)),
+                pygame.Rect((0, -self.get_screen().height * 0.3), (1000, 200)),
                 self.get_ui_manager(),
                 anchors=({"center": "center"}),
                 object_id=ObjectID(class_id="@title", object_id="#game_title"),
@@ -55,7 +53,7 @@ class StartMenu(BaseState):
 
         self.set_setting_button(
             UIButton(
-                relative_rect=pygame.Rect((0, self.__screen_height * 0.15), (500, 70)),
+                relative_rect=pygame.Rect((0, self.get_screen().height * 0.15), (500, 70)),
                 text="RESET GAME",
                 manager=self.get_ui_manager(),
                 anchors=({"center": "center"}),
@@ -64,7 +62,7 @@ class StartMenu(BaseState):
 
         self.set_quit_button(
             UIButton(
-                relative_rect=pygame.Rect((0, self.__screen_height * 0.3), (500, 70)),
+                relative_rect=pygame.Rect((0, self.get_screen().height * 0.3), (500, 70)),
                 text="QUIT",
                 manager=self.get_ui_manager(),
                 anchors=({"center": "center"}),
@@ -74,7 +72,7 @@ class StartMenu(BaseState):
         self.set_background_image(
             pygame.transform.scale(
                 pygame.image.load("assets/background_image.png"),
-                (self.__screen_width, self.__screen_height),
+                (self.get_screen().width, self.get_screen().height),
             )
         )
         pygame.display.set_caption("King's Quest")
