@@ -19,7 +19,7 @@ from characters.enemies.base_enemy import BaseEnemy
 from characters.players.base_player import BasePlayer
 from xp import XP
 from quest import Quest
-import json_utility
+from utilities.json_utility import write_default_if_not_exist, read_json
 
 
 class Game:
@@ -74,7 +74,7 @@ class Game:
                 "Ranger": ["Arrow Barrage"],
             },
         }
-        json_utility.write_default_if_not_exist(
+        write_default_if_not_exist(
             "settings/user_settings.json", default_data=default_user_data
         )
 
@@ -95,7 +95,7 @@ class Game:
             Enigma("assets/characters/enemies/enigma/idle/0000.png"),
         ]
 
-        xp = XP(json_utility.read_json("settings/user_settings.json")["xp"])
+        xp = XP(read_json("settings/user_settings.json")["xp"])
         quests: list[Quest] = [
             Quest(
                 "Fireball",

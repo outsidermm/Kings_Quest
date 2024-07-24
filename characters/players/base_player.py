@@ -2,7 +2,7 @@ import abc
 from ability import Ability
 from characters.base_character import BaseCharacter
 import copy
-import json_utility
+from utilities.json_utility import read_json, write_json
 
 
 class BasePlayer(abc.ABC, BaseCharacter):
@@ -73,14 +73,14 @@ class BasePlayer(abc.ABC, BaseCharacter):
 
     def set_character_level(self, character_level: int) -> None:
         self.__character_level = character_level
-        user_data = json_utility.read_json("settings/user_settings.json")
+        user_data = read_json("settings/user_settings.json")
         user_data["character_level"][self.get_name()] = character_level
-        json_utility.write_json("settings/user_settings.json", user_data)
+        write_json("settings/user_settings.json", user_data)
 
     def set_unlocked_abilities(self, unlocked_abilities: list[Ability]) -> None:
         self.__unlocked_abilities = list(set(unlocked_abilities))
-        user_data = json_utility.read_json("settings/user_settings.json")
+        user_data = read_json("settings/user_settings.json")
         user_data["character_abilities"][self.get_name()] = list(
             set([ability.get_name() for ability in unlocked_abilities])
         )
-        json_utility.write_json("settings/user_settings.json", user_data)
+        write_json("settings/user_settings.json", user_data)

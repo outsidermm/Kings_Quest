@@ -10,8 +10,8 @@ from gui.enemy_combat_hud import EnemyCombatHUD
 from combat_controller import CombatController
 import random
 from ability import Ability
-from animator import Animation
-from utilities import load_images
+from utilities.animation_utility import Animation
+from utilities.img_utility import load_images
 from visual_dialogue import VisualDialogue
 from quest import Quest
 

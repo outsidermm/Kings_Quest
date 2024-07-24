@@ -17,7 +17,3 @@ def load_images(path: str) -> list[pygame.Surface]:
     for img_name in sorted(os.listdir(BASE_IMG_PATH + path)):
         images.append(load_image(path + "/" + img_name))
     return images
-
-
-def min_max_bound(minimum: int, maximum: int, value: int) -> int:
-    return max(minimum, min(maximum, value))

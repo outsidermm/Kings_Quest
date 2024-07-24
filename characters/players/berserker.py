@@ -1,7 +1,7 @@
 from characters.players.base_player import BasePlayer
 from ability import PLAYER_ABILITY_LIST, Ability
 import copy
-import json_utility
+from utilities.json_utility import read_json
 
 
 class Berserker(BasePlayer):
@@ -29,16 +29,16 @@ class Berserker(BasePlayer):
         self,
         sprite_location: str,
     ) -> None:
-        self.__unlocked_abilities_string = json_utility.read_json(
-            "settings/user_settings.json"
-        )["character_abilities"]["Berserker"]
+        self.__unlocked_abilities_string = read_json("settings/user_settings.json")[
+            "character_abilities"
+        ]["Berserker"]
         for unlocked_ability_string in self.__unlocked_abilities_string:
             self.__unlocked_abilities.append(
                 PLAYER_ABILITY_LIST[unlocked_ability_string]
             )
-        character_level_user_setting = json_utility.read_json(
-            "settings/user_settings.json"
-        )["character_level"]["Berserker"]
+        character_level_user_setting = read_json("settings/user_settings.json")[
+            "character_level"
+        ]["Berserker"]
         super().__init__(
             "Berserker",
             copy.deepcopy(self.__statistics),

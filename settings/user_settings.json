@@ -1,0 +1,31 @@
+{
+    "xp": 5000,
+    "quest_progress": {
+        "Fireball": 0,
+        "Kill DreadNoughts": 0
+    },
+    "quest_claimed": {
+        "Fireball": false,
+        "Kill DreadNoughts": false
+    },
+    "character_level": {
+        "Warrior": 1,
+        "Mage": 1,
+        "Berserker": 1,
+        "Ranger": 1
+    },
+    "character_abilities": {
+        "Warrior": [
+            "Power Slash"
+        ],
+        "Mage": [
+            "Fireball"
+        ],
+        "Berserker": [
+            "Reckless Charge"
+        ],
+        "Ranger": [
+            "Arrow Barrage"
+        ]
+    }
+}

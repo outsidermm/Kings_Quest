@@ -1,5 +1,4 @@
-import json_utility
-import copy
+from utilities.json_utility import read_json, write_json
 
 
 class Quest:
@@ -23,10 +22,10 @@ class Quest:
         self.__description = description
         self.__reward = reward
         if not is_temporary:
-            self.__progress = json_utility.read_json("settings/user_settings.json")[
+            self.__progress = read_json("settings/user_settings.json")[
                 "quest_progress"
             ][self.__name]
-            self.__is_claimed = json_utility.read_json("settings/user_settings.json")[
+            self.__is_claimed = read_json("settings/user_settings.json")[
                 "quest_claimed"
             ][self.__name]
         self.__is_temporary = is_temporary
@@ -44,9 +43,9 @@ class Quest:
     def increment_progress(self, increment: int) -> None:
         self.__progress += increment
         if not self.__is_temporary:
-            user_setting = json_utility.read_json("settings/user_settings.json")
+            user_setting = read_json("settings/user_settings.json")
             user_setting["quest_progress"][self.__name] = self.__progress
-            json_utility.write_json("settings/user_settings.json", user_setting)
+            write_json("settings/user_settings.json", user_setting)
 
     def is_done(self) -> bool:
         return self.__progress >= self.__aim
@@ -54,9 +53,9 @@ class Quest:
     def claim(self) -> None:
         self.__is_claimed = True
         if not self.__is_temporary:
-            user_setting = json_utility.read_json("settings/user_settings.json")
+            user_setting = read_json("settings/user_settings.json")
             user_setting["quest_claimed"][self.__name] = self.__is_claimed
-            json_utility.write_json("settings/user_settings.json", user_setting)
+            write_json("settings/user_settings.json", user_setting)
 
     def is_claimed(self) -> bool:
         return self.__is_claimed

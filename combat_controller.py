@@ -2,7 +2,7 @@ from characters.base_character import BaseCharacter
 from ability import Ability
 from typing import Tuple
 import random
-from utilities import min_max_bound
+from utilities.math_utility import min_max_bound
 from pygame_gui.elements import UIImage
 
 

@@ -2,6 +2,7 @@ import json
 import os
 from typing import Any, Dict
 
+
 def read_json(file_path: str) -> Dict[str, Any]:
     """
     Reads a dictionary from a JSON file.
@@ -16,6 +17,7 @@ def read_json(file_path: str) -> Dict[str, Any]:
     else:
         return {}
 
+
 def write_json(file_path: str, data: Dict[str, Any]) -> None:
     """
     Writes a dictionary to a JSON file.
@@ -25,6 +27,7 @@ def write_json(file_path: str, data: Dict[str, Any]) -> None:
     """
     with open(file_path, "w") as file:
         json.dump(data, file, indent=4)
+
 
 def write_default_if_not_exist(file_path: str, default_data: Dict[str, Any]) -> None:
     """

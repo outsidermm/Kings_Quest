@@ -1,7 +1,7 @@
 from characters.players.base_player import BasePlayer
 from ability import PLAYER_ABILITY_LIST, Ability
 import copy
-import json_utility
+from utilities.json_utility import read_json
 
 
 class Mage(BasePlayer):
@@ -29,16 +29,16 @@ class Mage(BasePlayer):
         self,
         sprite_location: str,
     ) -> None:
-        self.__unlocked_abilities_string = json_utility.read_json(
-            "settings/user_settings.json"
-        )["character_abilities"]["Mage"]
+        self.__unlocked_abilities_string = read_json("settings/user_settings.json")[
+            "character_abilities"
+        ]["Mage"]
         for unlocked_ability_string in self.__unlocked_abilities_string:
             self.__unlocked_abilities.append(
                 PLAYER_ABILITY_LIST[unlocked_ability_string]
             )
-        character_level_user_setting = json_utility.read_json(
-            "settings/user_settings.json"
-        )["character_level"]["Mage"]
+        character_level_user_setting = read_json("settings/user_settings.json")[
+            "character_level"
+        ]["Mage"]
         super().__init__(
             "Mage",
             copy.deepcopy(self.__statistics),
