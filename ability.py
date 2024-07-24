@@ -19,7 +19,7 @@ class Ability:
         self,
         name: str,
         description: str,
-        ability_statistics: Dict[str, float],
+        ability_stats: Dict[str, float],
         cost: List[Tuple[str, float]],
         duration: int,
         icon_URL: str,
@@ -30,7 +30,7 @@ class Ability:
 
         :param name: Name of the ability.
         :param description: Description of the ability.
-        :param ability_statistics: Statistics of the ability.
+        :param ability_stats: stats of the ability.
         :param cost: Cost to use the ability.
         :param duration: Duration of the ability's effect.
         :param icon_URL: URL to the ability's icon.
@@ -39,7 +39,7 @@ class Ability:
         self.set_name(name)
         self.set_description(description)
         self.set_cost(cost)
-        self.set_stats(ability_statistics)
+        self.set_stats(ability_stats)
         self.set_upgrades(upgrades if upgrades is not None else [])
         self.set_icon_URL(icon_URL)
         self.set_duration(duration)
@@ -104,17 +104,17 @@ class Ability:
 
     def get_stats(self) -> Dict[str, float]:
         """
-        Gets the statistics of the ability.
+        Gets the stats of the ability.
 
-        :return: The statistics of the ability.
+        :return: The stats of the ability.
         """
         return self.__stats
 
     def set_stats(self, stats: Dict[str, float]) -> None:
         """
-        Sets the statistics of the ability.
+        Sets the stats of the ability.
 
-        :param statistics: The new statistics of the ability.
+        :param stats: The new stats of the ability.
         """
         self.__stats = stats
 

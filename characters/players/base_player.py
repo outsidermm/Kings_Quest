@@ -13,20 +13,20 @@ class BasePlayer(abc.ABC, BaseCharacter):
     def __init__(
         self,
         name: str,
-        statistics: dict,
+        stats: dict,
         sprite_location: str,
         abilities: list[Ability],
         unlocked_abilities: list[Ability],
         character_level: int = 1,
     ) -> None:
-        super().__init__(name, statistics, sprite_location, abilities)
+        super().__init__(name, stats, sprite_location, abilities)
         self.set_character_level(character_level)
         self.set_unlocked_abilities(unlocked_abilities)
 
     def copy(self) -> "BasePlayer":
         return self.__class__(
             self.get_name(),
-            copy.deepcopy(self.get_statistics()),  # Deep copy the statistics dictionary
+            copy.deepcopy(self.get_stats()),  # Deep copy the stats dictionary
             self.get_sprite_location(),
             self.get_abilities(),
             self.get_unlocked_abilities(),
@@ -47,8 +47,8 @@ class BasePlayer(abc.ABC, BaseCharacter):
     def get_sprite_location(self) -> str:
         return super().get_sprite_location()
 
-    def get_statistics(self) -> dict[str, int]:
-        return super().get_statistics()
+    def get_stats(self) -> dict[str, int]:
+        return super().get_stats()
 
     def get_abilities(self) -> list[Ability]:
         return super().get_abilities()
@@ -59,8 +59,8 @@ class BasePlayer(abc.ABC, BaseCharacter):
     def set_sprite_location(self, sprite_location: str) -> None:
         super().set_sprite_location(sprite_location)
 
-    def set_statistics(self, statistics: dict[str, int]) -> None:
-        super().set_statistics(statistics)
+    def set_stats(self, stats: dict[str, int]) -> None:
+        super().set_stats(stats)
 
     def set_abilities(self, abilities: list[Ability]) -> None:
         super().set_abilities(abilities)

@@ -22,17 +22,17 @@ class LevelSelectionMenu(BaseState):
     __dismiss_popup_button: UIButton = None
     __combat_entry_panel: UIPanel = None
     __static_panel_wrapper: UIPanel = None
-    __statistic_text: list[UITextBox] = [None] * 10
+    __stat_text: list[UITextBox] = [None] * 10
 
     # Define maximum values for the bars for normalization
-    __FIRST_COLUMN_STATISTIC_NAMES: list[str] = [
+    __FIRST_COLUMN_STAT_NAMES: list[str] = [
         "health_points",
         "physical_defense",
         "magical_defense",
         "spell_power",
         "physical_power",
     ]
-    __SECOND_COLUMN_STATISTIC_NAMES: list[str] = [
+    __SECOND_COLUMN_STAT_NAMES: list[str] = [
         "health_regeneration",
         "mana_regeneration",
         "mana_points",
@@ -172,23 +172,21 @@ class LevelSelectionMenu(BaseState):
         )
 
         init_y = 250
-        gap_per_statistics = 40
+        gap_per_stats = 40
         first_col_x = -200
         second_col_x = 200
 
-        for statistic_count, statistic_name in enumerate(
-            self.__FIRST_COLUMN_STATISTIC_NAMES
-        ):
-            numerical_statistic = (
-                self.__enemies[0].get_statistics()[statistic_name]
-                if statistic_name in self.__enemies[0].get_statistics().keys()
+        for stat_count, stat_name in enumerate(self.__FIRST_COLUMN_STAT_NAMES):
+            numerical_stat = (
+                self.__enemies[0].get_stats()[stat_name]
+                if stat_name in self.__enemies[0].get_stats().keys()
                 else 0
             )
-            self.__statistic_text[statistic_count] = UITextBox(
-                html_text=f'<img src="assets/icons_18/{statistic_name}.png"> '
-                f"{" ".join(word.capitalize() for word in statistic_name.split("_"))}: {numerical_statistic}",
+            self.__stat_text[stat_count] = UITextBox(
+                html_text=f'<img src="assets/icons_18/{stat_name}.png"> '
+                f"{" ".join(word.capitalize() for word in stat_name.split("_"))}: {numerical_stat}",
                 relative_rect=pygame.Rect(
-                    (first_col_x, init_y + statistic_count * gap_per_statistics),
+                    (first_col_x, init_y + stat_count * gap_per_stats),
                     (300, -1),
                 ),
                 anchors=({"centerx": "centerx"}),
@@ -197,19 +195,17 @@ class LevelSelectionMenu(BaseState):
                 object_id=ObjectID(object_id="#enemy_statistic"),
             )
 
-        for statistic_count, statistic_name in enumerate(
-            self.__SECOND_COLUMN_STATISTIC_NAMES
-        ):
-            numerical_statistic = (
-                self.__enemies[0].get_statistics()[statistic_name]
-                if statistic_name in self.__enemies[0].get_statistics().keys()
+        for stat_count, stat_name in enumerate(self.__SECOND_COLUMN_STAT_NAMES):
+            numerical_stat = (
+                self.__enemies[0].get_stats()[stat_name]
+                if stat_name in self.__enemies[0].get_stats().keys()
                 else 0
             )
-            self.__statistic_text[statistic_count + 5] = UITextBox(
-                html_text=f'<img src="assets/icons_18/{statistic_name}.png"> '
-                f"{" ".join(word.capitalize() for word in statistic_name.split("_"))}: {numerical_statistic}",
+            self.__stat_text[stat_count + 5] = UITextBox(
+                html_text=f'<img src="assets/icons_18/{stat_name}.png"> '
+                f"{" ".join(word.capitalize() for word in stat_name.split("_"))}: {numerical_stat}",
                 relative_rect=pygame.Rect(
-                    (second_col_x, init_y + statistic_count * gap_per_statistics),
+                    (second_col_x, init_y + stat_count * gap_per_stats),
                     (300, -1),
                 ),
                 anchors=({"centerx": "centerx"}),
@@ -269,36 +265,28 @@ class LevelSelectionMenu(BaseState):
             self.__enemy_name.set_text(
                 self.__enemies[self.__show_enemy_info].get_name()
             )
-            for statistic_count, statistic_name in enumerate(
-                self.__FIRST_COLUMN_STATISTIC_NAMES
-            ):
-                numerical_statistic = (
-                    self.__enemies[self.__show_enemy_info].get_statistics()[
-                        statistic_name
-                    ]
-                    if statistic_name
-                    in self.__enemies[self.__show_enemy_info].get_statistics().keys()
+            for stat_count, stat_name in enumerate(self.__FIRST_COLUMN_STAT_NAMES):
+                numerical_stat = (
+                    self.__enemies[self.__show_enemy_info].get_stats()[stat_name]
+                    if stat_name
+                    in self.__enemies[self.__show_enemy_info].get_stats().keys()
                     else 0
                 )
-                self.__statistic_text[statistic_count].set_text(
-                    f'<img src="assets/icons_18/{statistic_name}.png"> '
-                    f"{" ".join(word.capitalize() for word in statistic_name.split("_"))}: {numerical_statistic}"
+                self.__stat_text[stat_count].set_text(
+                    f'<img src="assets/icons_18/{stat_name}.png"> '
+                    f"{" ".join(word.capitalize() for word in stat_name.split("_"))}: {numerical_stat}"
                 )
 
-            for statistic_count, statistic_name in enumerate(
-                self.__SECOND_COLUMN_STATISTIC_NAMES
-            ):
-                numerical_statistic = (
-                    self.__enemies[self.__show_enemy_info].get_statistics()[
-                        statistic_name
-                    ]
-                    if statistic_name
-                    in self.__enemies[self.__show_enemy_info].get_statistics().keys()
+            for stat_count, stat_name in enumerate(self.__SECOND_COLUMN_STAT_NAMES):
+                numerical_stat = (
+                    self.__enemies[self.__show_enemy_info].get_stats()[stat_name]
+                    if stat_name
+                    in self.__enemies[self.__show_enemy_info].get_stats().keys()
                     else 0
                 )
-                self.__statistic_text[statistic_count + 5].set_text(
-                    f'<img src="assets/icons_18/{statistic_name}.png"> '
-                    f"{" ".join(word.capitalize() for word in statistic_name.split("_"))}: {numerical_statistic}"
+                self.__stat_text[stat_count + 5].set_text(
+                    f'<img src="assets/icons_18/{stat_name}.png"> '
+                    f"{" ".join(word.capitalize() for word in stat_name.split("_"))}: {numerical_stat}"
                 )
 
             self.__combat_entry_panel.show()
@@ -330,7 +318,7 @@ class LevelSelectionMenu(BaseState):
         self.__dismiss_popup_button.kill()
         self.__combat_entry_panel.kill()
         self.__static_panel_wrapper.kill()
-        [self.__statistic_text[statistic_count].kill() for statistic_count in range(10)]
+        [self.__stat_text[stat_count].kill() for stat_count in range(10)]
         self.__show_enemy_info = -1
         self.get_screen().fill((0, 0, 0))
 

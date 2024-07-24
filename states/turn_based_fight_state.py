@@ -183,7 +183,7 @@ class TurnBasedFight(BaseState):
         ) / (unlocked_abilities_number + 2)
         init_ability_button_y = 25
 
-        normal_attack_tool_tip = f"Deal {self.__player.get_statistics()['physical_damage'] if "physical_damage" in self.__player.get_statistics().keys() else 0} physical damage and {self.__player.get_statistics()['magical_damage'] if "magical_damage" in self.__player.get_statistics().keys() else 0} magical damage to the enemy"
+        normal_attack_tool_tip = f"Deal {self.__player.get_stats()['physical_damage'] if "physical_damage" in self.__player.get_stats().keys() else 0} physical damage and {self.__player.get_stats()['magical_damage'] if "magical_damage" in self.__player.get_stats().keys() else 0} magical damage to the enemy"
         self.__ability_button_list[0] = UIButton(
             text="Normal Attack",
             relative_rect=pygame.Rect(
@@ -291,20 +291,20 @@ class TurnBasedFight(BaseState):
             self.__count_down.set_text(str(3 - int(seconds)))
 
         if (
-            self.__enemy.get_statistics()["health_points"] > 0
-            and self.__player.get_statistics()["health_points"] > 0
+            self.__enemy.get_stats()["health_points"] > 0
+            and self.__player.get_stats()["health_points"] > 0
             and self.__combat_round_initalised
         ):
             if self.__round_counter % 2 == 0:
-                if self.__player_controller.is_stunned():
+                if self.__player_controller.get_is_stunned():
                     self.__tutorial_text.set_text("You are stunned and cannot act!")
                     self.__player_controller.stunned_round()
                     pygame.time.wait(250)
                     self.__visual_dialogue.set_dialogue(
                         self.__player.get_name(),
                         self.__enemy.get_name(),
-                        self.__player.get_statistics()["health_points"],
-                        self.__player.get_statistics()["mana_points"],
+                        self.__player.get_stats()["health_points"],
+                        self.__player.get_stats()["mana_points"],
                         0,
                         True,
                         None,
@@ -328,7 +328,7 @@ class TurnBasedFight(BaseState):
                         # If the user has clicked, then attack with the given values
                         if (
                             self.__mouse_pressed
-                            or self.__player_controller.is_stunned()
+                            or self.__player_controller.get_is_stunned()
                         ):
                             self.__is_player_attacking = True
                             # Regenerate before turn action occurs
@@ -350,8 +350,8 @@ class TurnBasedFight(BaseState):
                             self.__visual_dialogue.set_dialogue(
                                 self.__player.get_name(),
                                 self.__enemy.get_name(),
-                                self.__player.get_statistics()["health_points"],
-                                self.__player.get_statistics()["mana_points"],
+                                self.__player.get_stats()["health_points"],
+                                self.__player.get_stats()["mana_points"],
                                 (physical_damage + magical_damage),
                                 False,
                                 locked_ability_decision,
@@ -381,7 +381,7 @@ class TurnBasedFight(BaseState):
                         self.__round_counter += 1
 
             else:
-                if self.__enemy_controller.is_stunned():
+                if self.__enemy_controller.get_is_stunned():
                     self.__tutorial_text.set_text(
                         "You stunned the boss, you can hit again, good job!"
                     )
@@ -390,8 +390,8 @@ class TurnBasedFight(BaseState):
                     self.__visual_dialogue.set_dialogue(
                         self.__enemy.get_name(),
                         self.__player.get_name(),
-                        self.__enemy.get_statistics()["health_points"],
-                        self.__enemy.get_statistics()["mana_points"],
+                        self.__enemy.get_stats()["health_points"],
+                        self.__enemy.get_stats()["mana_points"],
                         0,
                         True,
                         None,
@@ -426,8 +426,8 @@ class TurnBasedFight(BaseState):
                         self.__visual_dialogue.set_dialogue(
                             self.__enemy.get_name(),
                             self.__player.get_name(),
-                            self.__enemy.get_statistics()["health_points"],
-                            self.__enemy.get_statistics()["mana_points"],
+                            self.__enemy.get_stats()["health_points"],
+                            self.__enemy.get_stats()["mana_points"],
                             (physical_damage + magical_damage),
                             False,
                             random_ability_choice,
@@ -444,7 +444,7 @@ class TurnBasedFight(BaseState):
                         self.__is_enemy_attacking = False
                         self.__round_counter += 1
 
-        if self.__enemy.get_statistics()["health_points"] <= 0:
+        if self.__enemy.get_stats()["health_points"] <= 0:
             for quest in self.__quests:
                 if (
                     quest.get_name() == "Kill DreadNoughts"
@@ -457,7 +457,7 @@ class TurnBasedFight(BaseState):
                 outgoing_transition_dict["temp_quest_completion"] = self.__temp_quest
             self.set_outgoing_transition_data(outgoing_transition_dict)
             self.set_time_to_transition(True)
-        elif self.__player.get_statistics()["health_points"] <= 0:
+        elif self.__player.get_stats()["health_points"] <= 0:
             outgoing_transition_dict = self.get_incoming_transition_data()
             outgoing_transition_dict["winner"] = "enemy"
             if self.__temp_quest.is_done():

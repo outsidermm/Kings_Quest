@@ -1,28 +1,24 @@
 from characters.base_character import BaseCharacter
 from ability import Ability
-from typing import Tuple
+from typing import Tuple, Dict, List
 import random
 from utilities.math_utility import min_max_bound
 from pygame_gui.elements import UIImage
 
 
 class CombatController:
-    __player_statistic: dict[str, int] = {}
-    __player_statistic_cap: dict[str, int] = {}
-    __debuff_dict: dict[str, Tuple[int, int]] = {}
-    __buff_dict: dict[str, Tuple[int, int]] = {}
-    __ability_histories: list[Ability] = []
-    __cooldown_abilities: dict[str, int] = {}
-    __player_sprite: UIImage = None
-    __is_stunned: bool = False
+    """
+    CombatController class to manage combat-related mechanics for a player character,
+    including handling abilities, buffs, debuffs, and damage calculations.
+    """
 
-    __DEBUFF_STATISTIC_MAPPER = {
+    __DEBUFF_STAT_MAPPER = {
         "physical_defense_reduction": "physical_defense",
         "physical_damage_reduction": "physical_damage",
         "bleed": "health_points",
     }
 
-    __POSITIVE_PLAYER_STATISTIC_MODIFERS = [
+    __POSITIVE_PLAYER_STAT_MODIFIERS = [
         "health_regeneration",
         "mana_regeneration",
         "absorption",
@@ -35,7 +31,7 @@ class CombatController:
         "spell_power",
     ]
 
-    __NEGATIVE_PLAYER_STATISTIC_MODIFERS = [
+    __NEGATIVE_PLAYER_STAT_MODIFIERS = [
         "stun",
         "physical_defense_reduction",
         "physical_damage_reduction",
@@ -43,128 +39,141 @@ class CombatController:
     ]
 
     def __init__(self, player: BaseCharacter, player_sprite: UIImage) -> None:
-        self.__player_statistic = self.__player_statistic_cap = player.get_statistics()
-        self.__player_sprite = player_sprite
+        """
+        Initializes the CombatController class.
+
+        :param player: The player character.
+        :param player_sprite: The player sprite.
+        """
+        self.set_player_stat(player.get_stats())
+        self.set_player_stat_cap(player.get_stats())
+        self.set_player_sprite(player_sprite)
+        self.set_debuff_dict({})
+        self.set_ability_histories([])
+        self.set_cooldown_abilities({})
+        self.set_is_stunned(False)
 
     def is_ability_on_cooldown(self, ability: Ability) -> bool:
-        return ability.get_name() in self.__cooldown_abilities.keys()
+        """
+        Checks if an ability is on cooldown.
 
-    def is_stunned(self) -> bool:
-        return self.__is_stunned
+        :param ability: The ability to check.
+        :return: True if the ability is on cooldown, False otherwise.
+        """
+        return ability.get_name() in self.get_cooldown_abilities().keys()
 
     def stunned_round(self) -> None:
-        # Collect abilities to remove in a separate list
-        abilities_to_remove = []
+        """
+        Handles the actions to be taken when the player is stunned, including
+        decrementing ability durations and removing expired abilities.
+        """
+        self.handle_ability_durations()
+        self.set_is_stunned(False)
 
-        for player_ability in self.__ability_histories:
-            if player_ability.get_duration() > 0:
-                player_ability.set_duration(player_ability.get_duration() - 1)
-            else:
-                # Remove buff effect if duration of the ability has passed
-                for modifier, value in player_ability.get_stats().items():
-                    if (
-                        modifier in self.__POSITIVE_PLAYER_STATISTIC_MODIFERS
-                        and modifier in self.__player_statistic.keys()
-                    ):
-                        self.__player_statistic[modifier] -= value
-                        self.__player_statistic[modifier] = max(
-                            0, self.__player_statistic[modifier]
-                        )
-                abilities_to_remove.append(player_ability)
-
-        # Remove abilities from the history after the iteration
-        for ability_to_remove in abilities_to_remove:
-            self.__ability_histories.remove(ability_to_remove)
-        self.__is_stunned = False
-
-    def attack(
-        self, hit_height: float, ability: Ability = None
-    ) -> Tuple[int, int, dict[str, Tuple[int, int]]]:
-        debuff_dict: dict[str, Tuple[int, int]] = {}
-
-        # Collect abilities to remove in a separate list
+    def handle_ability_cooldowns(self) -> None:
+        """
+        Handles the cooldowns of abilities, decrementing their cooldown counters and
+        removing them from the cooldown dictionary when the cooldown expires.
+        """
         cooldown_abilities_to_remove = []
 
-        # Decrease cooldown of abilities
-        for cooldown_ability_name, cooldown_count in self.__cooldown_abilities.items():
+        for (
+            cooldown_ability_name,
+            cooldown_count,
+        ) in self.get_cooldown_abilities().items():
             if cooldown_count > 1:
-                self.__cooldown_abilities[cooldown_ability_name] -= 1
+                self.get_cooldown_abilities()[cooldown_ability_name] -= 1
             else:
                 cooldown_abilities_to_remove.append(cooldown_ability_name)
 
-        # Remove abilities from the cooldown dictionary after the iteration
         for cooldown_ability_name in cooldown_abilities_to_remove:
-            del self.__cooldown_abilities[cooldown_ability_name]
+            del self.get_cooldown_abilities()[cooldown_ability_name]
 
-        critical_rate = hit_height / self.__player_sprite.rect.height * 100
+    def handle_ability_durations(self) -> None:
+        """
+        Handles the durations of abilities, decrementing their duration counters and
+        removing expired abilities from the history.
+        """
+        abilities_to_remove = []
+
+        for player_ability in self.get_ability_histories():
+            if player_ability.get_duration() > 0:
+                player_ability.set_duration(player_ability.get_duration() - 1)
+            else:
+                for modifier, value in player_ability.get_stats().items():
+                    if (
+                        modifier in self.__POSITIVE_PLAYER_STAT_MODIFIERS
+                        and modifier in self.get_player_stat().keys()
+                    ):
+                        self.get_player_stat()[modifier] -= value
+                        self.get_player_stat()[modifier] = max(
+                            0, self.get_player_stat()[modifier]
+                        )
+                abilities_to_remove.append(player_ability)
+
+        for ability_to_remove in abilities_to_remove:
+            self.get_ability_histories().remove(ability_to_remove)
+
+    def attack(
+        self, hit_height: float, ability: Ability = None
+    ) -> Tuple[int, int, Dict[str, Tuple[int, int]]]:
+        """
+        Calculates the physical and magical damage dealt in an attack, applying any ability effects.
+
+        :param hit_height: The height of the hit for calculating critical rate.
+        :param ability: The ability used in the attack (optional).
+        :return: A tuple containing the physical damage, magical damage, and any debuffs applied.
+        """
+        debuff_dict: Dict[str, Tuple[int, int]] = {}
+        self.handle_ability_cooldowns()
+
+        critical_rate = hit_height / self.get_player_sprite().rect.height * 100
         if ability is not None:
-            self.__ability_histories.append(ability.copy())
-            self.__cooldown_abilities[ability.get_name()] = ability.get_stats()[
+            self.get_ability_histories().append(ability.copy())
+            self.get_cooldown_abilities()[ability.get_name()] = ability.get_stats()[
                 "cooldown"
             ]
 
             for cost in ability.get_cost():
-                self.__player_statistic[cost[0]] -= cost[1]
+                self.get_player_stat()[cost[0]] -= cost[1]
 
-            for modifer, value in ability.get_stats().items():
-                if modifer == "critical":
+            for modifier, value in ability.get_stats().items():
+                if modifier == "critical":
                     critical_rate += value
-                elif modifer in self.__NEGATIVE_PLAYER_STATISTIC_MODIFERS:
-                    debuff_dict[modifer] = (value, ability.get_duration())
-                elif modifer in self.__POSITIVE_PLAYER_STATISTIC_MODIFERS:
-                    # The new ability will modifer the player statistic
-                    if modifer in self.__player_statistic.keys():
-                        self.__player_statistic[modifer] += value
+                elif modifier in self.__NEGATIVE_PLAYER_STAT_MODIFIERS:
+                    debuff_dict[modifier] = (value, ability.get_duration())
+                elif modifier in self.__POSITIVE_PLAYER_STAT_MODIFIERS:
+                    if modifier in self.get_player_stat().keys():
+                        self.get_player_stat()[modifier] += value
                     else:
-                        self.__player_statistic[modifer] = value
+                        self.get_player_stat()[modifier] = value
 
-        # Collect abilities to remove in a separate list
-        abilities_to_remove = []
-
-        for player_ability in self.__ability_histories:
-            if player_ability.get_duration() > 0:
-                player_ability.set_duration(player_ability.get_duration() - 1)
-            else:
-                # Remove buff effect if duration of the ability has passed
-                for modifier, value in player_ability.get_stats().items():
-                    if (
-                        modifier in self.__POSITIVE_PLAYER_STATISTIC_MODIFERS
-                        and modifier in self.__player_statistic.keys()
-                    ):
-                        self.__player_statistic[modifier] -= value
-                        self.__player_statistic[modifier] = max(
-                            0, self.__player_statistic[modifier]
-                        )
-                abilities_to_remove.append(player_ability)
-
-        # Remove abilities from the history after the iteration
-        for ability_to_remove in abilities_to_remove:
-            self.__ability_histories.remove(ability_to_remove)
+        self.handle_ability_durations()
 
         critical_dmg_addition = random.randint(0, int(critical_rate))
         physical_dmg = magical_dmg = 0
         if (
-            "physical_damage" in self.__player_statistic.keys()
-            and "physical_power" in self.__player_statistic.keys()
+            "physical_damage" in self.get_player_stat().keys()
+            and "physical_power" in self.get_player_stat().keys()
         ):
             physical_dmg = max(
                 0,
                 int(
-                    self.__player_statistic["physical_damage"]
-                    * self.__player_statistic["physical_power"]
+                    self.get_player_stat()["physical_damage"]
+                    * self.get_player_stat()["physical_power"]
                     / 50
                     + critical_dmg_addition
                 ),
             )
         if (
-            "magical_damage" in self.__player_statistic.keys()
-            and "spell_power" in self.__player_statistic.keys()
+            "magical_damage" in self.get_player_stat().keys()
+            and "spell_power" in self.get_player_stat().keys()
         ):
             magical_dmg = max(
                 0,
                 int(
-                    self.__player_statistic["magical_damage"]
-                    * self.__player_statistic["spell_power"]
+                    self.get_player_stat()["magical_damage"]
+                    * self.get_player_stat()["spell_power"]
                     / 50
                     + critical_dmg_addition
                 ),
@@ -175,91 +184,212 @@ class CombatController:
         self,
         physical_dmg: int,
         magical_damage: int,
-        debuff_dict: dict[str, Tuple[int, int]],
+        debuff_dict: Dict[str, Tuple[int, int]],
     ) -> None:
+        """
+        Applies damage to the player and handles debuffs.
 
-        # Add debuff to the player's original debuff statistic
+        :param physical_dmg: The physical damage to be applied.
+        :param magical_damage: The magical damage to be applied.
+        :param debuff_dict: Dictionary of debuffs to be applied.
+        """
         for debuff_name, (debuff_value, debuff_duration) in debuff_dict.items():
             if debuff_name == "stun":
-                self.__is_stunned = True
+                self.set_is_stunned(True)
             else:
-                self.__debuff_dict[debuff_name] = (debuff_value, debuff_duration)
+                self.get_debuff_dict()[debuff_name] = (debuff_value, debuff_duration)
 
-        # Collect debuffs to remove in a separate list
         debuffs_to_remove = []
 
-        # Decrease debuff modifier duration
-        for debuff_name, (debuff_value, debuff_duration) in self.__debuff_dict.items():
+        for debuff_name, (
+            debuff_value,
+            debuff_duration,
+        ) in self.get_debuff_dict().items():
             if debuff_duration > 1:
                 if (
-                    debuff_name in self.__DEBUFF_STATISTIC_MAPPER.keys()
-                    and self.__DEBUFF_STATISTIC_MAPPER[debuff_name]
-                    in self.__player_statistic.keys()
+                    debuff_name in self.__DEBUFF_STAT_MAPPER.keys()
+                    and self.__DEBUFF_STAT_MAPPER[debuff_name]
+                    in self.get_player_stat().keys()
                 ):
-                    self.__player_statistic[
-                        self.__DEBUFF_STATISTIC_MAPPER[debuff_name]
+                    self.get_player_stat()[
+                        self.__DEBUFF_STAT_MAPPER[debuff_name]
                     ] -= int(debuff_value)
-                    self.__player_statistic[
-                        self.__DEBUFF_STATISTIC_MAPPER[debuff_name]
-                    ] = max(
-                        0,
-                        self.__player_statistic[
-                            self.__DEBUFF_STATISTIC_MAPPER[debuff_name]
-                        ],
+                    self.get_player_stat()[self.__DEBUFF_STAT_MAPPER[debuff_name]] = (
+                        max(
+                            0,
+                            self.get_player_stat()[
+                                self.__DEBUFF_STAT_MAPPER[debuff_name]
+                            ],
+                        )
                     )
-                self.__debuff_dict[debuff_name] = (
+                self.get_debuff_dict()[debuff_name] = (
                     debuff_value,
                     debuff_duration - 1,
                 )
             else:
-                # Remove debuff effect if duration of the debuff has passed
                 if (
                     debuff_name
                     in [
                         "physical_defense_reduction",
                         "physical_damage_reduction",
                     ]
-                    and self.__DEBUFF_STATISTIC_MAPPER[debuff_name]
-                    in self.__player_statistic.keys()
+                    and self.__DEBUFF_STAT_MAPPER[debuff_name]
+                    in self.get_player_stat().keys()
                 ):
-                    self.__player_statistic[
-                        self.__DEBUFF_STATISTIC_MAPPER[debuff_name]
+                    self.get_player_stat()[
+                        self.__DEBUFF_STAT_MAPPER[debuff_name]
                     ] += int(debuff_value)
                 debuffs_to_remove.append(debuff_name)
 
         # Remove debuffs from the dictionary after the iteration
         for debuff_name in debuffs_to_remove:
-            del self.__debuff_dict[debuff_name]
+            del self.get_debuff_dict()[debuff_name]
 
-        physical_dmg *= 1 - self.__player_statistic["physical_defense"] / 400
-        magical_damage *= 1 - self.__player_statistic["magical_defense"] / 400
+        # Calculate damage with defense modifiers
+        physical_dmg *= 1 - self.get_player_stat()["physical_defense"] / 400
+        magical_damage *= 1 - self.get_player_stat()["magical_defense"] / 400
         physical_dmg = max(0, physical_dmg)
         magical_damage = max(0, magical_damage)
         total_dmg = physical_dmg + magical_damage
-        if "absorption" in self.__player_statistic.keys():
-            total_dmg = max(0, total_dmg - self.__player_statistic["absorption"])
-        self.__player_statistic["health_points"] = max(
-            0, self.__player_statistic["health_points"] - int(total_dmg)
+
+        # Apply absorption if available
+        if "absorption" in self.get_player_stat().keys():
+            total_dmg = max(0, total_dmg - self.get_player_stat()["absorption"])
+
+        # Reduce health points by total damage
+        self.get_player_stat()["health_points"] = max(
+            0, self.get_player_stat()["health_points"] - int(total_dmg)
         )
 
     def regenerate(self) -> None:
-        if "health_regeneration" in self.__player_statistic.keys():
-            self.__player_statistic["health_points"] = min_max_bound(
+        """
+        Regenerates health and mana points for the player based on their regeneration rates.
+        """
+        if "health_regeneration" in self.get_player_stat().keys():
+            self.get_player_stat()["health_points"] = min_max_bound(
                 0,
-                self.__player_statistic_cap["health_points"],
-                self.__player_statistic["health_points"]
-                + self.__player_statistic["health_regeneration"],
+                self.get_player_stat_cap()["health_points"],
+                self.get_player_stat()["health_points"]
+                + self.get_player_stat()["health_regeneration"],
             )
-        if "mana_regeneration" in self.__player_statistic.keys():
-            self.__player_statistic["mana_points"] = min_max_bound(
+        if "mana_regeneration" in self.get_player_stat().keys():
+            self.get_player_stat()["mana_points"] = min_max_bound(
                 0,
-                self.__player_statistic_cap["mana_points"],
-                self.__player_statistic["mana_points"]
-                + self.__player_statistic["mana_regeneration"],
+                self.get_player_stat_cap()["mana_points"],
+                self.get_player_stat()["mana_points"]
+                + self.get_player_stat()["mana_regeneration"],
             )
 
-    def get_cooldown_abilities(self) -> dict[str, int]:
+    # Getters and setters with docstrings
+
+    def get_player_stat(self) -> Dict[str, int]:
+        """
+        Gets the player's current stats.
+
+        :return: A dictionary of the player's current stats.
+        """
+        return self.__player_stat
+
+    def set_player_stat(self, stats: Dict[str, int]) -> None:
+        """
+        Sets the player's current stats.
+
+        :param stats: A dictionary of the player's new stats.
+        """
+        self.__player_stat = stats
+
+    def get_player_stat_cap(self) -> Dict[str, int]:
+        """
+        Gets the player's stats cap.
+
+        :return: A dictionary of the player's stats cap.
+        """
+        return self.__player_stat_cap
+
+    def set_player_stat_cap(self, stats_cap: Dict[str, int]) -> None:
+        """
+        Sets the player's stats cap.
+
+        :param stats_cap: A dictionary of the player's new stats cap.
+        """
+        self.__player_stat_cap = stats_cap
+
+    def get_debuff_dict(self) -> Dict[str, Tuple[int, int]]:
+        """
+        Gets the player's debuff dictionary.
+
+        :return: A dictionary of the player's debuffs.
+        """
+        return self.__debuff_dict
+
+    def set_debuff_dict(self, debuff_dict: Dict[str, Tuple[int, int]]) -> None:
+        """
+        Sets the player's debuff dictionary.
+
+        :param debuff_dict: A dictionary of the player's new debuffs.
+        """
+        self.__debuff_dict = debuff_dict
+
+    def get_ability_histories(self) -> List[Ability]:
+        """
+        Gets the player's ability history.
+
+        :return: A list of the player's ability history.
+        """
+        return self.__ability_histories
+
+    def set_ability_histories(self, ability_histories: List[Ability]) -> None:
+        """
+        Sets the player's ability history.
+
+        :param ability_histories: A list of the player's new ability history.
+        """
+        self.__ability_histories = ability_histories
+
+    def get_cooldown_abilities(self) -> Dict[str, int]:
+        """
+        Gets the player's cooldown abilities.
+
+        :return: A dictionary of the player's cooldown abilities.
+        """
         return self.__cooldown_abilities
 
-    def get_player_statistic(self) -> dict[str, int]:
-        return self.__player_statistic
+    def set_cooldown_abilities(self, cooldown_abilities: Dict[str, int]) -> None:
+        """
+        Sets the player's cooldown abilities.
+
+        :param cooldown_abilities: A dictionary of the player's new cooldown abilities.
+        """
+        self.__cooldown_abilities = cooldown_abilities
+
+    def get_player_sprite(self) -> UIImage:
+        """
+        Gets the player's sprite.
+
+        :return: The player's sprite.
+        """
+        return self.__player_sprite
+
+    def set_player_sprite(self, player_sprite: UIImage) -> None:
+        """
+        Sets the player's sprite.
+
+        :param player_sprite: The new player's sprite.
+        """
+        self.__player_sprite = player_sprite
+
+    def get_is_stunned(self) -> bool:
+        """
+        Gets the player's stunned status.
+
+        :return: True if the player is stunned, False otherwise.
+        """
+        return self.__is_stunned
+
+    def set_is_stunned(self, is_stunned: bool) -> None:
+        """
+        Sets the player's stunned status.
+
+        :param is_stunned: The new stunned status.
+        """
+        self.__is_stunned = is_stunned

@@ -6,7 +6,7 @@ from utilities.json_utility import read_json
 
 class Ranger(BasePlayer):
 
-    __statistics: dict = {
+    __stats: dict = {
         "health_points": 950,
         "physical_defense": 110,
         "magical_defense": 90,
@@ -40,7 +40,7 @@ class Ranger(BasePlayer):
         ]["Ranger"]
         super().__init__(
             "Ranger",
-            copy.deepcopy(self.__statistics),
+            copy.deepcopy(self.__stats),
             sprite_location,
             self.__abilities,
             self.__unlocked_abilities,
@@ -49,12 +49,12 @@ class Ranger(BasePlayer):
             self.upgrade()
 
     def upgrade(self) -> None:
-        new_statistic: dict[str, int] = self.get_statistics()
+        new_stat: dict[str, int] = self.get_stats()
         new_unlocked_abilities: list[Ability] = self.get_unlocked_abilities()
         if self.get_character_level() == 1:
             self.set_character_level(2)
-            new_statistic["health_points"] += 100
-            new_statistic["physical_power"] += 10
+            new_stat["health_points"] += 100
+            new_stat["physical_power"] += 10
         elif self.get_character_level() == 2:
             self.set_character_level(3)
             index = next(
@@ -70,7 +70,7 @@ class Ranger(BasePlayer):
         elif self.get_character_level() == 3:
             self.set_character_level(4)
             new_unlocked_abilities.append(PLAYER_ABILITY_LIST["Natural Grace"])
-        self.set_statistics(new_statistic)
+        self.set_stats(new_stat)
         self.set_unlocked_abilities(new_unlocked_abilities)
 
     def unlock_ability(self) -> None:
@@ -89,8 +89,8 @@ class Ranger(BasePlayer):
     def get_sprite_location(self) -> str:
         return super().get_sprite_location()
 
-    def get_statistics(self) -> dict:
-        return super().get_statistics()
+    def get_stats(self) -> dict:
+        return super().get_stats()
 
     def get_character_level(self) -> int:
         return super().get_character_level()
@@ -107,8 +107,8 @@ class Ranger(BasePlayer):
     def set_sprite_location(self, sprite_location: str) -> None:
         super().set_sprite_location(sprite_location)
 
-    def set_statistics(self, statistics: dict) -> None:
-        super().set_statistics(statistics)
+    def set_stats(self, stats: dict) -> None:
+        super().set_stats(stats)
 
     def set_character_level(self, character_level: int) -> None:
         super().set_character_level(character_level)

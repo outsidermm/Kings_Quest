@@ -22,33 +22,33 @@ class StatisticBar(UIStatusBar):
 
 
 class StatisticHUD:
-    __statistic_text: UITextBox = None
-    __statistic_bar: StatisticBar = None
-    __statistics: dict[str, int] = None
-    __max_statistic_value: int = None
+    __stat_text: UITextBox = None
+    __stat_bar: StatisticBar = None
+    __stats: dict[str, int] = None
+    __max_stat_value: int = None
 
     def __init__(
         self,
         ui_manager: pygame_gui.UIManager,
         container: UIPanel,
-        statistics: dict[str, int],
-        statistic_name: str,
-        max_statistic_value: int,
-        statistic_count: int,
+        stats: dict[str, int],
+        stat_name: str,
+        max_stat_value: int,
+        stat_count: int,
     ) -> None:
-        self.__statistics = statistics
-        self.__max_statistic_value = max_statistic_value
+        self.__stats = stats
+        self.__max_stat_value = max_stat_value
 
         init_text_x = 50
         init_bar_x = 300
         init_y = 108
-        gap_per_statistics = 50
+        gap_per_stats = 50
 
-        self.__statistic_text = UITextBox(
-            html_text=f'<img src="assets/icons_48/{statistic_name}.png"> '
-            f"{" ".join(word.capitalize() for word in statistic_name.split("_"))}",
+        self.__stat_text = UITextBox(
+            html_text=f'<img src="assets/icons_48/{stat_name}.png"> '
+            f"{" ".join(word.capitalize() for word in stat_name.split("_"))}",
             relative_rect=pygame.Rect(
-                (init_text_x, init_y + statistic_count * gap_per_statistics),
+                (init_text_x, init_y + stat_count * gap_per_stats),
                 (300, -1),
             ),
             manager=ui_manager,
@@ -57,48 +57,42 @@ class StatisticHUD:
         )
 
         bar_location = pygame.Rect(
-            (init_bar_x, init_y + statistic_count * gap_per_statistics + 12.5),
+            (init_bar_x, init_y + stat_count * gap_per_stats + 12.5),
             (200, 30),
         )
         bar_location.right = -50
-        numerical_statistic = (
-            statistics[statistic_name] if statistic_name in statistics.keys() else 0
-        )
+        numerical_stat = stats[stat_name] if stat_name in stats.keys() else 0
 
-        self.__statistic_bar = StatisticBar(
+        self.__stat_bar = StatisticBar(
             relative_rect=bar_location,
             manager=ui_manager,
             anchors=({"right": "right"}),
-            percent_method=(
-                lambda statistic_name=statistic_name,: self.progress_bar(statistic_name)
-            ),
+            percent_method=(lambda stat_name=stat_name,: self.progress_bar(stat_name)),
             container=container,
             object_id=ObjectID(class_id="@statistics_bar"),
-            text=f"{numerical_statistic}/{max_statistic_value}",
+            text=f"{numerical_stat}/{max_stat_value}",
         )
 
     def update(
         self,
-        statistics: dict[str, int],
-        statistic_name: str,
-        max_statistic_value: int,
+        stats: dict[str, int],
+        stat_name: str,
+        max_stat_value: int,
     ) -> None:
-        numerical_statistic = (
-            statistics[statistic_name] if statistic_name in statistics.keys() else 0
-        )
-        self.__statistic_bar.set_text(f"{numerical_statistic}/{max_statistic_value}")
-        self.__statistic_bar.redraw()
+        numerical_stat = stats[stat_name] if stat_name in stats.keys() else 0
+        self.__stat_bar.set_text(f"{numerical_stat}/{max_stat_value}")
+        self.__stat_bar.redraw()
 
-        self.__statistics = statistics
-        self.__max_statistic_value = max_statistic_value
+        self.__stats = stats
+        self.__max_stat_value = max_stat_value
 
     def kill(self) -> None:
-        self.__statistic_text.kill()
-        self.__statistic_bar.kill()
+        self.__stat_text.kill()
+        self.__stat_bar.kill()
 
-    def progress_bar(self, statistic_name: str) -> float:
+    def progress_bar(self, stat_name: str) -> float:
         return (
-            self.__statistics[statistic_name] / self.__max_statistic_value
-            if statistic_name in self.__statistics.keys()
+            self.__stats[stat_name] / self.__max_stat_value
+            if stat_name in self.__stats.keys()
             else 0
         )

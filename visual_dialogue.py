@@ -32,13 +32,15 @@ class VisualDialogue:
         self.set_temp_quest(temp_quest)
 
         # Initializing the dialogue UITextBox
-        self.set_dialogue_UI(UITextBox(
-            "",
-            pygame.Rect((25, 10), (container.relative_rect.width * 0.45, -1)),
-            ui_manager,
-            container=container,
-            object_id=ObjectID(object_id="#visual_dialogue_text"),
-        ))
+        self.set_dialogue_UI(
+            UITextBox(
+                "",
+                pygame.Rect((25, 10), (container.relative_rect.width * 0.45, -1)),
+                ui_manager,
+                container=container,
+                object_id=ObjectID(object_id="#visual_dialogue_text"),
+            )
+        )
         self.get_dialogue_UI().hide()
 
         # Setting up the quest display UITextBox
@@ -46,14 +48,16 @@ class VisualDialogue:
             (0, 10), (container.relative_rect.width * 0.5, -1)
         )
         quest_display_rect.right = -25
-        self.set_quest_display(UITextBox(
-            f"Quest master: Hello! hello! will you {self.get_temp_quest().get_description()} for money of unknown sums? :/\nProgress: {self.get_temp_quest().get_progress()}/{self.get_temp_quest().get_aim()}",
-            quest_display_rect,
-            ui_manager,
-            anchors={"right": "right"},
-            container=container,
-            object_id=ObjectID(object_id="#quest_display_text"),
-        ))
+        self.set_quest_display(
+            UITextBox(
+                f"Quest master: Hello! hello! will you {self.get_temp_quest().get_description()} for money of unknown sums? :/\nProgress: {self.get_temp_quest().get_progress()}/{self.get_temp_quest().get_aim()}",
+                quest_display_rect,
+                ui_manager,
+                anchors={"right": "right"},
+                container=container,
+                object_id=ObjectID(object_id="#quest_display_text"),
+            )
+        )
 
     def set_dialogue(
         self,

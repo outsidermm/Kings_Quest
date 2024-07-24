@@ -99,7 +99,7 @@ class QuestMenu(BaseState):
                 object_id=ObjectID(class_id="@level_selection_button"),
                 container=self.__static_panel_wrapper,
             )
-            if self.__quests[quest_button_count].is_claimed():
+            if self.__quests[quest_button_count].get_is_claimed():
                 self.__quest_buttons[quest_button_count].set_text("CLAIMED")
                 self.__quest_buttons[quest_button_count].disable()
 

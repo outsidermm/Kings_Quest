@@ -59,8 +59,6 @@ class EndMenu(BaseState):
         )
         if (
             self.get_incoming_transition_data()["winner"] == "enemy"
-            and "temp_quest_completion"
-            not in self.get_incoming_transition_data().keys()
         ):
             self.__game_heading.set_text("You Lost!")
             if "temp_quest_completion" in self.get_incoming_transition_data().keys():
@@ -81,7 +79,7 @@ class EndMenu(BaseState):
                 self.__xp.gain_xp(xp_quest)
             else:
                 self.__game_description.set_text(
-                    f"Better luck next time!\nUnforunately, you did fail the quest master's quest!"
+                    f"You have gained {xp_won} XP for beating the boss!\nUnforunately, you did fail the quest master's quest!"
                 )
 
         outgoing_dict_without_winner_key = self.get_incoming_transition_data()

@@ -184,18 +184,18 @@ class CharacterSelectionMenu(BaseState):
             self.__upgrade_button.set_text("MAX LEVEL")
             self.__upgrade_button.change_object_id(ObjectID(class_id="@lock_button"))
 
-        self.__statistic_HUDs: list[StatisticHUD] = [None] * 10
+        self.__stat_HUDs: list[StatisticHUD] = [None] * 10
 
-        for statistic_count, (statistic_name, max_statistic_value) in enumerate(
+        for stat_count, (stat_name, max_stat_value) in enumerate(
             self.__CHARACTER_MAX_VAL.items()
         ):
-            self.__statistic_HUDs[statistic_count] = StatisticHUD(
+            self.__stat_HUDs[stat_count] = StatisticHUD(
                 self.get_ui_manager(),
                 self.__character_info_panel,
-                self.get_characters()[self.__selection_page].get_statistics(),
-                statistic_name,
-                max_statistic_value,
-                statistic_count,
+                self.get_characters()[self.__selection_page].get_stats(),
+                stat_name,
+                max_stat_value,
+                stat_count,
             )
 
         self.__ability_menu = UIPanel(
@@ -463,13 +463,13 @@ class CharacterSelectionMenu(BaseState):
                     self.get_characters()[self.__selection_page], ability, ability_count
                 )
 
-            for statistic_count, (statistic_name, max_statistic_value) in enumerate(
+            for stat_count, (stat_name, max_stat_value) in enumerate(
                 self.__CHARACTER_MAX_VAL.items()
             ):
-                self.__statistic_HUDs[statistic_count].update(
-                    self.get_characters()[self.__selection_page].get_statistics(),
-                    statistic_name,
-                    max_statistic_value,
+                self.__stat_HUDs[stat_count].update(
+                    self.get_characters()[self.__selection_page].get_stats(),
+                    stat_name,
+                    max_stat_value,
                 )
 
             self.__character_name.set_text(
@@ -528,7 +528,7 @@ class CharacterSelectionMenu(BaseState):
         self.__upgrade_dismiss.kill()
         self.__xp_text.kill()
         [ability_HUD.kill() for ability_HUD in self.__ability_HUDs]
-        [statistic_HUD.kill() for statistic_HUD in self.__statistic_HUDs]
+        [stat_HUD.kill() for stat_HUD in self.__stat_HUDs]
         [upgrade_panel.kill() for upgrade_panel in self.__upgrade_character_panel]
         self.get_screen().fill((0, 0, 0))
 

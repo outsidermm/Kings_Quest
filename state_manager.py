@@ -1,5 +1,6 @@
 import copy
 
+
 class GameStateManager:
     """
     Manages the states of the game, allowing transitions between different game states.
@@ -7,6 +8,7 @@ class GameStateManager:
 
     __active_state = None
     __states = {}
+
     def __init__(self) -> None:
         """
         Initializes the GameStateManager with no active state and an empty state registry.
