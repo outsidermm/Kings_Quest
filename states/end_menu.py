@@ -1,6 +1,7 @@
 from states.base_state import BaseState
 from state_manager import GameStateManager
-import pygame, pygame_gui
+import pygame
+import pygame_gui
 from pygame_gui.elements import UIButton, UITextBox
 from pygame_gui.core import ObjectID
 from xp import XP
@@ -8,6 +9,10 @@ import random
 
 
 class EndMenu(BaseState):
+    """
+    EndMenu class to display the end of game screen, showing the result and earned XP.
+    """
+
     __background_image: pygame.Surface = None
     __navigate_start_menu_button: UIButton = None
     __navigate_start_menu: bool = False
@@ -22,6 +27,14 @@ class EndMenu(BaseState):
         game_state_manager: GameStateManager,
         xp: XP,
     ):
+        """
+        Initializes the EndMenu class.
+
+        :param screen: The game screen surface.
+        :param ui_manager: The UI manager for pygame_gui.
+        :param game_state_manager: The game state manager.
+        :param xp: The XP object for managing experience points.
+        """
         super().__init__(
             "end_menu",
             screen,
@@ -29,53 +42,62 @@ class EndMenu(BaseState):
             "start_menu",
             game_state_manager,
         )
-        self.__xp = xp
+        self.set_xp(xp)
 
     def start(self) -> None:
+        """
+        Starts the end menu by setting up UI elements and background image.
+        """
         self.set_outgoing_transition_data(self.get_incoming_transition_data())
 
-        self.__background_image = pygame.transform.scale(
-            pygame.image.load("assets/background_image.png"),
-            (self.get_screen().width, self.get_screen().height),
+        self.set_background_image(
+            pygame.transform.scale(
+                pygame.image.load("assets/background_image.png"),
+                (self.get_screen().get_width(), self.get_screen().get_height()),
+            )
         )
 
         xp_won = random.randint(100, 300)
         xp_quest = random.randint(100, 300)
-        self.__game_heading = UITextBox(
-            "You Won!",
-            pygame.Rect((0, -self.get_screen().height * 0.3), (1000, 200)),
-            self.get_ui_manager(),
-            anchors=({"center": "center"}),
-            object_id=ObjectID(class_id="@title", object_id="#game_title"),
+        self.set_game_heading(
+            UITextBox(
+                "You Won!",
+                pygame.Rect((0, -self.get_screen().get_height() * 0.3), (1000, 200)),
+                self.get_ui_manager(),
+                anchors=({"center": "center"}),
+                object_id=ObjectID(class_id="@title", object_id="#game_title"),
+            )
         )
 
-        self.__game_description = UITextBox(
-            f"You have gained {xp_won} XP!",
-            pygame.Rect((0, 300), (400, -1)),
-            self.get_ui_manager(),
-            anchors=({"centerx": "centerx"}),
-            object_id=ObjectID(class_id="#enemy_statistic"),
+        self.set_game_description(
+            UITextBox(
+                f"You have gained {xp_won} XP!",
+                pygame.Rect((0, 300), (400, -1)),
+                self.get_ui_manager(),
+                anchors=({"centerx": "centerx"}),
+                object_id=ObjectID(class_id="#enemy_statistic"),
+            )
         )
         if self.get_incoming_transition_data()["winner"] == "enemy":
-            self.__game_heading.set_text("You Lost!")
+            self.get_game_heading().set_text("You Lost!")
             if "temp_quest_completion" in self.get_incoming_transition_data().keys():
-                self.__game_description.set_text(
+                self.get_game_description().set_text(
                     f"Better luck next time!\nHowever, you did complete the quest.\nYou earned {xp_quest} XP!"
                 )
-                self.__xp.gain_xp(xp_quest)
+                self.get_xp().gain_xp(xp_quest)
             else:
-                self.__game_description.set_text(
+                self.get_game_description().set_text(
                     f"Better luck next time!\nYou also failed the quest master's quest!"
                 )
         else:
-            self.__xp.gain_xp(xp_won)
+            self.get_xp().gain_xp(xp_won)
             if "temp_quest_completion" in self.get_incoming_transition_data().keys():
-                self.__game_description.set_text(
+                self.get_game_description().set_text(
                     f"You have gained {xp_won} XP for beating the boss!\nAlso, you did complete the quest.\nYou earned an addition {xp_quest} XP!"
                 )
-                self.__xp.gain_xp(xp_quest)
+                self.get_xp().gain_xp(xp_quest)
             else:
-                self.__game_description.set_text(
+                self.get_game_description().set_text(
                     f"You have gained {xp_won} XP for beating the boss!\nUnforunately, you did fail the quest master's quest!"
                 )
 
@@ -85,25 +107,33 @@ class EndMenu(BaseState):
             del outgoing_dict_without_winner_key["temp_quest_completion"]
         self.set_outgoing_transition_data(outgoing_dict_without_winner_key)
 
-        self.__navigate_start_menu_button = UIButton(
-            relative_rect=pygame.Rect((0, 175), (400, 75)),
-            text="RETURN TO START MENU",
-            manager=self.get_ui_manager(),
-            anchors=({"center": "center"}),
-            object_id=ObjectID(class_id="@level_selection_button"),
+        self.set_navigate_start_menu_button(
+            UIButton(
+                relative_rect=pygame.Rect((0, 175), (400, 75)),
+                text="RETURN TO START MENU",
+                manager=self.get_ui_manager(),
+                anchors=({"center": "center"}),
+                object_id=ObjectID(class_id="@level_selection_button"),
+            )
         )
 
     def handle_events(self) -> None:
+        """
+        Handles events such as button presses and quitting the game.
+        """
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.set_time_to_quit_app(True)
             self.get_ui_manager().process_events(event)
             if event.type == pygame_gui.UI_BUTTON_PRESSED:
-                if event.ui_element == self.__navigate_start_menu_button:
-                    self.__navigate_start_menu = True
+                if event.ui_element == self.get_navigate_start_menu_button():
+                    self.set_navigate_start_menu(True)
 
     def run(self) -> None:
-        if self.__navigate_start_menu:
+        """
+        Runs the logic for the end menu, such as navigating to the start menu.
+        """
+        if self.get_navigate_start_menu():
             outgoing_dict_without_character_keys = self.get_outgoing_transition_data()
             del outgoing_dict_without_character_keys["player"]
             del outgoing_dict_without_character_keys["enemy"]
@@ -112,21 +142,68 @@ class EndMenu(BaseState):
             return
 
     def render(self, time_delta: int) -> None:
+        """
+        Renders the end menu screen.
 
+        :param time_delta: Time elapsed since the last frame.
+        """
         self.get_ui_manager().update(time_delta)
-        self.get_screen().blit(self.__background_image, (0, 0))
-
+        self.get_screen().blit(self.get_background_image(), (0, 0))
         self.get_ui_manager().draw_ui(self.get_screen())
         pygame.display.update()
 
     def reset_event_polling(self) -> None:
-        self.__navigate_start_menu = False
+        """
+        Resets the event polling flags.
+        """
+        self.set_navigate_start_menu(False)
 
     def end(self) -> None:
-        self.__game_description.kill()
-        self.__game_heading.kill()
-        self.__navigate_start_menu_button.kill()
+        """
+        Ends the end menu by killing all UI elements.
+        """
+        self.get_game_description().kill()
+        self.get_game_heading().kill()
+        self.get_navigate_start_menu_button().kill()
         self.get_screen().fill((0, 0, 0))
+
+    # Getters and setters
+
+    def get_background_image(self) -> pygame.Surface:
+        return self.__background_image
+
+    def set_background_image(self, background_image: pygame.Surface) -> None:
+        self.__background_image = background_image
+
+    def get_navigate_start_menu_button(self) -> UIButton:
+        return self.__navigate_start_menu_button
+
+    def set_navigate_start_menu_button(self, button: UIButton) -> None:
+        self.__navigate_start_menu_button = button
+
+    def get_navigate_start_menu(self) -> bool:
+        return self.__navigate_start_menu
+
+    def set_navigate_start_menu(self, navigate: bool) -> None:
+        self.__navigate_start_menu = navigate
+
+    def get_xp(self) -> XP:
+        return self.__xp
+
+    def set_xp(self, xp: XP) -> None:
+        self.__xp = xp
+
+    def get_game_heading(self) -> UITextBox:
+        return self.__game_heading
+
+    def set_game_heading(self, game_heading: UITextBox) -> None:
+        self.__game_heading = game_heading
+
+    def get_game_description(self) -> UITextBox:
+        return self.__game_description
+
+    def set_game_description(self, game_description: UITextBox) -> None:
+        self.__game_description = game_description
 
     def get_screen(self) -> pygame.Surface:
         return super().get_screen()
