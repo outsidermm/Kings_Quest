@@ -16,17 +16,17 @@ class BaseCharacter:
         sprite_location: str,
         abilities: list[Ability],
     ) -> None:
-        self.__name = name
-        self.__stats = stats
-        self.__sprite_location = sprite_location
-        self.__abilities = abilities
+        self.set_name(name)
+        self.set_stats(stats)
+        self.set_sprite_location(sprite_location)
+        self.set_abilities(abilities)
 
     def copy(self) -> "BaseCharacter":
         return BaseCharacter(
-            self.__name,
-            copy.deepcopy(self.__stats),
-            self.__sprite_location,
-            self.__abilities,
+            self.get_name(),
+            copy.deepcopy(self.get_stats()),
+            self.get_sprite_location(),
+            self.get_abilities(),  
         )
 
     def get_name(self) -> str:
