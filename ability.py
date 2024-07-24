@@ -9,7 +9,7 @@ class Ability:
 
     __name: str = None
     __description: str = None
-    __ability_statistics: Dict[str, float] = None
+    __stats: Dict[str, float] = None
     __cost: List[Tuple[str, float]] = None
     __duration: int = 0
     __upgrades: List[Tuple[str, float]] = None
@@ -39,7 +39,7 @@ class Ability:
         self.set_name(name)
         self.set_description(description)
         self.set_cost(cost)
-        self.set_statistics(ability_statistics)
+        self.set_stats(ability_statistics)
         self.set_upgrades(upgrades if upgrades is not None else [])
         self.set_icon_URL(icon_URL)
         self.set_duration(duration)
@@ -53,7 +53,7 @@ class Ability:
         return Ability(
             self.get_name(),
             self.get_description(),
-            self.get_statistics(),
+            self.get_stats(),
             self.get_cost(),
             self.get_duration(),
             self.get_icon_URL(),
@@ -65,10 +65,10 @@ class Ability:
         Upgrades the ability based on its upgrade list.
         """
         for upgrade in self.get_upgrades():
-            if upgrade[0] in self.get_statistics().keys():
-                self.get_statistics()[upgrade[0]] += upgrade[1]
+            if upgrade[0] in self.get_stats().keys():
+                self.get_stats()[upgrade[0]] += upgrade[1]
             else:
-                self.get_statistics()[upgrade[0]] = upgrade[1]
+                self.get_stats()[upgrade[0]] = upgrade[1]
 
     def get_name(self) -> str:
         """
@@ -102,21 +102,21 @@ class Ability:
         """
         self.__description = description
 
-    def get_statistics(self) -> Dict[str, float]:
+    def get_stats(self) -> Dict[str, float]:
         """
         Gets the statistics of the ability.
 
         :return: The statistics of the ability.
         """
-        return self.__ability_statistics
+        return self.__stats
 
-    def set_statistics(self, statistics: Dict[str, float]) -> None:
+    def set_stats(self, stats: Dict[str, float]) -> None:
         """
         Sets the statistics of the ability.
 
         :param statistics: The new statistics of the ability.
         """
-        self.__ability_statistics = statistics
+        self.__stats = stats
 
     def get_cost(self) -> List[Tuple[str, float]]:
         """
@@ -181,8 +181,8 @@ class Ability:
         :param icon_URL: The new icon URL of the ability.
         """
         self.__icon_URL = icon_URL
-        
-        
+
+
 PLAYER_ABILITY_LIST: dict[str, Ability] = {
     "Power Slash": Ability(
         "Power Slash",

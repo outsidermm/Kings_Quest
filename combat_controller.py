@@ -61,7 +61,7 @@ class CombatController:
                 player_ability.set_duration(player_ability.get_duration() - 1)
             else:
                 # Remove buff effect if duration of the ability has passed
-                for modifier, value in player_ability.get_statistics().items():
+                for modifier, value in player_ability.get_stats().items():
                     if (
                         modifier in self.__POSITIVE_PLAYER_STATISTIC_MODIFERS
                         and modifier in self.__player_statistic.keys()
@@ -99,14 +99,14 @@ class CombatController:
         critical_rate = hit_height / self.__player_sprite.rect.height * 100
         if ability is not None:
             self.__ability_histories.append(ability.copy())
-            self.__cooldown_abilities[ability.get_name()] = ability.get_statistics()[
+            self.__cooldown_abilities[ability.get_name()] = ability.get_stats()[
                 "cooldown"
             ]
 
             for cost in ability.get_cost():
                 self.__player_statistic[cost[0]] -= cost[1]
 
-            for modifer, value in ability.get_statistics().items():
+            for modifer, value in ability.get_stats().items():
                 if modifer == "critical":
                     critical_rate += value
                 elif modifer in self.__NEGATIVE_PLAYER_STATISTIC_MODIFERS:
@@ -126,7 +126,7 @@ class CombatController:
                 player_ability.set_duration(player_ability.get_duration() - 1)
             else:
                 # Remove buff effect if duration of the ability has passed
-                for modifier, value in player_ability.get_statistics().items():
+                for modifier, value in player_ability.get_stats().items():
                     if (
                         modifier in self.__POSITIVE_PLAYER_STATISTIC_MODIFERS
                         and modifier in self.__player_statistic.keys()
