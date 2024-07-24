@@ -391,6 +391,8 @@ class CharacterSelectionMenu(BaseState):
         switching characters, upgrading characters, and purchasing abilities.
         """
         if self.get_navigate_level_selection():
+            # If the player has selected to navigate to the level selection screen,
+            # set the outgoing transition data with the current player and trigger the transition.
             self.set_outgoing_transition_data(
                 {"player": self.get_characters()[self.get_selection_page()].copy()}
             )
@@ -398,19 +400,25 @@ class CharacterSelectionMenu(BaseState):
             return
 
         if self.get_left_switch_character():
+            # If the player has selected to switch to the previous character,
+            # update the selection page and set the flag to update the GUI.
             self.set_selection_page(
                 (self.get_selection_page() - 1) % self.get_characater_count()
             )
             self.set_update_GUI(True)
         elif self.get_right_switch_character():
+            # If the player has selected to switch to the next character,
+            # update the selection page and set the flag to update the GUI.
             self.set_selection_page(
                 (self.get_selection_page() + 1) % self.get_characater_count()
             )
-            self.set_update_GUI(True)
+            self.set_update_gui(True)
 
         if self.get_ability_menu_active():
+            # Show the ability menu if it is active.
             self.get_ability_menu().show()
         else:
+            # Hide the ability menu if it is not active.
             self.get_ability_menu().hide()
 
         if (
@@ -418,12 +426,15 @@ class CharacterSelectionMenu(BaseState):
             and self.get_characters()[self.get_selection_page()].get_character_level()
             < 4
         ):
+            # If the player has selected to upgrade the character and the character level is less than 4,
+            # open the upgrade character panel.
             self.set_last_pop_up_opened("character")
             self.get_character_info_panel().disable()
             self.get_character_picture_panel().disable()
 
             old_xp = self.get_xp().get_xp()
             try:
+                # Try to deduct the XP cost for the upgrade.
                 self.get_xp().lose_xp(
                     self.__UPGRADE_LVL_XP_COST[
                         self.get_characters()[
@@ -431,19 +442,26 @@ class CharacterSelectionMenu(BaseState):
                         ].get_character_level()
                     ]
                 )
+                # Update the XP text and show the appropriate panel.
                 self.get_xp_text().set_text(
                     f"Old XP: {old_xp}\nNew XP: {self.get_xp().get_xp()}"
                 )
                 self.get_upgrade_character_panel()[1].show()
             except:
+                # Show the panel indicating insufficient XP.
                 self.get_upgrade_character_panel()[0].show()
 
         if self.get_dismiss_upgrade() and self.get_last_pop_up_opened() == "character":
+            # If the upgrade is dismissed and the last popup opened was for character,
+            # enable the character info and picture panels and hide the upgrade panel.
             self.get_character_info_panel().enable()
             self.get_character_picture_panel().enable()
             self.get_upgrade_character_panel()[0].hide()
 
         if self.get_purchase_upgrade() and self.get_last_pop_up_opened() == "character":
+            # If the upgrade is purchased and the last popup opened was for character,
+            # upgrade the character, enable the character info and picture panels, hide the upgrade panel,
+            # and set the flag to update the GUI.
             self.get_characters()[self.get_selection_page()].upgrade()
             self.get_character_info_panel().enable()
             self.get_character_picture_panel().enable()
@@ -451,6 +469,8 @@ class CharacterSelectionMenu(BaseState):
             self.set_update_GUI(True)
 
         if self.get_refund_upgrade() and self.get_last_pop_up_opened() == "character":
+            # If the upgrade is refunded and the last popup opened was for character,
+            # refund the XP, enable the character info and picture panels, and hide the upgrade panel.
             self.get_xp().gain_xp(
                 self.__UPGRADE_LVL_XP_COST[
                     self.get_characters()[
@@ -469,26 +489,36 @@ class CharacterSelectionMenu(BaseState):
                 self.get_selection_page()
             ].get_unlocked_abilities()
         ):
+            # If the ability is purchased and it is not already unlocked,
+            # open the ability purchase panel.
             self.set_last_pop_up_opened("ability")
             self.get_character_info_panel().disable()
             self.get_character_picture_panel().disable()
 
             old_xp = self.get_xp().get_xp()
             try:
+                # Try to deduct the XP cost for the ability.
                 self.get_xp().lose_xp(self.__UNLOCK_ABILITY_COST)
+                # Update the XP text and show the appropriate panel.
                 self.get_xp_text().set_text(
                     f"Old XP: {old_xp}\nNew XP: {self.get_xp().get_xp()}"
                 )
                 self.get_upgrade_character_panel()[1].show()
             except:
+                # Show the panel indicating insufficient XP.
                 self.get_upgrade_character_panel()[0].show()
 
         if self.get_dismiss_upgrade() and self.get_last_pop_up_opened() == "ability":
+            # If the ability purchase is dismissed and the last popup opened was for ability,
+            # enable the character info and picture panels and hide the upgrade panel.
             self.get_character_info_panel().enable()
             self.get_character_picture_panel().enable()
             self.get_upgrade_character_panel()[0].hide()
 
         if self.get_purchase_upgrade() and self.get_last_pop_up_opened() == "ability":
+            # If the ability is purchased and the last popup opened was for ability,
+            # unlock the ability, enable the character info and picture panels, hide the upgrade panel,
+            # and set the flag to update the GUI.
             self.get_characters()[self.get_selection_page()].unlock_ability()
             self.get_character_info_panel().enable()
             self.get_character_picture_panel().enable()
@@ -496,6 +526,8 @@ class CharacterSelectionMenu(BaseState):
             self.set_update_GUI(True)
 
         if self.get_refund_upgrade() and self.get_last_pop_up_opened() == "ability":
+            # If the ability purchase is refunded and the last popup opened was for ability,
+            # refund the XP, enable the character info and picture panels, and hide the upgrade panel.
             self.get_xp().gain_xp(self.__UNLOCK_ABILITY_COST)
             self.get_character_info_panel().enable()
             self.get_character_picture_panel().enable()
@@ -508,6 +540,7 @@ class CharacterSelectionMenu(BaseState):
         :param time_delta: Time elapsed since the last frame.
         """
         if self.get_update_GUI():
+            # Update the ability HUDs for the current character
             for ability_count, ability in enumerate(
                 self.get_characters()[self.get_selection_page()].get_abilities()
             ):
@@ -517,6 +550,7 @@ class CharacterSelectionMenu(BaseState):
                     ability_count,
                 )
 
+            # Update the stat HUDs for the current character
             for stat_count, (stat_name, max_stat_value) in enumerate(
                 self.__CHARACTER_MAX_VAL.items()
             ):
@@ -526,9 +560,12 @@ class CharacterSelectionMenu(BaseState):
                     max_stat_value,
                 )
 
+            # Update the character name in the HUD
             self.get_character_name().set_text(
                 self.get_characater_name_list()[self.get_selection_page()]
             )
+            
+            # Update the character picture in the HUD
             self.get_character_picture().set_image(
                 pygame.image.load(
                     self.get_characters()[
@@ -536,12 +573,16 @@ class CharacterSelectionMenu(BaseState):
                     ].get_sprite_location()
                 ).convert_alpha()
             )
+
+            # Update the text and style of the upgrade button based on character level
             self.get_upgrade_button().set_text(
                 f"Upgrade for {self.__UPGRADE_LVL_XP_COST[self.get_characters()[self.get_selection_page()].get_character_level()]} XP"
             )
             self.get_upgrade_button().change_object_id(
                 ObjectID(class_id="@unlock_button")
             )
+            
+            # If character level is max, set the button text to "MAX LEVEL"
             if (
                 self.get_characters()[self.get_selection_page()].get_character_level()
                 == 4
@@ -551,11 +592,18 @@ class CharacterSelectionMenu(BaseState):
                     ObjectID(class_id="@lock_button")
                 )
 
+        # Update the UI manager
         self.get_ui_manager().update(time_delta)
+
+        # Clear the screen
         self.get_screen().blit(
             pygame.Surface((self.get_screen().width, self.get_screen().height)), (0, 0)
         )
+
+        # Draw the updated UI elements on the screen
         self.get_ui_manager().draw_ui(self.get_screen())
+
+        # Update the display to show the changes
         pygame.display.update()
 
     def reset_event_polling(self) -> None:

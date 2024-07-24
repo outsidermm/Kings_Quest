@@ -48,8 +48,10 @@ class EndMenu(BaseState):
         """
         Starts the end menu by setting up UI elements and background image.
         """
+        # Set the outgoing transition data to be the same as the incoming transition data
         self.set_outgoing_transition_data(self.get_incoming_transition_data())
 
+        # Load and scale the background image to fit the screen size
         self.set_background_image(
             pygame.transform.scale(
                 pygame.image.load("assets/background_image.png"),
@@ -57,8 +59,11 @@ class EndMenu(BaseState):
             )
         )
 
+        # Generate random XP values for winning the game and completing the quest
         xp_won = random.randint(100, 300)
         xp_quest = random.randint(100, 300)
+
+        # Create the game heading text box, initially setting it to "You Won!"
         self.set_game_heading(
             UITextBox(
                 "You Won!",
@@ -69,6 +74,7 @@ class EndMenu(BaseState):
             )
         )
 
+        # Create the game description text box, displaying the amount of XP won
         self.set_game_description(
             UITextBox(
                 f"You have gained {xp_won} XP!",
@@ -78,35 +84,49 @@ class EndMenu(BaseState):
                 object_id=ObjectID(class_id="#enemy_statistic"),
             )
         )
+
+        # Check the winner from the incoming transition data
         if self.get_incoming_transition_data()["winner"] == "enemy":
+            # If the enemy won, update the heading to "You Lost!"
             self.get_game_heading().set_text("You Lost!")
+            
+            # Check if the quest was completed
             if "temp_quest_completion" in self.get_incoming_transition_data().keys():
+                # If the quest was completed, update the description and add quest XP
                 self.get_game_description().set_text(
                     f"Better luck next time!\nHowever, you did complete the quest.\nYou earned {xp_quest} XP!"
                 )
                 self.get_xp().gain_xp(xp_quest)
             else:
+                # If the quest was not completed, update the description accordingly
                 self.get_game_description().set_text(
                     f"Better luck next time!\nYou also failed the quest master's quest!"
                 )
         else:
+            # If the player won, add the XP won to the player's total XP
             self.get_xp().gain_xp(xp_won)
+            
+            # Check if the quest was completed
             if "temp_quest_completion" in self.get_incoming_transition_data().keys():
+                # If the quest was completed, update the description and add quest XP
                 self.get_game_description().set_text(
-                    f"You have gained {xp_won} XP for beating the boss!\nAlso, you did complete the quest.\nYou earned an addition {xp_quest} XP!"
+                    f"You have gained {xp_won} XP for beating the boss!\nAlso, you did complete the quest.\nYou earned an additional {xp_quest} XP!"
                 )
                 self.get_xp().gain_xp(xp_quest)
             else:
+                # If the quest was not completed, update the description accordingly
                 self.get_game_description().set_text(
-                    f"You have gained {xp_won} XP for beating the boss!\nUnforunately, you did fail the quest master's quest!"
+                    f"You have gained {xp_won} XP for beating the boss!\nUnfortunately, you did fail the quest master's quest!"
                 )
 
+        # Prepare outgoing transition data by removing "winner" and "temp_quest_completion" keys
         outgoing_dict_without_winner_key = self.get_incoming_transition_data()
         del outgoing_dict_without_winner_key["winner"]
         if "temp_quest_completion" in outgoing_dict_without_winner_key.keys():
             del outgoing_dict_without_winner_key["temp_quest_completion"]
         self.set_outgoing_transition_data(outgoing_dict_without_winner_key)
 
+        # Create the button to navigate back to the start menu
         self.set_navigate_start_menu_button(
             UIButton(
                 relative_rect=pygame.Rect((0, 175), (400, 75)),
@@ -116,7 +136,8 @@ class EndMenu(BaseState):
                 object_id=ObjectID(class_id="@level_selection_button"),
             )
         )
-
+        
+        
     def handle_events(self) -> None:
         """
         Handles events such as button presses and quitting the game.
@@ -134,10 +155,17 @@ class EndMenu(BaseState):
         Runs the logic for the end menu, such as navigating to the start menu.
         """
         if self.get_navigate_start_menu():
+            # Retrieve the current outgoing transition data
             outgoing_dict_without_character_keys = self.get_outgoing_transition_data()
+            
+            # Remove the "player" and "enemy" keys from the transition data
             del outgoing_dict_without_character_keys["player"]
             del outgoing_dict_without_character_keys["enemy"]
+            
+            # Set the updated transition data without the "player" and "enemy" keys
             self.set_outgoing_transition_data(outgoing_dict_without_character_keys)
+            
+            # Indicate that it's time to transition to the next state
             self.set_time_to_transition(True)
             return
 

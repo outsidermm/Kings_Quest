@@ -1,12 +1,11 @@
 from pygame_gui.elements import UIStatusBar
 
-
 class StatisticBar(UIStatusBar):
     """
     Custom UIStatusBar class to represent a statistic bar with text.
 
     Attributes:
-        __bar_text (str): Text to display on the bar.
+        bar_text (str): Text to display on the bar.
     """
 
     def __init__(
@@ -20,7 +19,7 @@ class StatisticBar(UIStatusBar):
 
         :param text: Text to display on the bar.
         """
-        self.set_bar_text(text)
+        self.set_bar_text(text)  # Set the initial bar text
         super().__init__(*args, **kwargs)
 
     def status_text(self) -> str:
@@ -29,7 +28,7 @@ class StatisticBar(UIStatusBar):
 
         :return: The bar text.
         """
-        return self.get_bar_text()
+        return self.get_bar_text()  # Return the current text of the bar
 
     def set_text(self, text: str) -> None:
         """
@@ -37,7 +36,7 @@ class StatisticBar(UIStatusBar):
 
         :param text: Text to set.
         """
-        self.set_bar_text(text)
+        self.set_bar_text(text)  # Update the text of the bar
 
     def get_bar_text(self) -> str:
         """
@@ -45,7 +44,7 @@ class StatisticBar(UIStatusBar):
 
         :return: The bar text.
         """
-        return self.__bar_text
+        return self.__bar_text  # Return the bar text
 
     def set_bar_text(self, text: str) -> None:
         """
@@ -53,4 +52,4 @@ class StatisticBar(UIStatusBar):
 
         :param text: Text to set.
         """
-        self.__bar_text = text
+        self.__bar_text = text  # Set the bar text

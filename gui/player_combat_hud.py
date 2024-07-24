@@ -5,6 +5,7 @@ import pygame_gui
 from characters.base_character import BaseCharacter
 from gui.health_bar import HealthBar
 
+# List of character stats to be displayed in the HUD
 CHARACTER_STAT = [
     "health_points",
     "physical_defense",
@@ -18,23 +19,22 @@ CHARACTER_STAT = [
     "magical_damage",
 ]
 
-
 class PlayerCombatHUD:
     """
     HUD for displaying player combat statistics including health bar and other stats.
 
     Attributes:
-        __ui_manager (pygame_gui.UIManager): Manager for the UI elements.
-        __player (BaseCharacter): The player character whose stats are displayed.
-        __container (UIPanel): The container panel for the HUD.
-        __health_bar (HealthBar): Health bar UI element.
-        __HUD_text (dict[str, UITextBox]): Dictionary containing stat text boxes.
-        __CHARACTER_STAT (list[str]): List of character stats to display in the HUD.
+        ui_manager (pygame_gui.UIManager): Manager for the UI elements.
+        player (BaseCharacter): The player character whose stats are displayed.
+        container (UIPanel): The container panel for the HUD.
+        health_bar (HealthBar): Health bar UI element.
+        HUD_text (dict[str, UITextBox]): Dictionary containing stat text boxes.
+        CHARACTER_STAT (list[str]): List of character stats to display in the HUD.
     """
 
     __ui_manager: pygame_gui.UIManager = None
     __player: BaseCharacter = None
-    __container = None
+    __container: UIPanel = None
     __health_bar: HealthBar = None
     __HUD_text: dict[str, UITextBox] = {}
 
@@ -57,13 +57,15 @@ class PlayerCombatHUD:
         :param HUD_text_x: X position for the HUD text.
         :param HUD_step: Vertical step between each stat text.
         """
+        # Set UI manager, player character, and container
         self.set_ui_manager(ui_manager)
         self.set_player(player)
         self.set_container(container)
 
+        # Define the rectangle for the health bar
         health_bar_rect = pygame.Rect((85, 20), (225, 30))
 
-        # Initialize the health bar
+        # Initialize the health bar with player's health points
         self.set_health_bar(
             HealthBar(
                 self.get_ui_manager(),
@@ -74,11 +76,13 @@ class PlayerCombatHUD:
             )
         )
 
-        # Initialize HUD text for each character stat
+        # Initialize HUD text elements for each character stat
         for stat_count, stat_name in enumerate(CHARACTER_STAT):
+            # Ensure all stats have a default value of 0 if not present
             if stat_name not in self.get_player().get_stats().keys():
                 self.get_player().get_stats()[stat_name] = 0
 
+            # Skip health points as it's managed by the health bar
             if stat_name != "health_points":
                 stat_rect = pygame.Rect(
                     (HUD_text_x, HUD_init_text_y + stat_count * HUD_step), (225, 30)
@@ -96,12 +100,15 @@ class PlayerCombatHUD:
         """
         Updates the health bar and other stat texts in the HUD.
         """
+        # Update the health bar with current health points
         self.get_health_bar().update(self.get_player().get_stats()["health_points"])
+        
+        # Update each stat text in the HUD
         for stat_name in CHARACTER_STAT:
             if stat_name not in self.get_player().get_stats().keys():
                 self.get_player().get_stats()[stat_name] = 0
 
-            if stat_name != "health_points":
+            if stat_name != "health_points":  # Health points are managed by the health bar
                 self.get_HUD_text()[stat_name].set_text(
                     html_text=f'<img src="assets/icons_18/{stat_name}.png"> '
                     f"{' '.join(word.capitalize() for word in stat_name.split('_'))}: {self.get_player().get_stats()[stat_name]}"

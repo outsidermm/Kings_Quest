@@ -143,10 +143,14 @@ class AbilityHUD:
         :param ability: The ability to update.
         :param ability_count: The index of the ability in the player's ability list.
         """
+        # Update the ability header (name)
         self.get_ability_header().set_text(ability.get_name())
+        # Update the ability icon image
         self.get_ability_icon().set_image(pygame.image.load(ability.get_icon_URL()))
+        # Update the ability description
         self.get_ability_description().set_text(ability.get_description())
 
+        # Update the ability button based on unlock status
         if ability in player.get_unlocked_abilities():
             self.get_ability_button().set_text(self.get_ability_button_text()[0])
             self.get_ability_button().change_object_id(
@@ -169,6 +173,7 @@ class AbilityHUD:
         self.get_ability_description().kill()
         self.get_ability_button().kill()
 
+    # Getters and Setters for encapsulation and data protection
     def get_ability_button(self) -> UIButton:
         """
         Gets the ability button.

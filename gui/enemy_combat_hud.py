@@ -1,7 +1,7 @@
 import pygame
+import pygame_gui
 from pygame_gui.elements import UITextBox, UIPanel
 from pygame_gui.core import ObjectID
-import pygame_gui
 from characters.base_character import BaseCharacter
 from gui.health_bar import HealthBar
 
@@ -21,20 +21,19 @@ CHARACTER_STAT = [
 
 class EnemyCombatHUD:
     """
-    HUD for displaying player combat statistics including health bar and other stats.
+    HUD for displaying enemy combat statistics including health bar and other stats.
 
     Attributes:
         __ui_manager (pygame_gui.UIManager): Manager for the UI elements.
-        __player (BaseCharacter): The player character whose stats are displayed.
+        __player (BaseCharacter): The enemy character whose stats are displayed.
         __container (UIPanel): The container panel for the HUD.
         __health_bar (HealthBar): Health bar UI element.
         __HUD_text (dict[str, UITextBox]): Dictionary containing stat text boxes.
-        __CHARACTER_STAT (list[str]): List of character stats to display in the HUD.
     """
 
     __ui_manager: pygame_gui.UIManager = None
     __player: BaseCharacter = None
-    __container = None
+    __container: UIPanel = None
     __health_bar: HealthBar = None
     __HUD_text: dict[str, UITextBox] = {}
 
@@ -48,10 +47,10 @@ class EnemyCombatHUD:
         HUD_step: int = 30,
     ) -> None:
         """
-        Initializes the PlayerCombatHUD with the provided parameters.
+        Initializes the EnemyCombatHUD with the provided parameters.
 
         :param ui_manager: Manager for the UI elements.
-        :param player: The player character whose stats are displayed.
+        :param player: The enemy character whose stats are displayed.
         :param container: The container panel for the HUD.
         :param HUD_init_text_y: Initial Y position for the HUD text.
         :param HUD_text_x: X position for the HUD text.
@@ -64,7 +63,7 @@ class EnemyCombatHUD:
         health_bar_rect = pygame.Rect((0, 20), (225, 30))
         health_bar_rect.right = 240
 
-        # Initialize the health bar
+        # Initialize the health bar for the enemy
         self.set_health_bar(
             HealthBar(
                 self.get_ui_manager(),
@@ -72,7 +71,7 @@ class EnemyCombatHUD:
                 health_bar_rect,
                 self.get_player().get_stats()["health_points"],
                 self.get_player().get_stats()["health_points"],
-                True,
+                True,  # Indicates that the health bar is flipped
             )
         )
 
@@ -99,6 +98,9 @@ class EnemyCombatHUD:
     def update(self):
         """
         Updates the health bar and other stat texts in the HUD.
+
+        This method updates the health bar to reflect the current health points
+        and updates the text for each stat displayed in the HUD.
         """
         self.get_health_bar().update(self.get_player().get_stats()["health_points"])
         for stat_name in CHARACTER_STAT:
@@ -129,17 +131,17 @@ class EnemyCombatHUD:
 
     def get_player(self) -> BaseCharacter:
         """
-        Gets the player character.
+        Gets the enemy character.
 
-        :return: The player character.
+        :return: The enemy character.
         """
         return self.__player
 
     def set_player(self, player: BaseCharacter) -> None:
         """
-        Sets the player character.
+        Sets the enemy character.
 
-        :param player: The player character to set.
+        :param player: The enemy character to set.
         """
         self.__player = player
 

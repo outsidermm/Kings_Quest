@@ -10,10 +10,10 @@ class StatisticHUD:
     HUD component to display character statistics using text and bars.
 
     Attributes:
-        __stat_text (UITextBox): The text box displaying the stat name.
-        __stat_bar (StatisticBar): The bar representing the stat value.
-        __stats (dict[str, int]): Dictionary of character stats.
-        __max_stat_value (int): The maximum value for the stat.
+        stat_text (UITextBox): The text box displaying the stat name.
+        stat_bar (StatisticBar): The bar representing the stat value.
+        stats (dict[str, int]): Dictionary of character stats.
+        max_stat_value (int): The maximum value for the stat.
     """
 
     def __init__(
@@ -38,6 +38,10 @@ class StatisticHUD:
         :param stat_name: The name of the stat to display.
         :param max_stat_value: The maximum value of the stat for normalization.
         :param stat_count: The index of the stat to position it correctly.
+        :param init_text_x: Initial x-position for the stat text.
+        :param init_bar_x: Initial x-position for the stat bar.
+        :param init_y: Initial y-position for the stat components.
+        :param gap_per_stats: Vertical gap between each stat component.
         """
         self.set_stats(stats)
         self.set_max_stat_value(max_stat_value)

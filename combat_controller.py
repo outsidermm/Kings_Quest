@@ -2,7 +2,7 @@ from characters.base_character import BaseCharacter
 from ability import Ability
 from typing import Tuple, Dict, List
 import random
-from utilities.math_utility import min_max_bound
+from utilities.general_utility import min_max_bound
 from pygame_gui.elements import UIImage
 
 
@@ -40,7 +40,14 @@ class CombatController:
         "physical_damage_reduction",
         "bleed",
     ]
-
+    __player_stat: Dict[str, int] = {}
+    __player_stat_cap: Dict[str, int] = {}
+    __debuff_dict: Dict[str, Tuple[int, int]] = {}
+    __ability_histories: List[Ability] = []
+    __cooldown_abilities: Dict[str, int] = {}
+    __player_sprite: UIImage = None
+    __is_stunned: bool = False
+    
     def __init__(self, player: BaseCharacter, player_sprite: UIImage) -> None:
         """
         Initializes the CombatController class.
