@@ -8,7 +8,6 @@ import random
 
 
 class EndMenu(BaseState):
-    __quit_button_pressed: bool = False
     __background_image: pygame.Surface = None
     __navigate_start_menu_button: UIButton = None
     __navigate_start_menu: bool = False
@@ -97,17 +96,13 @@ class EndMenu(BaseState):
     def handle_events(self) -> None:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                self.__quit_button_pressed = True
+                self.set_time_to_quit_app(True)
             self.get_ui_manager().process_events(event)
             if event.type == pygame_gui.UI_BUTTON_PRESSED:
                 if event.ui_element == self.__navigate_start_menu_button:
                     self.__navigate_start_menu = True
 
     def run(self) -> None:
-        if self.__quit_button_pressed:
-            self.set_time_to_quit_app(True)
-            return
-
         if self.__navigate_start_menu:
             outgoing_dict_without_character_keys = self.get_outgoing_transition_data()
             del outgoing_dict_without_character_keys["player"]
@@ -125,7 +120,6 @@ class EndMenu(BaseState):
         pygame.display.update()
 
     def reset_event_polling(self) -> None:
-        self.__quit_button_pressed = False
         self.__navigate_start_menu = False
 
     def end(self) -> None:

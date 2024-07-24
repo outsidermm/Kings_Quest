@@ -9,7 +9,6 @@ from characters.enemies.base_enemy import BaseEnemy
 class LevelSelectionMenu(BaseState):
 
     __enemies: list[BaseEnemy] = None
-    __quit_button_pressed: bool = False
     __show_enemy_info: int = -1
     __enemy_buttons: list[UIButton] = None
     __background_image: pygame.Surface = None
@@ -217,7 +216,7 @@ class LevelSelectionMenu(BaseState):
     def handle_events(self) -> None:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                self.__quit_button_pressed = True
+                self.set_time_to_quit_app(True)
             self.get_ui_manager().process_events(event)
             if event.type == pygame_gui.UI_BUTTON_PRESSED:
                 if event.ui_element == self.__navigate_character_selection_button:
@@ -233,10 +232,6 @@ class LevelSelectionMenu(BaseState):
                         self.__show_enemy_info = enemy_button_index
 
     def run(self) -> None:
-        if self.__quit_button_pressed:
-            self.set_time_to_quit_app(True)
-            return
-
         if self.__navigate_character_selection:
             self.set_target_state_name("character_selection_menu")
             self.set_time_to_transition(True)
@@ -302,7 +297,6 @@ class LevelSelectionMenu(BaseState):
         pygame.display.update()
 
     def reset_event_polling(self) -> None:
-        self.__quit_button_pressed = False
         self.__navigate_character_selection = False
         self.__navigate_quest = False
         self.__navigate_combat = False

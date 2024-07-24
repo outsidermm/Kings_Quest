@@ -9,10 +9,6 @@ from typing import Any
 from gui.ability_hud import AbilityHUD
 from gui.statistic_hud import StatisticHUD
 
-
-# TODO Need to show highlights made
-
-
 class CharacterSelectionMenu(BaseState):
 
     __characters: list[BasePlayer] = None
@@ -29,9 +25,7 @@ class CharacterSelectionMenu(BaseState):
     __refund_upgrade: bool = False
     __purchase_ability: bool = False
     __last_pop_up_opened: str = None
-    __quit_button_pressed: bool = False
     __ability_HUDs: list[AbilityHUD] = [None] * 3
-
     __xp: XP = None
 
     __UPGRADE_LVL_XP_COST: dict[int, Any] = {
@@ -319,7 +313,7 @@ class CharacterSelectionMenu(BaseState):
     def handle_events(self) -> None:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                self.__quit_button_pressed = True
+                self.set_time_to_quit_app(True)
             self.get_ui_manager().process_events(event)
             if event.type == pygame_gui.UI_BUTTON_PRESSED:
                 if event.ui_element == self.get_left_arrow_select():
@@ -344,9 +338,6 @@ class CharacterSelectionMenu(BaseState):
                     self.__purchase_ability = True
 
     def run(self) -> None:
-        if self.__quit_button_pressed:
-            self.set_time_to_quit_app(True)
-            return
 
         if self.__navigate_level_selection:
             self.set_outgoing_transition_data(
@@ -509,7 +500,6 @@ class CharacterSelectionMenu(BaseState):
         self.__purchase_upgrade = False
         self.__dismiss_upgrade = False
         self.__update_GUI = False
-        self.__quit_button_pressed = False
         self.__navigate_level_selection = False
 
     def end(self) -> None:

@@ -23,18 +23,15 @@ class BaseState(abc.ABC):
         target_state_name: str,
         game_state_manager: GameStateManager,
     ) -> None:
-        self.__state_name = state_name
-        self.__target_state_name = target_state_name
+        self.set_state_name(state_name)
+        self.set_target_state_name(target_state_name)
         self.set_screen(screen)
         self.set_ui_manager(ui_manager)
         self.set_game_state_manager(game_state_manager)
         self.get_game_state_manager().register_state(self)
 
-    def set_target_state_name(self, target_name):
-        self.__target_state_name = target_name
-
-    def trigger_transition(self):
-        self.time_to_transition = True
+    def trigger_transition(self) -> None:
+        self.set_time_to_transition(True)
 
     @abc.abstractmethod
     def start(self):
@@ -113,3 +110,12 @@ class BaseState(abc.ABC):
 
     def get_time_to_transition(self) -> bool:
         return self.__time_to_transition
+
+    def set_state_name(self, state_name: str) -> None:
+        self.__state_name = state_name
+    
+    def get_state_name(self) -> str:
+        return self.__state_name
+    
+    def set_time_to_transition(self, time_to_transition: bool) -> None:
+        self.__time_to_transition = time_to_transition
