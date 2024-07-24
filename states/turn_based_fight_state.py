@@ -230,7 +230,6 @@ class TurnBasedFight(BaseState):
                 self.get_ui_manager(),
                 self.get_enemy(),
                 self.get_enemy_info_container(),
-                is_flipped=True,
             )
         )
 

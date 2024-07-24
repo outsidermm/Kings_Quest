@@ -53,7 +53,9 @@ class StartMenu(BaseState):
 
         self.set_setting_button(
             UIButton(
-                relative_rect=pygame.Rect((0, self.get_screen().height * 0.15), (500, 70)),
+                relative_rect=pygame.Rect(
+                    (0, self.get_screen().height * 0.15), (500, 70)
+                ),
                 text="RESET GAME",
                 manager=self.get_ui_manager(),
                 anchors=({"center": "center"}),
@@ -62,7 +64,9 @@ class StartMenu(BaseState):
 
         self.set_quit_button(
             UIButton(
-                relative_rect=pygame.Rect((0, self.get_screen().height * 0.3), (500, 70)),
+                relative_rect=pygame.Rect(
+                    (0, self.get_screen().height * 0.3), (500, 70)
+                ),
                 text="QUIT",
                 manager=self.get_ui_manager(),
                 anchors=({"center": "center"}),
