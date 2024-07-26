@@ -72,7 +72,7 @@ class EnemyCombatHUD:
                 health_bar_rect,
                 self.get_player().get_stats()["health_points"],
                 self.get_player().get_stats()["health_points"],
-                True,  # Indicates that the health bar is flipped
+                is_flipped=True,  # Indicates that the health bar is flipped
             )
         )
 
