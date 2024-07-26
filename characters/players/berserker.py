@@ -14,7 +14,7 @@ class Berserker(BasePlayer):
         "physical_power": 120,
         "health_regeneration": 10,
         "mana_points": 100,
-        "physical_damage": 1000,
+        "physical_damage": 100,
     }
 
     __unlocked_abilities_string: list[str] = []

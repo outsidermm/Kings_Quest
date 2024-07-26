@@ -6,7 +6,7 @@ import copy
 class Devourer(BaseEnemy):
 
     __stats: dict[str, int] = {
-        "health_points": 1700,
+        "health_points": 1600,
         "physical_defense": 200,
         "magical_defense": 150,
         "spell_power": 150,
@@ -14,7 +14,7 @@ class Devourer(BaseEnemy):
         "health_regeneration": 15,
         "mana_regeneration": 15,
         "mana_points": 250,
-        "physical_damage": 60,
+        "physical_damage": 40,
         "magical_damage": 40,
     }
 

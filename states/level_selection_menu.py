@@ -332,7 +332,7 @@ class LevelSelectionMenu(BaseState):
             self.get_enemy_name().set_text(
                 self.get_enemies()[self.get_show_enemy_info()].get_name()
             )
-            
+
             # Loop through the first column of stat names and display their values
             for stat_count, stat_name in enumerate(FIRST_COLUMN_STAT_NAMES):
                 # Retrieve the numerical stat value, default to 0 if stat not found

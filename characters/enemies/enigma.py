@@ -6,7 +6,7 @@ import copy
 class Enigma(BaseEnemy):
 
     __stats: dict[str, int] = {
-        "health_points": 1700,
+        "health_points": 1500,
         "physical_defense": 100,
         "magical_defense": 200,
         "spell_power": 150,
@@ -14,7 +14,7 @@ class Enigma(BaseEnemy):
         "health_regeneration": 15,
         "mana_regeneration": 15,
         "mana_points": 250,
-        "physical_damage": 100,
+        "physical_damage": 70,
         "magical_damage": 0,
     }
 

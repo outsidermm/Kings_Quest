@@ -53,16 +53,16 @@ class CharacterSelectionMenu(BaseState):
 
     # Define maximum values for the bars for normalization
     __CHARACTER_MAX_VAL: dict[str, int] = {
-        "health_points": 1350,  # Berserker's max health points
-        "physical_defense": 250,  # Warrior's max physical defense
-        "magical_defense": 150,  # Mage's max magical defense
-        "spell_power": 145,  # Mage's 130 + 15 upgrade
-        "physical_power": 200,  # Warrior's 90 + 90 upgrade
-        "health_regeneration": 20,  # Warrior's max health regeneration
-        "mana_regeneration": 10,  # Mage's max mana regeneration
-        "mana_points": 300,  # Mage's 250 + 50 upgrade
-        "physical_damage": 110,  # Berserker's max physical damage
-        "magical_damage": 60,  # Mage's max magical damage
+        "health_points": 1300,
+        "physical_defense": 220,
+        "magical_defense": 160,
+        "spell_power": 140,
+        "physical_power": 120,
+        "health_regeneration": 15,
+        "mana_points": 300,
+        "physical_damage": 1000,
+        "mana_regeneration": 15,
+        "magical_damage": 70,
     }
 
     __UNLOCK_ABILITY_COST: int = 600

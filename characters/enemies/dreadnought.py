@@ -6,7 +6,7 @@ import copy
 class DreadNought(BaseEnemy):
 
     __stats: dict[str, int] = {
-        "health_points": 1800,
+        "health_points": 1400,
         "physical_defense": 200,
         "magical_defense": 150,
         "spell_power": 150,
@@ -15,7 +15,7 @@ class DreadNought(BaseEnemy):
         "mana_regeneration": 15,
         "mana_points": 250,
         "physical_damage": 40,
-        "magical_damage": 60,
+        "magical_damage": 40,
     }
 
     __abilities: list[Ability] = [
