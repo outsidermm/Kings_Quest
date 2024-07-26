@@ -282,22 +282,35 @@ class LevelSelectionMenu(BaseState):
     def run(self) -> None:
         """
         Runs the logic for the level selection menu, such as navigating to different states.
+        This method checks various conditions to determine if a state transition should occur.
         """
+        # Check if the character selection menu should be navigated to
         if self.get_navigate_character_selection():
+            # Set the target state to the character selection menu
             self.set_target_state_name("character_selection_menu")
+            # Mark that a transition should occur
             self.set_time_to_transition(True)
             return
 
+        # Check if the quest menu should be navigated to
         if self.get_navigate_quest():
+            # Set the target state to the quest menu
             self.set_target_state_name("quest_menu")
+            # Mark that a transition should occur
             self.set_time_to_transition(True)
             return
 
+        # Check if the combat menu should be navigated to
         if self.get_navigate_combat():
+            # Get the incoming transition data
             combat_pair = self.get_incoming_transition_data()
+            # Add enemy information to the transition data
             combat_pair["enemy"] = self.get_enemies()[self.get_show_enemy_info()].copy()
+            # Set the outgoing transition data
             self.set_outgoing_transition_data(combat_pair)
+            # Set the target state to the turn-based fight
             self.set_target_state_name("turn_based_fight")
+            # Mark that a transition should occur
             self.set_time_to_transition(True)
             return
 
@@ -307,16 +320,22 @@ class LevelSelectionMenu(BaseState):
 
         :param time_delta: Time elapsed since the last frame.
         """
+        # Check if enemy information should be displayed
         if self.get_show_enemy_info() != -1:
+            # Load and set the enemy icon image
             self.get_enemy_icon().set_image(
                 pygame.image.load(
                     self.get_enemies()[self.get_show_enemy_info()].get_sprite_location()
                 ).convert_alpha()
             )
+            # Set the enemy name text
             self.get_enemy_name().set_text(
                 self.get_enemies()[self.get_show_enemy_info()].get_name()
             )
+            
+            # Loop through the first column of stat names and display their values
             for stat_count, stat_name in enumerate(FIRST_COLUMN_STAT_NAMES):
+                # Retrieve the numerical stat value, default to 0 if stat not found
                 numerical_stat = (
                     self.get_enemies()[self.get_show_enemy_info()].get_stats()[
                         stat_name
@@ -325,12 +344,15 @@ class LevelSelectionMenu(BaseState):
                     in self.get_enemies()[self.get_show_enemy_info()].get_stats().keys()
                     else 0
                 )
+                # Set the stat text with an icon
                 self.get_stat_text()[stat_count].set_text(
                     f'<img src="assets/icons_18/{stat_name}.png"> '
                     f"{convert_snake_to_title(stat_name)}: {numerical_stat}"
                 )
 
+            # Loop through the second column of stat names and display their values
             for stat_count, stat_name in enumerate(SECOND_COLUMN_STAT_NAMES):
+                # Retrieve the numerical stat value, default to 0 if stat not found
                 numerical_stat = (
                     self.get_enemies()[self.get_show_enemy_info()].get_stats()[
                         stat_name
@@ -339,21 +361,28 @@ class LevelSelectionMenu(BaseState):
                     in self.get_enemies()[self.get_show_enemy_info()].get_stats().keys()
                     else 0
                 )
+                # Set the stat text with an icon
                 self.get_stat_text()[stat_count + 5].set_text(
                     f'<img src="assets/icons_18/{stat_name}.png"> '
                     f"{convert_snake_to_title(stat_name)}: {numerical_stat}"
                 )
 
+            # Show the combat entry panel and hide the static panel wrapper
             self.get_combat_entry_panel().show()
             self.get_static_panel_wrapper().hide()
         else:
+            # Hide the combat entry panel and show the static panel wrapper
             self.get_combat_entry_panel().hide()
             self.get_static_panel_wrapper().show()
 
+        # Update the UI manager with the time delta
         self.get_ui_manager().update(time_delta)
+        # Blit (copy) the background image onto the screen at coordinates (0, 0)
         self.get_screen().blit(self.get_background_image(), (0, 0))
 
+        # Draw the UI elements onto the screen
         self.get_ui_manager().draw_ui(self.get_screen())
+        # Update the display to reflect the changes
         pygame.display.update()
 
     def reset_event_polling(self) -> None:

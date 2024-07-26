@@ -103,11 +103,16 @@ class EnemyCombatHUD:
         This method updates the health bar to reflect the current health points
         and updates the text for each stat displayed in the HUD.
         """
+        # Update the health bar to reflect the player's current health points
         self.get_health_bar().update(self.get_player().get_stats()["health_points"])
+
+        # Loop through each stat name defined in CHARACTER_STAT
         for stat_name in CHARACTER_STAT:
+            # Ensure that every stat name has a value in the player's stats dictionary, defaulting to 0 if not present
             if stat_name not in self.get_player().get_stats().keys():
                 self.get_player().get_stats()[stat_name] = 0
 
+            # Update the HUD text for each stat except for health points
             if stat_name != "health_points":
                 self.get_HUD_text()[stat_name].set_text(
                     html_text=f'<img src="assets/icons_18/{stat_name}.png"> '

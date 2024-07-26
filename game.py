@@ -35,22 +35,25 @@ class Game:
         """
         Initializes the game, sets up pygame, UI, and game states.
         """
+        # Initialize pygame modules
         pygame.init()
         pygame.font.init()
         pygame.mixer.init()
 
+        # Set the display mode with a screen resolution of 1280x720
         screen = pygame.display.set_mode((1280, 720))
 
+        # Initialize the UI manager with the same screen resolution
         ui_manager = pygame_gui.UIManager((1280, 720))
 
-        # Load UI themes
+        # Load various UI themes from JSON files
         ui_manager.get_theme().load_theme("settings/general.json")
         ui_manager.get_theme().load_theme("settings/character_selection_theme.json")
         ui_manager.get_theme().load_theme("settings/level_selection_theme.json")
         ui_manager.get_theme().load_theme("settings/combat_theme.json")
         ui_manager.get_theme().load_theme("settings/health_bar.json")
 
-        # Default user data
+        # Default user data for initialization
         default_user_data = {
             "xp": 5000,
             "quest_progress": {
@@ -74,14 +77,18 @@ class Game:
                 "Ranger": ["Arrow Barrage"],
             },
         }
+        # Write the default user data to file if it doesn't already exist
         write_default_if_not_exist(
             "settings/user_settings.json", default_data=default_user_data
         )
 
+        # Set up the game clock
         self.set_clock(pygame.time.Clock())
 
+        # Initialize the game state manager
         self.set_game_state_manager(GameStateManager())
 
+        # Create player character instances
         players: list[BasePlayer] = [
             Warrior("assets/characters/players/warrior/idle/0.png"),
             Mage("assets/characters/players/mage/idle/0.png"),
@@ -89,13 +96,16 @@ class Game:
             Ranger("assets/characters/players/ranger/idle/0.png"),
         ]
 
+        # Create enemy character instances
         enemies: list[BaseEnemy] = [
             DreadNought("assets/characters/enemies/dreadnought/idle/0000.png"),
             Devourer("assets/characters/enemies/devourer/idle/0000.png"),
             Enigma("assets/characters/enemies/enigma/idle/0000.png"),
         ]
 
+        # Read XP from the user settings file
         xp = XP(read_json("settings/user_settings.json")["xp"])
+        # Define quests
         quests: list[Quest] = [
             Quest(
                 "Fireball",
@@ -111,6 +121,7 @@ class Game:
             ),
         ]
 
+        # Initialize various game menus and states
         StartMenu(screen, ui_manager, self.get_game_state_manager())
         CharacterSelectionMenu(
             screen,
@@ -152,16 +163,21 @@ class Game:
             xp,
         )
 
+        # Set the initial game state to the start menu
         self.get_game_state_manager().set_initial_state("start_menu")
 
     def run(self) -> None:
         """
         Runs the main game loop.
         """
+        # Main game loop
         while self.get_running():
+            # Calculate the time delta for the current frame
             time_delta = self.get_clock().tick_busy_loop(60)
+            # Update the game state and check if the game should continue running
             self.set_running(self.get_game_state_manager().run(time_delta))
 
+        # Quit pygame and exit the program
         pygame.quit()
         quit()
 
